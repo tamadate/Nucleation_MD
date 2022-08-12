@@ -114,10 +114,8 @@ MD::export_dump(void) {
 	Nvapor+=int(vars->vapor_out.size());
 	Nvapor+=vars->vapors[0].inAtoms.size()*int(vars->vapor_in.size());
 	int Ngas=0;
-	if(flags->dump_gas) {
-        Ngas+=int(vars->gas_in.size());
-        Ngas+=int(vars->gas_out.size());
-    }
+	Ngas+=int(vars->gas_out.size());
+	Ngas+=vars->gases[0].inAtoms.size()*int(vars->gas_in.size());
 
 	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
 
@@ -125,20 +123,29 @@ MD::export_dump(void) {
 	X=Y=Z=0;
 	if(flags->dump_fix==1) {X=ion_r[0];Y=ion_r[1];Z=ion_r[2];}
 
-	for (auto &a : vars->ions) fprintf(f,"%d %d %f %f %f %f %f %f\n",a.id,a.type,a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
-	if(flags->dump_gas) {
-        for (auto &a : vars->gas_out) fprintf(f, "%d %d %f %f %f %f %f %f\n", vars->gases[a].id, 222, vars->gases[a].qx-X, vars->gases[a].qy-Y, vars->gases[a].qz-Z, vars->gases[a].px, vars->gases[a].py, vars->gases[a].pz);
-        for (auto &a : vars->gas_in) fprintf(f, "%d %d %f %f %f %f %f %f\n", vars->gases[a].id, vars->gases[a].type, vars->gases[a].qx-X, vars->gases[a].qy-Y, vars->gases[a].qz-Z, vars->gases[a].px, vars->gases[a].py, vars->gases[a].pz);
-    }
-	int vaporID=0;
+	int ID=0;
+	for (auto &a : vars->ions) {
+		fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,a.type,a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
+		ID++;
+	}
+    for (auto &a : vars->gas_out) {
+		fprintf(f, "%d %d %f %f %f %f %f %f\n", ID, 222, vars->gases[a].qx-X, vars->gases[a].qy-Y, vars->gases[a].qz-Z, vars->gases[a].px, vars->gases[a].py, vars->gases[a].pz);
+		ID++;
+	}
+    for (auto &a : vars->gas_in) {
+		for (auto &b : vars->gases[a].inAtoms) {
+			fprintf(f, "%d %d %f %f %f %f %f %f\n", ID, b.type, b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+			ID++;
+		}
+	}
     for (auto &a : vars->vapor_out) {
-		fprintf(f, "%d %d %f %f %f %f %f %f\n", Ngas+Nion+vaporID, 333, vars->vapors[a].qx-X, vars->vapors[a].qy-Y, vars->vapors[a].qz-Z, vars->vapors[a].px, vars->vapors[a].py, vars->vapors[a].pz);
-		vaporID+=1;
+		fprintf(f, "%d %d %f %f %f %f %f %f\n", ID, 333, vars->vapors[a].qx-X, vars->vapors[a].qy-Y, vars->vapors[a].qz-Z, vars->vapors[a].px, vars->vapors[a].py, vars->vapors[a].pz);
+		ID++;
 	}
     for (auto &a : vars->vapor_in) {
 		for (auto &b : vars->vapors[a].inAtoms) {
-			fprintf(f, "%d %d %f %f %f %f %f %f\n", Ngas+Nion+vaporID, b.type, b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
-			vaporID+=1;
+			fprintf(f, "%d %d %f %f %f %f %f %f\n", ID, b.type, b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+			ID++;
 		}
 	}
 	fclose(f);
@@ -151,21 +158,28 @@ MD::export_dump_close(void) {
 	FILE*f=fopen(pp->dump_path, "a");
 	int Nion=int(vars->ions.size());
 	int Nvapor=vars->vapors[0].inAtoms.size()*int(vars->vapor_in.size());;
-	int Ngas=int(vars->gas_in.size());
+	int Ngas=vars->gases[0].inAtoms.size()*int(vars->gas_in.size());
 
 	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
 
 	double X,Y,Z;
 	X=Y=Z=0;
 	if(flags->dump_fix==1) {X=ion_r[0];Y=ion_r[1];Z=ion_r[2];}
-
-	for (auto &a : vars->ions) fprintf(f,"%d %d %f %f %f %f %f %f\n",a.id,a.type,a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
-    for (auto &a : vars->gas_in) fprintf(f, "%d %d %f %f %f %f %f %f\n", vars->gases[a].id, vars->gases[a].type, vars->gases[a].qx-X, vars->gases[a].qy-Y, vars->gases[a].qz-Z, vars->gases[a].px, vars->gases[a].py, vars->gases[a].pz);
-	int vaporID=0;
+	int ID=0;
+	for (auto &a : vars->ions) {
+		fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,a.type,a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
+		ID++;
+	}
+    for (auto &a : vars->gas_in) {
+		for (auto &b : vars->gases[a].inAtoms) {
+			fprintf(f, "%d %d %f %f %f %f %f %f\n", ID, b.type, b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+			ID++;
+		}
+	}
     for (auto &a : vars->vapor_in) {
 		for (auto &b : vars->vapors[a].inAtoms) {
-			fprintf(f, "%d %d %f %f %f %f %f %f\n", Ngas+Nion+vaporID, b.type, b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
-			vaporID+=1;
+			fprintf(f, "%d %d %f %f %f %f %f %f\n", ID, b.type, b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+			ID++;
 		}
 	}
 	fclose(f);

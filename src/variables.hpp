@@ -89,7 +89,7 @@ public:
 
 	/*variables*/
 	std::vector<Atom> ions;
-	std::vector<Atom> gases;
+	std::vector<Molecule> gases;
     std::vector<Molecule> vapors;
 	double time;
 	double zeta_ion;
@@ -116,6 +116,7 @@ public:
 	std::vector<Bond> bondMeOH(void);
 	std::vector<Angle> angleMeOH(void);
 	std::vector<Dihedral> dihedralMeOH(void);
+	std::vector<Atom> atomGas(void);
 	std::vector<vector<vector<double>>> pair_coeff;
 	double bornCoeff[2][2][5];
 

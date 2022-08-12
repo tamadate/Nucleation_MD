@@ -19,7 +19,7 @@ MD::make_pair(void){
 	make_pair_gasvapor();
 	if(flags->inter_gg==1) make_pair_gasgas();
 //	set number of steps to update pair list
-	Atom *gases = vars->gases.data();
+	Molecule *gases = vars->gases.data();
 	double vmax2 = 0.0;
 	int gos=vars->gas_out.size();
 	for (auto &a : vars->gas_out) {
@@ -46,49 +46,57 @@ MD::make_pair(void){
 /////////////////////////////////////////////////////////////////////
 void
 MD::make_pair_gasion(void){
+	Molecule *gases = vars->gases.data();
+	for (auto i : vars->gas_in){
+		double X=0;
+		double Y=0;
+		double Z=0;
+		double VX=0;
+		double VY=0;
+		double VZ=0;
+		double Mass=0;
+		for (auto &a : vars->gases[i].inAtoms){
+			X+=a.qx*a.mass;
+			Y+=a.qy*a.mass;
+			Z+=a.qz*a.mass;
+			VX+=a.px*a.mass;
+			VY+=a.py*a.mass;
+			VZ+=a.pz*a.mass;
+			Mass+=a.mass;
+		}
+        //  averaged position
+	    vars->gases[i].qx=X/Mass;
+	    vars->gases[i].qy=Y/Mass;
+	    vars->gases[i].qz=Z/Mass;
+        //  averaged velocity
+        vars->gases[i].px=VX/Mass;
+        vars->gases[i].py=VY/Mass;
+        vars->gases[i].pz=VZ/Mass;
+	}
 // clear vars->gas_in, vars->gas_out and pair list of gas-ion
 	vars->gas_in.clear();
 	vars->gas_out.clear();
 	vars->pairs_gi.clear();
 
-	Atom *gases = vars->gases.data();
-	Atom *ions = vars->ions.data();
 	int is=vars->ions.size();
 	for (int i=0;i<Nof_around_gas;i++){
 		int flag_in=0;
-		for (int j=0;j<is;j++){
-			double dx = gases[i].qx - ions[j].qx;
-			double dy = gases[i].qy - ions[j].qy;
-			double dz = gases[i].qz - ions[j].qz;
-			double r2 = (dx * dx + dy * dy + dz * dz);
-			if (r2 < ML2){
-				flag_in+=1;
-				Pair p;
-				p.i=i;
-				p.j=j;
-				vars->pairs_gi.push_back(p);
-                if(pp->num_gas==2) {
-                    p.i=i+Nof_around_gas;
-                    vars->pairs_gi.push_back(p);
-                }
-			}
-		}
+		double dx = gases[i].qx - ion_r[0];
+		double dy = gases[i].qy - ion_r[1];
+		double dz = gases[i].qz - ion_r[2];
+		double r2 = (dx * dx + dy * dy + dz * dz);
+		if (r2 < ML2) flag_in=1;
 //if inter-gas interaction flag is ON, stand flag_in ON
 //if flag_in ON, molecule push back to vars->gas_in
 //if flag_in OFF, molecule push back to vars->gas_out
 		if(flags->inter_gg==1) flag_in=1;	
 		if(flag_in>0) {
             vars->gas_in.push_back(i);
-            if(pp->num_gas==2) {
-               makeDiatomicProp_in(i);
-               vars->gas_in.push_back(i+Nof_around_gas);
-            }
+            makeDiatomicProp_in(i);
         }
 		if(flag_in==0) {
             vars->gas_out.push_back(i);
-            if(pp->num_gas==2) {
-                makeDiatomicProp_out(i);
-            }
+            makeDiatomicProp_out(i);
         }
 	}
 }
@@ -134,16 +142,11 @@ MD::make_pair_vaporion(void){
 
 	for (int i=0;i<Nof_around_vapor;i++){
 		int flag_in=0;
-		for (auto &a : vars->ions){
-			double dx = vapors[i].qx - a.qx;
-			double dy = vapors[i].qy - a.qy;
-			double dz = vapors[i].qz - a.qz;
-			double r2 = (dx * dx + dy * dy + dz * dz);
-			if (r2 < ML2){
-				flag_in=1;
-				break;
-			}
-		}
+		double dx = vapors[i].qx - ion_r[0];
+		double dy = vapors[i].qy - ion_r[1];
+		double dz = vapors[i].qz - ion_r[2];
+		double r2 = (dx * dx + dy * dy + dz * dz);
+		if (r2 < ML2) flag_in=1;
 		if(flag_in>0) {
 			vars->vapor_in.push_back(i);
 			makePolyatomicProp_in(i);
@@ -165,7 +168,7 @@ void
 MD::make_pair_gasvapor(void){
 // clear vars->gas_in, vars->gas_out and pair list of gas-ion
 	Molecule *vapors = vars->vapors.data();
-	Atom *gases = vars->gases.data();
+	Molecule *gases = vars->gases.data();
 	Pair p;
 	for (auto i : vars->gas_in){
 		for (auto j : vars->vapor_in){
@@ -195,7 +198,7 @@ MD::make_pair_gasvapor(void){
 void
 MD::make_pair_gasgas(void){
 	vars->pairs_gg.clear();
-	Atom *gases = vars->gases.data();
+	Molecule *gases = vars->gases.data();
 	int gs=vars->gases.size();
 	for (int i=0; i<gs-1; i++){
 		for (int j=i+1; j<gs; j++){
@@ -224,7 +227,7 @@ void
 MD::check_pairlist(void){
 	loop++;
 	if(loop>loop_update){
-		Atom *gases = vars->gases.data();
+		Molecule *gases = vars->gases.data();
 		Molecule *vapors = vars->vapors.data();
 		boundary_scaling_ion_move();
 		for (auto &i : vars->gas_out) {

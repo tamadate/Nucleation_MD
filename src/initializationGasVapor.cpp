@@ -24,8 +24,8 @@ This makes connection between thermal relaxation and main diffusion coeficient c
 void
 MD::initialization_gas(void) {
 	double nion=vars->ions.size();
-	double dx,dy,dz, d,min_gg,min_gi, gasgas, gasion;
-	gasgas=5, gasion=5;	/*	minimum gas-gas, gas-ion distance */
+	double dx,dy,dz, d;
+	double dis=5;	/*	minimum gas-gas, gas-ion distance */
     
     // Set random number generator
 	random_device seed;
@@ -37,9 +37,8 @@ MD::initialization_gas(void) {
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
 	do {
-		Atom a;
-		a.id=nion+i+1;
-		min_gg=min_gi=10000.0;
+		Molecule a;
+		double min_dis=10000.0;
 		a.qx=r(mt), a.qy=r(mt), a.qz=r(mt);
 		if(i>0){
 			for(auto &b : vars->gases){
@@ -48,7 +47,7 @@ MD::initialization_gas(void) {
 				dz=a.qx-b.qx;
 				adjust_periodic(dx, dy, dz);
 				d=sqrt(dx*dx+dy*dy+dz*dz);
-				if(d<min_gg) min_gg=d; // minimum gas-gas distance
+				if(d<min_dis) min_dis=d; // minimum gas-gas distance
 			}
 		}
 		for(auto &b : vars->ions) {
@@ -57,29 +56,20 @@ MD::initialization_gas(void) {
 			dz=a.qz-b.qz;
 			adjust_periodic(dx, dy, dz);
 			d=sqrt(dx*dx+dy*dy+dz*dz);
-			if(d<min_gi) min_gi=d; // minimum gas-ion distance
+			if(d<min_dis) min_dis=d; // minimum gas-ion distance
 		}
-		if(min_gg>gasgas && min_gi>gasion){
+		if(min_dis>dis){
 			a.px=distgas(engine)*1e-5;
 			a.py=distgas(engine)*1e-5;
 			a.pz=distgas(engine)*1e-5;
-			a.fx=a.fy=a.fz=a.charge=a.ix=a.iy=a.iz=0;
-			a.type=gastype;
 			a.mass=pp->Mgas;
+			a.inAtoms=vars->atomGas();
+			a.inFlag=0;
 			vars->gases.push_back(a);
 			i++;
 		}
 		collisionFlagGas.push_back(0);
 	} while(i<Nof_around_gas);
-    if (gastype==2){
-        for(i=0; i<Nof_around_gas; i++){
-			Atom a;
-			a.id=nion+i+1+Nof_around_gas;
-			a.type=2;
-			a.px=a.py=a.pz=a.qx=a.qy=a.qz=a.fx=a.fy=a.fz=a.charge=a.ix=a.iy=a.iz=a.mass=0;
-            vars->gases.push_back(a);
-        }
-    }
 }
 
 
@@ -119,7 +109,7 @@ MD::initialization_vapor(void) {
 				dz = a.qz - b.qz;
 				adjust_periodic(dx, dy, dz);
 				d=sqrt(dx*dx+dy*dy+dz*dz);
-				if(d<min_vv) min_vv=d; // minimum gas-gas distance
+				if(d<min_vv) min_vv=d; // minimum vapor-vapor distance
 			}
 		}
 		for(auto &b : vars->ions) {
@@ -128,7 +118,7 @@ MD::initialization_vapor(void) {
 			dz=a.qz-b.qz;
 			adjust_periodic(dx, dy, dz);
 			d=sqrt(dx*dx+dy*dy+dz*dz);
-			if(d<min_iv) min_iv=d; // minimum gas-ion distance
+			if(d<min_iv) min_iv=d; // minimum vapor-ion distance
 		}
         for(auto &b : vars->gases) {
 			dx=a.qx-b.qx;
@@ -136,14 +126,13 @@ MD::initialization_vapor(void) {
 			dz=a.qz-b.qz;
 			adjust_periodic(dx, dy, dz);
 			d=sqrt(dx*dx+dy*dy+dz*dz);
-			if(d<min_gv) min_gv=d; // minimum gas-ion distance
+			if(d<min_gv) min_gv=d; // minimum gas-vapor distance
 		}
 		if(min_gv>gv && min_iv>iv && min_vv>vv){
 			a.px=distvapor(engine)*1e-5;
 			a.py=distvapor(engine)*1e-5;
 			a.pz=distvapor(engine)*1e-5;
 			a.mass=pp->Mvapor;
-			Atom b;
 			a.inAtoms=vars->atomVapor;
 			a.bonds=vars->bondMeOH();
 			a.angles=vars->angleMeOH();

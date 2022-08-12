@@ -46,7 +46,7 @@ MD::verlet(void) {
 /////////////////////////////////////////////////////////////////////
 void 
 MD::velocity_calculation(void) {
-	Atom *gases = vars->gases.data();
+	Molecule *gases = vars->gases.data();
 	double const Coeff=0.5*dt*4.184e-4;
 	for (auto &a : vars->ions) {
 		double Coeff2=Coeff/a.mass;
@@ -63,10 +63,12 @@ MD::velocity_calculation(void) {
 		}
     }
     for (auto &i : vars->gas_in){
-		double Coeff2=Coeff/gases[i].mass;
-        gases[i].px += gases[i].fx *Coeff2;
-        gases[i].py += gases[i].fy *Coeff2;
-        gases[i].pz += gases[i].fz *Coeff2;
+		for (auto &a : vars->gases[i].inAtoms){
+			double Coeff2=Coeff/a.mass;
+			a.px += a.fx * Coeff2;
+			a.py += a.fy * Coeff2;
+			a.pz += a.fz * Coeff2;
+		}
 	}
 }
 
@@ -92,12 +94,13 @@ MD::update_position(void) {
 		}
     }
 
-	Atom *gases = vars->gases.data();
     for (auto &i : vars->gas_in) {
-        gases[i].qx += gases[i].px * dt;
-        gases[i].qy += gases[i].py * dt;
-        gases[i].qz += gases[i].pz * dt;
-        gases[i].fx=gases[i].fy=gases[i].fz=0.0;    
+		for (auto &a : vars->gases[i].inAtoms){
+			a.qx += a.px * dt;
+			a.qy += a.py * dt;
+			a.qz += a.pz * dt;
+		    a.fx=a.fy=a.fz=0.0;    
+		}
     }
 }
 

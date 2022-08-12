@@ -19,7 +19,6 @@ MD::MD(char* condfile) {
 	pp->PhysicalProp_set(condfile, atomFile, flags);
 	if(vaportype==1) vars->atomVapor = vars->makeAtomMeOH();
 	if(vaportype==2) vars->atomVapor = vars->makeAtomTIP3P();
-
 	vars->read_initial(atomFile);
 	vars->set_initial_velocity(pp);
 	setPotential(flags);
