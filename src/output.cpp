@@ -101,13 +101,13 @@ MD::display(int output_ONOFF){
 		double Kout=obs->Kout_g+obs->Kout_v;
     std::cout << "----------------------TIME = " << vars->time/1000.0 << " ps-------------------------" << endl;
 		cout<<"Inside propeties"<<endl;
-    printf("  Kion = %1.2e  Tion = %1.2f  Uion = %1.2e	\n  Kgas = %1.2e  Tgas = %f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %f  Uvap = %1.2e	\n  Kin = %1.2e    Uin = %1.2e	\n",
+    printf("  Kion = %1.2e  Tion = %1.2f  Uion = %1.2e	\n  Kgas = %1.2e  Tgas = %1.2f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %1.2f  Uvap = %1.2e	\n  Kin = %1.2e    Uin = %1.2e	\n",
 		obs->Kion, obs->Tion, U, obs->Kin_g, obs->Tin_g, U, obs->Kin_v, obs->Tin_v, U, Kin, U);
 		cout<<"Out side propeties"<<endl;
-		printf("  Kgas = %1.2e  Tgas = %f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %f  Uvap = %1.2e	\n  Kout = %1.2e    Uout = %1.2e	\n",
+		printf("  Kgas = %1.2e  Tgas = %1.2f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %1.2f  Uvap = %1.2e	\n  Kout = %1.2e    Uout = %1.2e	\n",
 		obs->Kout_g, obs->Tout_g, 0.0, obs->Kout_v, obs->Tout_v, 0.0, Kout, 0.0);
 		cout<<"System propeties"<<endl;
-		printf("  K = %1.2e  T = %f  U = %1.2e  Press = %f\n",
+		printf("  K = %1.2e  T = %1.2f  U = %1.2e  Press = %f\n",
 		Kin+Kout, (Kin+Kout)/(obs->Ngas+obs->Nion+obs->Nvap), U, gaspress/101300.0);
 		cout <<endl;
 /*    FILE*f=fopen("T-E.dat", "a");
