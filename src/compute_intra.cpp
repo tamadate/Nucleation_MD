@@ -9,7 +9,7 @@
 /////////////////////////////////////////////////////////////////////
 void
 Potential::compute(Variables *vars, FLAG *flags){
-	Ion *ions = vars->ions.data();
+	Atom *ions = vars->ions.data();
 
 	for (auto &a : vars->ion_pairs){
 		int i=a.i;
@@ -44,7 +44,7 @@ Potential::compute(Variables *vars, FLAG *flags){
 
 void
 PotentialGasIntra::compute(Variables *vars, FLAG *flags){
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	for(auto &i : vars->gas_in){
 		if(i<Nof_around_gas){
 		    int j=i+Nof_around_gas;

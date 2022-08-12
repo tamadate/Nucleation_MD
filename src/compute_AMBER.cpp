@@ -16,7 +16,7 @@ PotentialAMBER::compute(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
-	Ion *ions = vars->ions.data();
+	Atom *ions = vars->ions.data();
 /*intra-molecular interaction (bond)*/
 	Bond_type *btypes = vars->btypes.data();
 	for (auto &b : vars-> bonds) {
@@ -42,7 +42,7 @@ PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
-	Ion *ions = vars->ions.data();
+	Atom *ions = vars->ions.data();
 /*intra-molecular interaction (angle)*/
 	double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
 	Angle_type *ctypes = vars->ctypes.data();
@@ -89,7 +89,7 @@ PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
-	Ion *ions = vars->ions.data();
+	Atom *ions = vars->ions.data();
 /*intra-molecular interaction (dihedral)*/
 	double vb1x,vb1y,vb1z,vb2x,vb2y,vb2z,vb3x,vb3y,vb3z,vb2xm,vb2ym,vb2zm;
 	double edihedral,ff2[3],ff4[3],ff1[3],ff3[3];

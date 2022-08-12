@@ -10,12 +10,11 @@ int main ( int argc,char *argv[] ) {
         
 /////////////////////////////////////////////////////////////////////
 /*	
-	Diffusion coefficient estimation	
-	-Diffusion coefficient and collision rate coefficient simulation 
-	require 2 and 7 input parameters, respectively.
+	Single ion tracking	
+	-Diffusion coefficient and vapor uptaking simulations 
+	require 2 input parameters.
 	- 1:molecular infomation file name 
-	- 2:calculation condition file name 
-	- 3:calculation number
+	- 2:calculation number
 */
 /////////////////////////////////////////////////////////////////////
 
@@ -27,9 +26,6 @@ int main ( int argc,char *argv[] ) {
 		md -> run_diff ( argv );
 	}
 
-
-
-/*Exception error*/
 	if ( argc != 3 ) cout<<"Error:Number of input parameters. -> Diffusion coefficient simulation require 2 input parameters \n1:molecular infomation file name \n2:calculation condition file name \n3:Calculation number"<<endl;
 	return 0;
 }

@@ -96,7 +96,7 @@ MD::makeDiatomicProp_out(int i){
 void 
 MD::makePolyatomicProp_in(int i){
     Molecule *vapors = vars->vapors.data();
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
     if(vapors[i].inFlag==0){
         random_device seed;
         mt19937 mt(seed());

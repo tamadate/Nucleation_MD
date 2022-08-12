@@ -46,7 +46,7 @@ MD::verlet(void) {
 /////////////////////////////////////////////////////////////////////
 void 
 MD::velocity_calculation(void) {
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	double const Coeff=0.5*dt*4.184e-4;
 	for (auto &a : vars->ions) {
 		double Coeff2=Coeff/a.mass;
@@ -92,7 +92,7 @@ MD::update_position(void) {
 		}
     }
 
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
     for (auto &i : vars->gas_in) {
         gases[i].qx += gases[i].px * dt;
         gases[i].qy += gases[i].py * dt;

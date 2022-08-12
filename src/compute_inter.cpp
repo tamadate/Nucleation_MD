@@ -9,8 +9,8 @@
 /////////////////////////////////////////////////////////////////////
 void
 PotentialGasIon::compute(Variables *vars, FLAG *flags) {
-	Gas *gases = vars->gases.data();
-	Ion *ions = vars->ions.data();
+	Atom *gases = vars->gases.data();
+	Atom *ions = vars->ions.data();
 	const int gs = vars->gas_in.size();
 	const int is = vars->ions.size();
 	for(auto &a : vars->pairs_gi){
@@ -48,7 +48,7 @@ PotentialGasIon::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	Molecule *vapors = vars->vapors.data();
 
 	for(auto I : vars->vapor_in){
@@ -87,7 +87,7 @@ PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
 void
 PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 	Molecule *vapors = vars->vapors.data();
-	Ion *ions = vars->ions.data();
+	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
 	for(auto &I : vars->vapor_in){
 		for (auto &av : vapors[I].inAtoms){
@@ -172,7 +172,7 @@ PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
 // charge devided by number of atoms in ions
 void
 PotentialIonDipole::compute(Variables *vars, FLAG *flags) {
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	const int gs = vars->gas_in.size();
 	const int is = vars->ions.size();
     
@@ -207,7 +207,7 @@ PotentialIonDipole::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialGasGas::compute(Variables *vars, FLAG *flags) {
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	for(auto &a : vars->pairs_gg){
 		int i=a.i;
 		int j=a.j;

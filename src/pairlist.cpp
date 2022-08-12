@@ -19,7 +19,7 @@ MD::make_pair(void){
 	make_pair_gasvapor();
 	if(flags->inter_gg==1) make_pair_gasgas();
 //	set number of steps to update pair list
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	double vmax2 = 0.0;
 	int gos=vars->gas_out.size();
 	for (auto &a : vars->gas_out) {
@@ -51,8 +51,8 @@ MD::make_pair_gasion(void){
 	vars->gas_out.clear();
 	vars->pairs_gi.clear();
 
-	Gas *gases = vars->gases.data();
-	Ion *ions = vars->ions.data();
+	Atom *gases = vars->gases.data();
+	Atom *ions = vars->ions.data();
 	int is=vars->ions.size();
 	for (int i=0;i<Nof_around_gas;i++){
 		int flag_in=0;
@@ -165,7 +165,7 @@ void
 MD::make_pair_gasvapor(void){
 // clear vars->gas_in, vars->gas_out and pair list of gas-ion
 	Molecule *vapors = vars->vapors.data();
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	Pair p;
 	for (auto i : vars->gas_in){
 		for (auto j : vars->vapor_in){
@@ -195,7 +195,7 @@ MD::make_pair_gasvapor(void){
 void
 MD::make_pair_gasgas(void){
 	vars->pairs_gg.clear();
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	int gs=vars->gases.size();
 	for (int i=0; i<gs-1; i++){
 		for (int j=i+1; j<gs; j++){
@@ -224,7 +224,7 @@ void
 MD::check_pairlist(void){
 	loop++;
 	if(loop>loop_update){
-		Gas *gases = vars->gases.data();
+		Atom *gases = vars->gases.data();
 		Molecule *vapors = vars->vapors.data();
 		boundary_scaling_ion_move();
 		for (auto &i : vars->gas_out) {

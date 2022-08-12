@@ -24,7 +24,7 @@ adjust_periodic(double &dx, double &dy, double &dz) {
 /************************periodec condition for in gas***************************/
 void
 MD::periodic(void) {
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	int gis=vars->gas_in.size();
 	double HL=d_size*0.5;
 	int flag, flagx, flagy, flagz;
@@ -46,7 +46,7 @@ MD::periodic(void) {
 void
 MD::boundary_scaling_gas_move(void){
 
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	double HL=d_size*0.5;
 	int flag, flagx, flagy, flagz;
 	double vMB, vxMB, vyMB, vzMB, vx, vy, vz, v2, v, mod_factor;
@@ -151,7 +151,7 @@ MD::boundary_scaling_vapor_move(void){
 
 void
 MD::boundary_scaling_ion_move(void){
-	Gas *gases = vars->gases.data();
+	Atom *gases = vars->gases.data();
 	double HL=d_size*0.5;
 	int flag, flagx, flagy, flagz;
 	random_device seed;

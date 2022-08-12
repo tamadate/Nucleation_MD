@@ -31,28 +31,6 @@ struct Dihedral_type {
 	double coeff[15];
 };
 //------------------------------------------------------------------------
-struct Ion {
- 	double qx, qy, qz;
-	double px, py, pz;
-	double charge;
-	int type;
-	int id;
-	double fx, fy, fz;
-	double mass;
-	int ix, iy, iz;
-};
-//------------------------------------------------------------------------
-struct Gas {
- 	double qx, qy, qz;
-	double px, py, pz;
-	double charge;
-	int type;
-	int id;
-	double fx, fy, fz;
-	double mass;
-	int ix, iy, iz;
-};
-//------------------------------------------------------------------------
 struct Atom {
  	double qx, qy, qz;
 	double px, py, pz;
@@ -110,8 +88,8 @@ public:
 	}
 
 	/*variables*/
-	std::vector<Ion> ions;
-	std::vector<Gas> gases;
+	std::vector<Atom> ions;
+	std::vector<Atom> gases;
     std::vector<Molecule> vapors;
 	double time;
 	double zeta_ion;
@@ -140,15 +118,6 @@ public:
 	std::vector<Dihedral> dihedralMeOH(void);
 	std::vector<vector<vector<double>>> pair_coeff;
 	double bornCoeff[2][2][5];
-
-	/*add to vectors*/
-	void add_ions(int id, int type, double x, double y, double z, double vx, double vy, double vz, double fx, double fy, double fz, double charge, double mass);
-	void add_gases(int id, int type, double x, double y, double z, double vx, double vy, double vz, double fx, double fy, double fz, double charge, double mass);
-    void add_vapors(int id, int type, double x, double y, double z, double vx, double vy, double vz, double mass);
-	void add_bonds(int atom1, int atom2, int type);
-	void add_angles(int atom1, int atom2, int atom3, int type);
-	void add_dihedrals(int atom1, int atom2, int atom3, int atom4, int type);
-	void add_atype(int type, double mass, double coeff1, double coeff2);
 
 	/*initialization and export to dump file*/
 	void read_initial(char* infile);
