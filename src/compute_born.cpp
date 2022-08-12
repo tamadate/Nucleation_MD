@@ -8,7 +8,7 @@
 /**********************************Force calculation******************************************/
 void
 PotentialBorn::compute(Variables *vars, FLAG *flags) {
-	Ion *ions = vars->ions.data();
+	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
 	for(int i=0; i<is-1; i++){
 		for(int j=i+1; j<is; j++){

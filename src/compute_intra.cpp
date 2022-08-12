@@ -9,7 +9,7 @@
 /////////////////////////////////////////////////////////////////////
 void
 Potential::compute(Variables *vars, FLAG *flags){
-	Ion *ions = vars->ions.data();
+	Atom *ions = vars->ions.data();
 
 	for (auto &a : vars->ion_pairs){
 		int i=a.i;
@@ -31,10 +31,10 @@ Potential::compute(Variables *vars, FLAG *flags){
 		ions[j].fx -= force_pair * dx;
 		ions[j].fy -= force_pair * dy;
 		ions[j].fz -= force_pair * dz;
-		if(flags->eflag) {
+/*		if(flags->eflag) {
 			vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 			vars->totalPotential+=qqrd2e * ions[i].charge * ions[j].charge * sqrt(r2inv);
-		}
+		}*/
 /*		if(flags->vflag){
 			vars->totalVirial+=force_lj+force_coul;
 		}*/
@@ -44,27 +44,25 @@ Potential::compute(Variables *vars, FLAG *flags){
 
 void
 PotentialGasIntra::compute(Variables *vars, FLAG *flags){
-	Gas *gases = vars->gases.data();
+	Molecule *gases = vars->gases.data();
 	for(auto &i : vars->gas_in){
-		if(i<Nof_around_gas){
-		    int j=i+Nof_around_gas;
-		    double dx = gases[i].qx - gases[j].qx;
-		    double dy = gases[i].qy - gases[j].qy;
-		    double dz = gases[i].qz - gases[j].qz;
-		    double rsq = (dx * dx + dy * dy + dz * dz);
-		    double r = sqrt(rsq);
-			double dr= r - 1.098;
-		    double rk = 1221.7 * dr;
-		    double force_bond_harmonic = -2.0*rk/r;
-		    gases[i].fx += force_bond_harmonic * dx;
-		    gases[i].fy += force_bond_harmonic * dy;
-		    gases[i].fz += force_bond_harmonic * dz;
-		    gases[j].fx -= force_bond_harmonic * dx;
-		    gases[j].fy -= force_bond_harmonic * dy;
-		    gases[j].fz -= force_bond_harmonic * dz;
-			if(flags->eflag) vars->totalPotential+=rk*dr;
-
-		}
+		Atom g1=gases[i].inAtoms[0];
+		Atom g2=gases[i].inAtoms[1];
+	    double dx = g1.qx - g2.qx;
+	    double dy = g1.qy - g2.qy;
+	    double dz = g1.qz - g2.qz;
+	    double rsq = (dx * dx + dy * dy + dz * dz);
+	    double r = sqrt(rsq);
+		double dr= r - 1.098;
+	    double rk = 1221.7 * dr;
+	    double force_bond_harmonic = -2.0*rk/r;
+	    g1.fx += force_bond_harmonic * dx;
+	    g1.fy += force_bond_harmonic * dy;
+	    g1.fz += force_bond_harmonic * dz;
+	    g2.fx -= force_bond_harmonic * dx;
+	    g2.fy -= force_bond_harmonic * dy;
+	    g2.fz -= force_bond_harmonic * dz;
+		if(flags->eflag) vars->totalPotential+=rk*dr;
 	}
 }
 

@@ -21,17 +21,16 @@ Variables::read_initial(char* infile) {
 	    string tmp;
     	istringstream stream(str);		
 		if (iflag==1) {
+			Atom_type at;
 			int loop=0;
-			int type;
-			double mass, coeff1, coeff2;
 			while(getline(stream,tmp,'\t')) {
-				if (loop==0) type=stoi(tmp);
-				if (loop==2) mass=stod(tmp);
-				if (loop==3) coeff1=stod(tmp);
-				if (loop==4) coeff2=stod(tmp);
+				if (loop==0) at.type=stoi(tmp);
+				if (loop==2) at.mass=stod(tmp);
+				if (loop==3) at.coeff1=stod(tmp);
+				if (loop==4) at.coeff2=stod(tmp);
 				loop++;
 			}
-			add_atype(type, mass, coeff1, coeff2);
+			atypes.push_back(at);
 			num_atoms++;
 		}
 		if (iflag==2) {
@@ -89,61 +88,62 @@ Variables::read_initial(char* infile) {
 			dtypes.push_back(dit);
 		}
 		if (iflag==5) {
+			Atom a;
 			int loop=0;
-			int type, id;
-			double charge, x, y, z, vx, vy, vz, mass;
+			a.fx=a.fy=a.fz=a.px=a.py=a.pz=0;
 			while(getline(stream,tmp,'\t')) {
-				if (loop==0) id=stoi(tmp);
-				if (loop==1) type=stoi(tmp);
-				if (loop==2) charge=stod(tmp);
-				if (loop==3) x=stod(tmp);
-				if (loop==4) y=stod(tmp);
-				if (loop==5) z=stod(tmp);
-				if (loop==6) vx=stod(tmp);
-				if (loop==7) vy=stod(tmp);
-				if (loop==8) vz=stod(tmp);
+				if (loop==0) a.id=stoi(tmp);
+				if (loop==1) a.type=stoi(tmp);
+				if (loop==2) a.charge=stod(tmp);
+				if (loop==3) a.qx=stod(tmp);
+				if (loop==4) a.qy=stod(tmp);
+				if (loop==5) a.qz=stod(tmp);
+				if (loop==6) a.px=stod(tmp);
+				if (loop==7) a.py=stod(tmp);
+				if (loop==8) a.pz=stod(tmp);
 				loop++;
 			}
 			for (auto &at : atypes) {
-				if(at.type==type) mass=at.mass;
+				if(at.type==a.type) a.mass=at.mass;
 			}
-			add_ions(id,type,x,y,z,vx,vy,vz,0,0,0,charge,mass);
+			ions.push_back(a);
 		}
 		if (iflag==6) {
+		 	Bond b;
 			int loop=0;
 			int atom1, atom2, type;
 			while(getline(stream,tmp,'\t')) {
-				if (loop==0) atom1=stoi(tmp);
-				if (loop==1) atom2=stoi(tmp);
-				if (loop==2) type=stoi(tmp);
+				if (loop==0) b.atom1 = stoi(tmp);
+				if (loop==1) b.atom2 = stoi(tmp);
+				if (loop==2) b.type=stoi(tmp);
 				loop++;
 			}
-			add_bonds(atom1-1,atom2-1,type-1);
+			bonds.push_back(b);
 		}
 		if (iflag==7) {
+			Angle c;
 			int loop=0;
-			int atom1, atom2, atom3, type;
 			while(getline(stream,tmp,'\t')) {
-				if (loop==0) atom1=stoi(tmp);
-				if (loop==1) atom2=stoi(tmp);
-				if (loop==2) atom3=stoi(tmp);
-				if (loop==3) type=stoi(tmp);
+				if (loop==0) c.atom1=stoi(tmp);
+				if (loop==1) c.atom2=stoi(tmp);
+				if (loop==2) c.atom3=stoi(tmp);
+				if (loop==3) c.type=stoi(tmp);
 				loop++;
 			}
-			add_angles(atom1-1,atom2-1,atom3-1,type-1);
+			angles.push_back(c);
 		}
 		if (iflag==8) {
+			Dihedral d;
 			int loop=0;
-			int atom1, atom2, atom3, atom4, type;
 			while(getline(stream,tmp,'\t')) {
-				if (loop==0) atom1=stoi(tmp);
-				if (loop==1) atom2=stoi(tmp);
-				if (loop==2) atom3=stoi(tmp);
-				if (loop==3) atom4=stoi(tmp);
-				if (loop==4) type=stoi(tmp);
+				if (loop==0) d.atom1=stoi(tmp);
+				if (loop==1) d.atom2=stoi(tmp);
+				if (loop==2) d.atom3=stoi(tmp);
+				if (loop==3) d.atom4=stoi(tmp);
+				if (loop==4) d.type=stoi(tmp);
 				loop++;
 			}
-			add_dihedrals(atom1-1,atom2-1,atom3-1,atom4-1,type-1);
+			dihedrals.push_back(d);
 		}
 		if (iflag==9) {
 			int atom;
@@ -199,8 +199,7 @@ Variables::read_initial(char* infile) {
 
 	random_device seed;
 	double A,B,C,x,y,z;
-	A=seed(),B=seed(),C=seed()
-;
+	A=seed(),B=seed(),C=seed();
 	for(auto &a : ions) {x=a.qx,y=a.qy,z=a.qz; ROTATION(a.qx,a.qy,a.qz,A,B,C,x,y,z);}
     int is=ions.size();
     for(int i=0;i<is-1;i++) {
