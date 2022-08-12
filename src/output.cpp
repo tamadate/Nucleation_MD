@@ -8,25 +8,25 @@
 /**********************************initialization******************************************/
 void
 MD::output_initial(void){
-	sprintf(filepath, "ion_%d_%d.dat", int(T), int(calculation_number)); 
+	sprintf(filepath, "ion_%d_%d.dat", int(T), int(calculation_number));
 	FILE*f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "%d_%d_relax.dat", int(T), int(calculation_number)); 
+	sprintf(filepath, "%d_%d_relax.dat", int(T), int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "gas_%d_%d.dat", int(T), int(calculation_number)); 
+	sprintf(filepath, "gas_%d_%d.dat", int(T), int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "vapor_collision_%d.dat", int(calculation_number)); 
+	sprintf(filepath, "vapor_collision_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "vapor_in_%d.dat", int(calculation_number)); 
+	sprintf(filepath, "vapor_in_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "vapor_out_%d.dat", int(calculation_number)); 
+	sprintf(filepath, "vapor_out_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "gas_collision_%d.dat", int(calculation_number)); 
+	sprintf(filepath, "gas_collision_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
 }
@@ -34,7 +34,7 @@ MD::output_initial(void){
 
 void
 MD::output(void){
-	sprintf(filepath, "ion_%d_%d.dat", int(T), int(calculation_number)); 
+	sprintf(filepath, "ion_%d_%d.dat", int(T), int(calculation_number));
 	FILE*f=fopen(filepath, "a");
 	fprintf(f, "%f %f %f %f %e %e %e\n", vars->time/1e6, ion_r[0], ion_r[1], ion_r[2], ion_v[0], ion_v[1], ion_v[2]);
 	fclose(f);
@@ -42,7 +42,7 @@ MD::output(void){
 
 void
 MD::output_gas(void){
-	sprintf(filepath, "gas_%d_%d.dat", int(T), int(calculation_number)); 
+	sprintf(filepath, "gas_%d_%d.dat", int(T), int(calculation_number));
 	FILE*f=fopen(filepath, "a");
 	fprintf(f, "%f %f %f %f %e %e %e\n", vars->time/1e6, gas_r[0], gas_r[1], gas_r[2], gas_v[0], gas_v[1], gas_v[2]);
 	fclose(f);
@@ -50,7 +50,7 @@ MD::output_gas(void){
 
 void
 MD::output_gas_collision(long int initime){
-	sprintf(filepath, "gas_collision_%d.dat", int(calculation_number)); 
+	sprintf(filepath, "gas_collision_%d.dat", int(calculation_number));
 	FILE*f=fopen(filepath, "a");
 	fprintf(f, "%e %e\n", initime*dt, itime*dt);
 	fclose(f);
@@ -58,7 +58,7 @@ MD::output_gas_collision(long int initime){
 
 void
 MD::output_vapor_collision(long int initime){
-	sprintf(filepath, "vapor_collision_%d.dat", int(calculation_number)); 
+	sprintf(filepath, "vapor_collision_%d.dat", int(calculation_number));
 	FILE*f=fopen(filepath, "a");
 	fprintf(f, "%e %e\n", initime*dt, itime*dt);
 	fclose(f);
@@ -66,7 +66,7 @@ MD::output_vapor_collision(long int initime){
 
 void
 MD::Ovin(int i){
-	sprintf(filepath, "vapor_in_%d.dat", int(calculation_number)); 
+	sprintf(filepath, "vapor_in_%d.dat", int(calculation_number));
 	FILE*f=fopen(filepath, "a");
 	fprintf(f, "%d %e %e %e %e %e %e %e\n", i,itime*dt,vars->vapors[i].qx-ion_r[0],vars->vapors[i].qy-ion_r[1],vars->vapors[i].qz-ion_r[2],vars->vapors[i].px-ion_v[0],vars->vapors[i].py-ion_v[1],vars->vapors[i].pz-ion_v[2]);
 	fclose(f);
@@ -74,7 +74,7 @@ MD::Ovin(int i){
 
 void
 MD::Ovout(int i){
-	sprintf(filepath, "vapor_out_%d.dat", int(calculation_number)); 
+	sprintf(filepath, "vapor_out_%d.dat", int(calculation_number));
 	FILE*f=fopen(filepath, "a");
 	fprintf(f, "%d %e %e %e %e %e %e %e\n", i,itime*dt,vars->vapors[i].qx-ion_r[0],vars->vapors[i].qy-ion_r[1],vars->vapors[i].qz-ion_r[2],vars->vapors[i].px-ion_v[0],vars->vapors[i].py-ion_v[1],vars->vapors[i].pz-ion_v[2]);
 	fclose(f);
@@ -82,7 +82,7 @@ MD::Ovout(int i){
 
 void
 MD::output_temp(double gastemp, double iontemp){
-	sprintf(filepath, "%d_%d_relax.dat", int(T), int(calculation_number)); 
+	sprintf(filepath, "%d_%d_relax.dat", int(T), int(calculation_number));
 	FILE*f=fopen(filepath, "a");
 	fprintf(f, "%f\t%f\t%f\n", vars->time/1e6, gastemp, iontemp);
 	fclose(f);
@@ -91,15 +91,25 @@ MD::output_temp(double gastemp, double iontemp){
 
 void
 MD::display(int output_ONOFF){
-    double gastemp = obs->gas_temperature(vars);
-    double gastemp_total = obs->gas_total_temperature(vars); 
-    double iontemp = obs->ion_temperature(vars);
+		obs->computeGasProps(vars);
+		obs->computeIonProps(vars);
+		obs->computeVaporProps(vars);
     double virial=0;//ters->compute_tersoff_virial(vars)/3.0/V*Cpress;
-    double gaspress=(kb*Nof_around_gas*gastemp + vars->totalVirial/3.0*6.95e-21)/(V*1e-30);
+    double gaspress=(kb*Nof_around_gas*obs->T_g + vars->totalVirial/3.0*6.95e-21)/(V*1e-30);
     double U = vars->totalPotential;
-    double K = obs->ion_kinetic_energy(vars);
+		double Kin=obs->Kion+obs->Kin_g+obs->Kin_v;
+		double Kout=obs->Kout_g+obs->Kout_v;
     std::cout << "----------------------TIME = " << vars->time/1000.0 << " ps-------------------------" << endl;
-    printf("Kinetic energy = %1.2e		Temp(gas) = %f\nPotential energy = %1.2e		Temp(ion) = %f\nTotal energy = %1.2e			Temp(gas total) = %f\nPress(gas) = %f\n", K, gastemp, U, iontemp, K+U, gastemp_total, gaspress/101300.0); 
+		cout<<"Inside propeties"<<endl;
+    printf("  Kion = %1.2e  Tion = %1.2f  Uion = %1.2e	\n  Kgas = %1.2e  Tgas = %f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %f  Uvap = %1.2e	\n  Kin = %1.2e    Uin = %1.2e	\n",
+		obs->Kion, obs->Tion, U, obs->Kin_g, obs->Tin_g, U, obs->Kin_v, obs->Tin_v, U, Kin, U);
+		cout<<"Out side propeties"<<endl;
+		printf("  Kgas = %1.2e  Tgas = %f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %f  Uvap = %1.2e	\n  Kout = %1.2e    Uout = %1.2e	\n",
+		obs->Kout_g, obs->Tout_g, 0.0, obs->Kout_v, obs->Tout_v, 0.0, Kout, 0.0);
+		cout<<"System propeties"<<endl;
+		printf("  K = %1.2e  T = %f  U = %1.2e  Press = %f\n",
+		Kin+Kout, (Kin+Kout)/(obs->Ngas+obs->Nion+obs->Nvap), U, gaspress/101300.0);
+		cout <<endl;
 /*    FILE*f=fopen("T-E.dat", "a");
     fprintf(f, "%e\t%e\n", iontemp, U);
     fclose(f);*/
@@ -184,6 +194,3 @@ MD::export_dump_close(void) {
 	}
 	fclose(f);
 }
-
-
-
