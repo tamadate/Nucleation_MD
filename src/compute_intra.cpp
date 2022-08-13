@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	- Calculate force working on ion-ion (Coulombic+LJ)
 */
 /////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@ Potential::compute(Variables *vars, FLAG *flags){
 		int type1=ions[i].type;
 		int type2=ions[j].type;
 		double r6inv = r2inv * r2inv * r2inv;
-		double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);	
+		double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);
 		double force_coul = qqrd2e * ions[i].charge * ions[j].charge * sqrt(r2inv);
 		double force_pair = (force_lj + force_coul)*r2inv;
 		ions[i].fx += force_pair * dx;
@@ -65,7 +65,3 @@ PotentialGasIntra::compute(Variables *vars, FLAG *flags){
 		if(flags->eflag) vars->totalPotential+=rk*dr;
 	}
 }
-
-
-
-
