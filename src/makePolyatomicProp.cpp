@@ -14,7 +14,7 @@ MD::makeDiatomicProp_in(int i){
 
         double a=r(mt)*2*M_PI;
         double b=r(mt)*2*M_PI;
-        double c=r(mt)*2*M_PI;
+    //    double c=r(mt)*2*M_PI;
 
 		gases[i].inAtoms=vars->atomGas(); //check name
 
@@ -44,16 +44,16 @@ MD::makeDiatomicProp_in(int i){
 
 
 		int GmolSize=gases[i].inAtoms.size();
-		/*double vy_rot = distgas(mt) *1e-5*0.1;
+		double vy_rot = distgas(mt) *1e-5*0.1;
 		double vz_rot = distgas(mt) *1e-5*0.1;
 		gases[i].inAtoms[0].py=0;
 		gases[i].inAtoms[0].py=vy_rot;
 		gases[i].inAtoms[0].pz=vz_rot;
 		gases[i].inAtoms[1].py=0;
 		gases[i].inAtoms[1].py=-vy_rot;
-		gases[i].inAtoms[1].pz=-vz_rot;*/
+		gases[i].inAtoms[1].pz=-vz_rot;
 		for (int j=0; j<GmolSize; j++){
-		    vars->ROTATION(gases[i].inAtoms[j].qx,gases[i].inAtoms[j].qy,gases[i].inAtoms[j].qz,a,b,c,gases[i].inAtoms[j].qx,gases[i].inAtoms[j].qy,gases[i].inAtoms[j].qz);
+		    vars->ROTATION(gases[i].inAtoms[j].qx,gases[i].inAtoms[j].qy,gases[i].inAtoms[j].qz,0,a,b,gases[i].inAtoms[j].qx,gases[i].inAtoms[j].qy,gases[i].inAtoms[j].qz);
 		    //vars->ROTATION(gases[i].inAtoms[j].px,gases[i].inAtoms[j].py,gases[i].inAtoms[j].pz,a,b,c,gases[i].inAtoms[j].px,gases[i].inAtoms[j].py,gases[i].inAtoms[j].pz);
 			gases[i].inAtoms[j].qx+=gases[i].qx;
 			gases[i].inAtoms[j].qy+=gases[i].qy;
