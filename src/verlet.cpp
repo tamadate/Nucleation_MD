@@ -54,15 +54,15 @@ MD::velocity_calculation(void) {
 	    a.py += a.fy *Coeff2;
 	    a.pz += a.fz *Coeff2;
 	}
-    for (auto &i : vars->vapor_in) {
+  for (auto &i : vars->vapor_in) {
 		for (auto &a : vars->vapors[i].inAtoms){
 			double Coeff2=Coeff/a.mass;
 			a.px += a.fx * Coeff2;
 			a.py += a.fy * Coeff2;
 			a.pz += a.fz * Coeff2;
 		}
-    }
-    for (auto &i : vars->gas_in){
+  }
+  for (auto &i : vars->gas_in){
 		for (auto &a : vars->gases[i].inAtoms){
 			double Coeff2=Coeff/a.mass;
 			a.px += a.fx * Coeff2;
@@ -85,23 +85,23 @@ MD::update_position(void) {
 		a.qz += a.pz * dt;
 		a.fx=a.fy=a.fz=0.0;
 	}
-    for (auto &i : vars->vapor_in) {
+  for (auto &i : vars->vapor_in) {
 		for (auto &a : vars->vapors[i].inAtoms){
 			a.qx += a.px * dt;
 			a.qy += a.py * dt;
 			a.qz += a.pz * dt;
 		    a.fx=a.fy=a.fz=0.0;
 		}
-    }
+  }
 
-    for (auto &i : vars->gas_in) {
+  for (auto &i : vars->gas_in) {
 		for (auto &a : vars->gases[i].inAtoms){
 			a.qx += a.px * dt;
 			a.qy += a.py * dt;
 			a.qz += a.pz * dt;
 		    a.fx=a.fy=a.fz=0.0;
 		}
-    }
+  }
 }
 
 

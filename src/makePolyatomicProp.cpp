@@ -61,7 +61,9 @@ MD::makeDiatomicProp_in(int i){
 			gases[i].inAtoms[j].px+=gases[i].px;
 			gases[i].inAtoms[j].py+=gases[i].py;
 			gases[i].inAtoms[j].pz+=gases[i].pz;
+			cout<<gases[i].inAtoms[j].px<<" "<<gases[i].inAtoms[j].py<<" "<<gases[i].inAtoms[j].pz<<" ";
 		}
+		cout<<endl;
 
     }
 	vars->gases[i].inFlag=1;
