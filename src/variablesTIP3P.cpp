@@ -6,7 +6,7 @@ Variables::makeAtomTIP3P(void) {
  	std::vector<Atom> atms;
 	Atom a;
 	a.id = 0;
-	a.type = 9; 
+	a.type = 9;
 	a.qx = 0;
 	a.qy = 0;
 	a.qz = 0;
@@ -24,16 +24,16 @@ Variables::makeAtomTIP3P(void) {
 	atms.push_back(a);
 
 	a.id = 1;
-	a.type = 10; 
+	a.type = 10;
 	a.qx = 0.75695;
 	a.qy = -0.58588;
 	a.qz = 0;
 	a.mass = 1.008;
-	a.charge = -0.417;
+	a.charge = 0.417;
 	atms.push_back(a);
 
 	a.id = 2;
-	a.type = 10; 
+	a.type = 10;
 	a.qx = -0.75695;
 	a.qy = -0.58588;
 	a.qz = 0;
@@ -43,5 +43,3 @@ Variables::makeAtomTIP3P(void) {
 
 	return atms;
 }
-
-
