@@ -8,9 +8,10 @@ atom type name mass coeff1 coeff2
 7	h1(MeOH)	1.008	0.0157	2.471
 8	ho(MeOH)	1.008	0	0
 9	o(H2O)	15.999	0.1521	3.15061
-10	h(H2O)	1.008	0	0
-11	Na	22.99	0.0005	4.07
-12	Cl	35.453	0.71	4.02
+10	h(H2O)	1.008	0.046	0.4
+11	Na	22.99 0.1	2.583
+12	Cl	35.453  0.1	4.4
+
 
 bond type name coeff1 coeff2
 1	c3-h1(MeOH)	340.0	1.09
