@@ -4,7 +4,7 @@
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	- Diffusion coefficient calculation
 	- MD simulation performed for (step_relax) steps as a thermal
 	relaxation, and main calculation run for (Noftimestep) steps.
@@ -18,6 +18,7 @@ MD::run_diff(char** argv) {
 /****Thermal relaxation****/
     const int logger=10000;
 	flags->inter_vi=0;
+  flags->inter_vg=0;
 	flags->force_lj=0;
 	setPotential(flags);
 	for (auto &a : IntraInter) {a->printName();}
@@ -31,11 +32,11 @@ MD::run_diff(char** argv) {
 		}
     	verlet();
 	}
-	
-/*	
+
+/*
 ****Reinitialization****
-- Reset time (time -> 0).	
-- Re-initializating the ion and gas positions and velocities. 
+- Reset time (time -> 0).
+- Re-initializating the ion and gas positions and velocities.
 Position -> 0 elta, Traslational velocity -> 0
 - Set ion's center of mass (maybe -> 0), make pair list for initial
 step of simulation, reset the margine size.
@@ -67,8 +68,3 @@ step of simulation, reset the margine size.
     	verlet();
 	}
 }
-
-
-
-
-

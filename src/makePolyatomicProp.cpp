@@ -3,14 +3,13 @@
 //------------------------------------------------------------------------
 
 
-void 
+void
 MD::makeDiatomicProp_in(int i){
 	Molecule *gases = vars->gases.data();
     if(gases[i].inFlag==0){
         random_device seed;
         mt19937 mt(seed());
-        default_random_engine engine(seed());
-        normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mvapor));
+        normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mgas));
         uniform_real_distribution<double> r(0,1);
 
         double a=r(mt)*2*M_PI;
@@ -45,9 +44,17 @@ MD::makeDiatomicProp_in(int i){
 
 
 		int GmolSize=gases[i].inAtoms.size();
+		double vy_rot = distgas(mt) *1e-5;
+		double vz_rot = distgas(mt) *1e-5;
+		gases[i].inAtoms[0].px=0;
+		gases[i].inAtoms[0].py=vy_rot;
+		gases[i].inAtoms[0].pz=vz_rot;
+		gases[i].inAtoms[1].px=0;
+		gases[i].inAtoms[1].py=-vy_rot;
+		gases[i].inAtoms[1].pz=-vz_rot;
 		for (int j=0; j<GmolSize; j++){
 		    vars->ROTATION(gases[i].inAtoms[j].qx,gases[i].inAtoms[j].qy,gases[i].inAtoms[j].qz,a,b,c,gases[i].inAtoms[j].qx,gases[i].inAtoms[j].qy,gases[i].inAtoms[j].qz);
-		    //vars->ROTATION(gases[i].inAtoms[j].px,gases[i].inAtoms[j].py,gases[i].inAtoms[j].pz,a,b,c,gases[i].inAtoms[j].px,gases[i].inAtoms[j].py,gases[i].inAtoms[j].pz);
+		    vars->ROTATION(gases[i].inAtoms[j].px,gases[i].inAtoms[j].py,gases[i].inAtoms[j].pz,a,b,c,gases[i].inAtoms[j].px,gases[i].inAtoms[j].py,gases[i].inAtoms[j].pz);
 			gases[i].inAtoms[j].qx+=gases[i].qx;
 			gases[i].inAtoms[j].qy+=gases[i].qy;
 			gases[i].inAtoms[j].qz+=gases[i].qz;
@@ -60,7 +67,7 @@ MD::makeDiatomicProp_in(int i){
 	vars->gases[i].inFlag=1;
 }
 
-void 
+void
 MD::makeDiatomicProp_out(int i){
     Molecule *gases = vars->gases.data();
     if(gases[i].inFlag==1){
@@ -77,7 +84,7 @@ MD::makeDiatomicProp_out(int i){
 	vars->gases[i].inFlag=0;
 }
 
-void 
+void
 MD::makePolyatomicProp_in(int i){
     Molecule *vapors = vars->vapors.data();
 	Molecule *gases = vars->gases.data();
@@ -154,14 +161,14 @@ MD::makePolyatomicProp_in(int i){
 		if(collisionFlagVapor[i]==0){
 			Ovin(i);
 			collisionFlagVapor[i]=itime;
-		} 
+		}
 
     }
 	vars->vapors[i].inFlag=1;
 }
 
 
-void 
+void
 MD::makePolyatomicProp_out(int i){
     Molecule *vapors = vars->vapors.data();
     if(vapors[i].inFlag==1){
@@ -182,4 +189,3 @@ MD::makePolyatomicProp_out(int i){
     }
 	vars->vapors[i].inFlag=0;
 }
-

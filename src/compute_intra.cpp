@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	- Calculate force working on ion-ion (Coulombic+LJ)
 */
 /////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@ Potential::compute(Variables *vars, FLAG *flags){
 		int type1=ions[i].type;
 		int type2=ions[j].type;
 		double r6inv = r2inv * r2inv * r2inv;
-		double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);	
+		double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);
 		double force_coul = qqrd2e * ions[i].charge * ions[j].charge * sqrt(r2inv);
 		double force_pair = (force_lj + force_coul)*r2inv;
 		ions[i].fx += force_pair * dx;
@@ -44,28 +44,23 @@ Potential::compute(Variables *vars, FLAG *flags){
 
 void
 PotentialGasIntra::compute(Variables *vars, FLAG *flags){
-	Molecule *gases = vars->gases.data();
 	for(auto &i : vars->gas_in){
-		Atom g1=gases[i].inAtoms[0];
-		Atom g2=gases[i].inAtoms[1];
-	    double dx = g1.qx - g2.qx;
-	    double dy = g1.qy - g2.qy;
-	    double dz = g1.qz - g2.qz;
+		Atom *g1= & vars->gases[i].inAtoms[0];
+		Atom *g2= & vars->gases[i].inAtoms[1];
+	    double dx = g1->qx - g2->qx;
+	    double dy = g1->qy - g2->qy;
+	    double dz = g1->qz - g2->qz;
 	    double rsq = (dx * dx + dy * dy + dz * dz);
 	    double r = sqrt(rsq);
 		double dr= r - 1.098;
 	    double rk = 1221.7 * dr;
 	    double force_bond_harmonic = -2.0*rk/r;
-	    g1.fx += force_bond_harmonic * dx;
-	    g1.fy += force_bond_harmonic * dy;
-	    g1.fz += force_bond_harmonic * dz;
-	    g2.fx -= force_bond_harmonic * dx;
-	    g2.fy -= force_bond_harmonic * dy;
-	    g2.fz -= force_bond_harmonic * dz;
+	    g1->fx += force_bond_harmonic * dx;
+	    g1->fy += force_bond_harmonic * dy;
+	    g1->fz += force_bond_harmonic * dz;
+	    g2->fx -= force_bond_harmonic * dx;
+	    g2->fy -= force_bond_harmonic * dy;
+	    g2->fz -= force_bond_harmonic * dz;
 		if(flags->eflag) vars->totalPotential+=rk*dr;
 	}
 }
-
-
-
-

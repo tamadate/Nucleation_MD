@@ -90,7 +90,7 @@ MD::boundary_scaling_gas_move(void){
 
 
 
-/*void
+void
 MD::boundary_scaling_vapor_move(void){
 	Molecule *vapors = vars->vapors.data();
 	double HL=d_size*0.5;
@@ -120,42 +120,16 @@ MD::boundary_scaling_vapor_move(void){
 		    mbdistV->number++;
 		}
 	}
-}*/
-void
-MD::boundary_scaling_vapor_move(void){
-
-	Molecule *vapors = vars->vapors.data();
-	double HL=d_size*0.5;
-	int flag, flagx, flagy, flagz;
-	double vMB, vxMB, vyMB, vzMB, vx, vy, vz, v2, v, mod_factor;
-	random_device seed;
-	default_random_engine engine(seed());
-	normal_distribution<> distvapor(0.0, sqrt(kb*T/pp->mvapor));
-
-	for (auto &i : vars->vapor_out){
-		flag=flagx=flagy=flagz=0;
-		if (vapors[i].qx < ion_r[0]-HL) vapors[i].qx += d_size, flag++;
-		if (vapors[i].qy < ion_r[1]-HL) vapors[i].qy += d_size, flag++;
-		if (vapors[i].qz < ion_r[2]-HL) vapors[i].qz += d_size, flag++;
-		if (vapors[i].qx > ion_r[0]+HL) vapors[i].qx -= d_size, flag++;
-		if (vapors[i].qy > ion_r[1]+HL) vapors[i].qy -= d_size, flag++;
-		if (vapors[i].qz > ion_r[2]+HL) vapors[i].qz -= d_size, flag++;
-		if (flag>0) {
-			vapors[i].px = distvapor(engine) *1e-5;
-			vapors[i].py = distvapor(engine) *1e-5;
-			vapors[i].pz = distvapor(engine) *1e-5;
-		}
-	}
 }
-
 
 void
 MD::boundary_scaling_ion_move(void){
-	Molecule *gases = vars->gases.data();
 	double HL=d_size*0.5;
 	int flag, flagx, flagy, flagz;
 	random_device seed;
 	mt19937 mt(seed());
+
+	Molecule *gases = vars->gases.data();
 	normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mgas));
 
 	for (auto &i : vars->gas_out){
@@ -173,8 +147,22 @@ MD::boundary_scaling_ion_move(void){
 		}
 	}
 
+	Molecule *vapors = vars->vapors.data();
+	normal_distribution<> distvapor(0.0, sqrt(kb*T/pp->mvapor));
+
+	for (auto &i : vars->vapor_out){
+		flag=flagx=flagy=flagz=0;
+		if (vapors[i].qx < ion_r[0]-HL) vapors[i].qx += d_size, flag++;
+		if (vapors[i].qy < ion_r[1]-HL) vapors[i].qy += d_size, flag++;
+		if (vapors[i].qz < ion_r[2]-HL) vapors[i].qz += d_size, flag++;
+		if (vapors[i].qx > ion_r[0]+HL) vapors[i].qx -= d_size, flag++;
+		if (vapors[i].qy > ion_r[1]+HL) vapors[i].qy -= d_size, flag++;
+		if (vapors[i].qz > ion_r[2]+HL) vapors[i].qz -= d_size, flag++;
+		if (flag>0) {
+			vapors[i].px = distvapor(mt) *1e-5;
+			vapors[i].py = distvapor(mt) *1e-5;
+			vapors[i].pz = distvapor(mt) *1e-5;
+		}
+	}
+
 }
-
-
-
-
