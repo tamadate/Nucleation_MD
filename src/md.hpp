@@ -11,49 +11,47 @@ class MD {
 	private:
 
 
-    public:
-		
-		long int itime;
-		std::vector<long int> collisionFlagGas;
-		std::vector<long int> collisionFlagVapor;
-		std::vector<Potential*> InterInter;
-		std::vector<Potential*> IntraInter;
-		void setPotential(FLAG *flags);
+  public:
 
-		Variables *vars;
-		Observer *obs;
-		Physical *pp;
-		FLAG *flags;
-		MBdist *mbdist;
-		MBdist *mbdistV;
+	long int itime;
+	std::vector<long int> collisionFlagGas;
+	std::vector<long int> collisionFlagVapor;
+	std::vector<Potential*> InterInter;
+	std::vector<Potential*> IntraInter;
+	void setPotential(FLAG *flags);
 
-	//	vectors for pairlist
-		std::vector<Pair> pairs;	/*	pair list	*/
-		std::vector<Pair> pairs_tersoff;	/*	pair list	*/
-        std::vector<Pair> pairs_vi;	/*	vapor-ion interaction pair list	*/
-        std::vector<Pair> pairs_gv;	/*	vapor-ion interaction pair list	*/
-		double margin_length;	
+	Variables *vars;
+	Observer *obs;
+	Physical *pp;
+	FLAG *flags;
+	MBdist *mbdist;
+	MBdist *mbdistV;
 
-	//	velocity verlet
-		void run_diff(char** argv);
-		void verlet(void);
-		void update_position(void);
-		void velocity_calculation(void);
-        void update_position_constrained(void);		
-        void update_velocity_constrained(void);
+//	vectors for pairlist
+	double margin_length;	
+
+//	velocity verlet
+	void run_diff(char** argv);
+	void verlet(void);
+	void update_position(void);
+	void velocity_calculation(void);
+  void update_position_constrained(void);
+  void update_velocity_constrained(void);
 
 	//	pair list
-		void make_pair(void);
-		void make_pair_gasgas(void);
-		void make_pair_gasion(void);
-		void make_pair_gasvapor(void);
-		void make_pair_vaporion(void);
-		void check_pairlist(void);
-        void makeDiatomicProp_in(int i);
-        void makeDiatomicProp_out(int i);
-		void makePolyatomicProp_in(int i);
-		void makePolyatomicProp_out(int i);
-	
+	void update_vapor_in(void);
+	void update_gas_in(void);
+	void make_pair(void);
+	void make_pair_gasgas(void);
+	void make_pair_gasion(void);
+	void make_pair_gasvapor(void);
+	void make_pair_vaporion(void);
+	void check_pairlist(void);
+  void makeDiatomicProp_in(int i);
+  void makeDiatomicProp_out(int i);
+	void makePolyatomicProp_in(int i);
+	void makePolyatomicProp_out(int i);
+
 	//	initialization
 		void initialization_gas(void);
         void initialization_vapor(void);
@@ -89,7 +87,7 @@ class MD {
 		void output_vapor_collision(long int initime);
 		void Ovin(int i);
 		void Ovout(int i);
-		void display(int output_ONOFF);	
+		void display(int output_ONOFF);
 		char filepath[100];
 		char atomFile[100];
 		char filepath_gyration[100];
@@ -99,7 +97,7 @@ class MD {
 		string gyration_path;
 		double crsq;
 
-		void velocity_scaling(void);	
+		void velocity_scaling(void);
 		void nosehoover_ion(void);
 		void nosehoover_zeta(void);
 		void nosehoover_gas(void);

@@ -4,7 +4,7 @@
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	make pair list
 	- always gas-ion pair list was calculated
 	- if gas-gas interaction is ON, make pair_gasgas
@@ -14,8 +14,9 @@
 /////////////////////////////////////////////////////////////////////
 void
 MD::make_pair(void){
+	update_gas_in();
+	update_vapor_in();
 	make_pair_gasion();
-	make_pair_vaporion();
 	make_pair_gasvapor();
 	if(flags->inter_gg==1) make_pair_gasgas();
 //	set number of steps to update pair list
@@ -33,19 +34,18 @@ MD::make_pair(void){
 	if (vmax2<vion2) vmax2=vion2;
 	double vmax = sqrt(vmax2);
 
-
 	loop_update=margin_length/(vmax*dt);
 	loop=0;
 }
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	make gas-ion pair list
 */
 /////////////////////////////////////////////////////////////////////
 void
-MD::make_pair_gasion(void){
+MD::update_gas_in(void){
 	Molecule *gases = vars->gases.data();
 	for (auto i : vars->gas_in){
 		double X=0;
@@ -76,38 +76,34 @@ MD::make_pair_gasion(void){
 // clear vars->gas_in, vars->gas_out and pair list of gas-ion
 	vars->gas_in.clear();
 	vars->gas_out.clear();
-	vars->pairs_gi.clear();
 
-	int is=vars->ions.size();
+
 	for (int i=0;i<Nof_around_gas;i++){
-		int flag_in=0;
 		double dx = gases[i].qx - ion_r[0];
 		double dy = gases[i].qy - ion_r[1];
 		double dz = gases[i].qz - ion_r[2];
 		double r2 = (dx * dx + dy * dy + dz * dz);
-		if (r2 < ML2) flag_in=1;
+		if (r2 < RI2){
 //if inter-gas interaction flag is ON, stand flag_in ON
 //if flag_in ON, molecule push back to vars->gas_in
 //if flag_in OFF, molecule push back to vars->gas_out
-		if(flags->inter_gg==1) flag_in=1;	
-		if(flag_in>0) {
-            vars->gas_in.push_back(i);
-            makeDiatomicProp_in(i);
-        }
-		if(flag_in==0) {
-            vars->gas_out.push_back(i);
-            makeDiatomicProp_out(i);
-        }
+    	vars->gas_in.push_back(i);
+    	makeDiatomicProp_in(i);
+	  }
+		else{
+      vars->gas_out.push_back(i);
+      makeDiatomicProp_out(i);
+		}
 	}
 }
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	make vapor-ion pair list
 */
 /////////////////////////////////////////////////////////////////////
 void
-MD::make_pair_vaporion(void){
+MD::update_vapor_in(void){
 // clear vars->gas_in, vars->gas_out and pair list of gas-ion
 	Molecule *vapors = vars->vapors.data();
 	for (auto i : vars->vapor_in){
@@ -141,17 +137,15 @@ MD::make_pair_vaporion(void){
 	vars->vapor_out.clear();
 
 	for (int i=0;i<Nof_around_vapor;i++){
-		int flag_in=0;
 		double dx = vapors[i].qx - ion_r[0];
 		double dy = vapors[i].qy - ion_r[1];
 		double dz = vapors[i].qz - ion_r[2];
 		double r2 = (dx * dx + dy * dy + dz * dz);
-		if (r2 < ML2) flag_in=1;
-		if(flag_in>0) {
+		if (r2 < RI2) {
 			vars->vapor_in.push_back(i);
 			makePolyatomicProp_in(i);
 		}
-		if(flag_in==0) {
+		else{
 			vars->vapor_out.push_back(i);
 			makePolyatomicProp_out(i);
 		}
@@ -160,16 +154,37 @@ MD::make_pair_vaporion(void){
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	make vapor-ion pair list
 */
 /////////////////////////////////////////////////////////////////////
+
+void
+MD::make_pair_gasion(void){
+	vars->pairs_gi.clear();
+	Molecule *gases = vars->gases.data();
+	Atom *ions = vars->ions.data();
+	for (auto i : vars->gas_in){
+		for(int j=0;j<vars->ions.size();j++){
+			double dx=gases[i].qx-ions[j].qx;
+			double dy=gases[i].qy-ions[j].qy;
+			double dz=gases[i].qz-ions[j].qz;
+			double r2 = (dx * dx + dy * dy + dz * dz);
+			if(r2 < ML2){
+				Pair p;
+				p.i=i;
+				p.j=j;
+				vars->pairs_gi.push_back(p);
+			}
+		}
+	}
+}
+
 void
 MD::make_pair_gasvapor(void){
-// clear vars->gas_in, vars->gas_out and pair list of gas-ion
+	vars->pairs_gv.clear();
 	Molecule *vapors = vars->vapors.data();
 	Molecule *gases = vars->gases.data();
-	Pair p;
 	for (auto i : vars->gas_in){
 		for (auto j : vars->vapor_in){
 			double dx = gases[i].qx - vapors[j].qx;
@@ -177,13 +192,10 @@ MD::make_pair_gasvapor(void){
 			double dz = gases[i].qz - vapors[j].qz;
 			double r2 = (dx * dx + dy * dy + dz * dz);
 			if (r2 < ML2){
+				Pair p;
 				p.i=i;
 				p.j=j;
-				pairs_gv.push_back(p);
-                if(pp->num_gas==2) {
-                    p.i=i+Nof_around_gas;
-                    pairs_gv.push_back(p);
-                }
+				vars->pairs_gv.push_back(p);
 			}
 		}
 	}
@@ -191,7 +203,7 @@ MD::make_pair_gasvapor(void){
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	make gas-gas pair list
 */
 /////////////////////////////////////////////////////////////////////
@@ -219,7 +231,7 @@ MD::make_pair_gasgas(void){
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	check necessity of the pair list updating
 */
 /////////////////////////////////////////////////////////////////////
@@ -248,7 +260,3 @@ MD::check_pairlist(void){
 //	if(flags->force_sw==1) sw->check_pairlist(vars);
 //	if(flags->force_ters==1) ters->check_pairlist(vars);
 }
-
-
-
-
