@@ -29,6 +29,12 @@ MD::output_initial(void){
 	sprintf(filepath, "gas_collision_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
+	sprintf(filepath, "K_%d.dat", int(calculation_number));
+	f=fopen(filepath, "w");
+	fclose(f);
+	sprintf(filepath, "U_%d.dat", int(calculation_number));
+	f=fopen(filepath, "w");
+	fclose(f);
 }
 
 
@@ -110,9 +116,16 @@ MD::display(int output_ONOFF){
 		printf("  K = %1.2e	U = %1.2e	Press = %f\n",
 		Kin+Kout, U, gaspress/101300.0);
 		cout <<endl;
-/*    FILE*f=fopen("T-E.dat", "a");
-    fprintf(f, "%e\t%e\n", iontemp, U);
-    fclose(f);*/
+
+		sprintf(filepath, "K_%d.dat", int(calculation_number));
+		FILE*f=fopen(filepath, "a");
+		fprintf(f,"%e %e %e %e %e %e\n",vars->time,obs->Kion,obs->Kin_g,obs->Kin_v,obs->Kout_g,obs->Kout_v);
+		fclose(f);
+
+		sprintf(filepath, "U_%d.dat", int(calculation_number));
+		f=fopen(filepath, "a");
+		fprintf(f,"%e %e %e %e %e %e %e %e %e\n",vars->time,vars->Uion,vars->Ugas,vars->Uvap,vars->Ugi,vars->Ugg,vars->Uvg,vars->Uvi,vars->Uvv);
+		fclose(f);
 }
 
 void

@@ -10,7 +10,7 @@ public:
 	const double myuHe=1.47e-5;
 	const double alphaHe=0.208, alphaN2=1.7*0.5, alphaAr=1.664;
     const double SAr=114, TrefAr=273.0, myuAr=2.125e-5; // REF
-    const double SN2=107, TrefN2=273.0, myuN2=1.663e-5; // REF 
+    const double SN2=107, TrefN2=273.0, myuN2=1.663e-5; // REF
 	double Mion, Mgas, Mvapor, mgas, mvapor, m , m_gas, m_N2, z, myu, alphagas,D0,D0_He,D0_Ar,D0_N2,zzee, cgas, cvapor;
 	int num_gas;
 	double c;
@@ -33,4 +33,3 @@ private:
 	void set_condition(char* condfile, FLAG *flags, char* file);
 	std::vector<double> atype;
 };
-
