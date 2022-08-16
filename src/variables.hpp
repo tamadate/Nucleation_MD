@@ -95,14 +95,27 @@ public:
 	double zeta_ion;
 	double zeta_gas;
 
+	double Uion;
+	double Ugas;
+	double Uvap;
+	double Ugi;
+	double Ugg;
+	double Uvg;
+	double Uvi;
+	double Uvv;
+
+	void Uzero(void)	{Uion=Ugas=Uvap=Ugi=Ugg=Uvg=Uvi=Uvv=0;}
+	double Usum(void)	{return Uion+Ugas+Uvap+Ugi+Ugg+Uvg+Uvi+Uvv;}
+
 	std::vector<int> gas_in;	/*	gas list around ion1	*/
 	std::vector<int> gas_out;	/*	gas list far from ion1	*/
 	std::vector<int> vapor_in;	/*	gas list around ion1	*/
 	std::vector<int> vapor_out;	/*	gas list far from ion1	*/
 
 	/*vectors for potential calculation*/
-    std::vector<Pair> ion_pairs;
+  std::vector<Pair> ion_pairs;
 	std::vector<Pair> pairs_gi;	/*	gas-ion interaction pair list	*/
+	std::vector<Pair> pairs_gv;	/*	gas-vapor interaction pair list	*/
 	std::vector<Pair> pairs_gg;	/*	gas-gas interaction pair list	*/
 	std::vector<Bond> bonds;
 	std::vector<Angle> angles;
@@ -134,7 +147,7 @@ public:
 
 	std::vector<Atom> makeAtomMeOH(void);
 	std::vector<Atom> makeAtomTIP3P(void);
-	
+
 
 private:
 };

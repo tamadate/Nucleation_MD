@@ -5,7 +5,7 @@
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	- Calculate the intra-atomic interaction (Stillinger-Weber)
 */
 /////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ void
 PotentialTersoff::compute(Variables *vars, FLAG *flags) {
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
-	energy=0;
+	U=0;
 	Pressure=0;
 	for(auto &a : pairs){
 		int i=a.i;
@@ -36,7 +36,7 @@ PotentialTersoff::compute(Variables *vars, FLAG *flags) {
 			ions[j].fz-=force_pair*delr[2];
 
 			neighshort.push_back(j);
-			energy+=fC(r)*fR(r)*0.5;
+			U+=fC(r)*fR(r)*0.5;
 		}
 
 //	three body interaction
@@ -69,7 +69,7 @@ PotentialTersoff::compute(Variables *vars, FLAG *flags) {
 			ions[j].fy -= force_pair * delr[1];
 			ions[j].fz -= force_pair * delr[2];
 
-			energy+=bij(zeta_ij)*fC(r)*fA(r)*0.5;
+			U+=bij(zeta_ij)*fC(r)*fA(r)*0.5;
 
 			if(zeta_ij==0) continue;
 			for (auto k : neighshort) {
@@ -183,7 +183,7 @@ PotentialTersoff::attractive(double prefactor, double rij, double rik, double *d
 	zeta_d(prefactor,rij_hat,rij,rik_hat,rik,fi,fj,fk);
 }
 
-void 
+void
 PotentialTersoff::zeta_d(double prefactor, double *rij_hat, double rij,double *rik_hat, double rik,double *dri, double *drj, double *drk){
 	double g,g_d,ex_delr,ex_delr_d,fc,dfc,cos_theta,tmp;
 	double dcosdri[3],dcosdrj[3],dcosdrk[3];
@@ -213,7 +213,7 @@ PotentialTersoff::zeta_d(double prefactor, double *rij_hat, double rij,double *r
 	}
 }
 
-double 
+double
 PotentialTersoff::force_zeta(double r, double zeta_ij, double &prefactor){
 	prefactor = fA(r)*fC(r)*bij_d(zeta_ij);
 	if (zeta_ij==0) prefactor=0;
@@ -227,13 +227,13 @@ PotentialTersoff::zeta(double rij, double rik, double x1x2, double y1y2, double 
 	return arg*gijk(costheta)*fC(rik);
 }
 
-double 
+double
 PotentialTersoff::gijk(double costheta) {
 	double hcth= costheta0-costheta;
 	return gamma*(1.0+c2/d2-c2/(d2+hcth*hcth));
 }
 
-double 
+double
 PotentialTersoff::gijk_d(double costheta) {
 	double hcth= costheta0-costheta;
 	double numerator=-2.0*c2*hcth;
@@ -293,8 +293,3 @@ PotentialTersoff::make_pair(Variables *vars){
 	}
 	loop_t=0;
 }
-
-
-
-	
-

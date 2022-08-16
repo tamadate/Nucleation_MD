@@ -30,7 +30,8 @@ MD::run_diff(char** argv) {
 			export_dump_close();
 			vars->time=(itime*dt);
 		}
-    	verlet();
+    verlet();
+		if ((itime+1)%OBSERVE==0) flags->eflag=1;
 	}
 
 /*
@@ -44,6 +45,7 @@ step of simulation, reset the margine size.
 	vars->time=0;
 	itime=0;
 	flags->inter_vi=1;
+	flags->inter_vg=1;
 	flags->force_lj=1;
 	setPotential(flags);
 	for (auto &a : vars->ions) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
@@ -65,6 +67,7 @@ step of simulation, reset the margine size.
                 export_dump_close();
             }
         }
+			if ((itime+1)%OBSERVE==0) flags->eflag=1;
     	verlet();
 	}
 }

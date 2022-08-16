@@ -5,7 +5,7 @@
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	- Calculate the intra-atomic interaction (Stillinger-Weber)
 */
 /////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ void
 PotentialSW::compute(Variables *vars, FLAG *flags) {
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
-	energy=0;
+	U=0;
 	Pressure=0;
 	virial=0;
 
@@ -82,7 +82,7 @@ PotentialSW::compute(Variables *vars, FLAG *flags) {
 		ions[i].fy*=23.06;
 		ions[i].fz*=23.06;
 	}
-	energy*=0.5;
+	U*=0.5;
 //	vars->Potential+=energy*23.06;
 //	vars->virial+=virial*23.06;
 
@@ -103,7 +103,7 @@ PotentialSW::computeVirial(Variables *vars) {
 
 
 
-double 
+double
 PotentialSW::twobody(double rsq){
 	double r,rinvsq,rp,rq,rainv,rainvsq,expsrainv;
 
@@ -114,12 +114,12 @@ PotentialSW::twobody(double rsq){
 	rainv = 1.0 / (r - cut);
 	rainvsq = rainv*rainv*r;
 	expsrainv = exp(sigma * rainv);
-	energy+=(c5*rp-c6*rq)*expsrainv;
+	U+=(c5*rp-c6*rq)*expsrainv;
 	return (c1*rp - c2*rq + (c3*rp -c4*rq) * rainvsq) * expsrainv * rinvsq;
 }
 
 
-void 
+void
 PotentialSW::threebody(double rsq1, double rsq2,double *rij, double *rik,double *fj, double *fk)
 {
 	double r1,rinvsq1,rainv1,gsrainv1,gsrainvsq1,expgsrainv1;
@@ -167,7 +167,7 @@ PotentialSW::threebody(double rsq1, double rsq2,double *rij, double *rik,double 
 	fk[1] = rik[1]*(frad2+csfac2)-rij[1]*facang12;
 	fk[2] = rik[2]*(frad2+csfac2)-rij[2]*facang12;
 
-	energy+=facrad;
+	U+=facrad;
 }
 
 void
@@ -199,4 +199,3 @@ PotentialSW::make_pair(Variables *vars){
 	}
 	loop_t=0;
 }
-

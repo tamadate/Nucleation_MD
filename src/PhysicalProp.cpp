@@ -16,17 +16,15 @@ int Nof_around_vapor=0;
 double d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;
 double V=d_size*d_size*d_size;
 double dt = 0.5;	/*	fs	*/
-double CUTOFF = 50.0;	/*	A	*/
-double MARGIN = 50.0;	/*	A	*/
+double CUTOFF = 20.0;	/*	A	*/
+double MARGIN = 10.0;	/*	A	*/
 double ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
 double ML2_V = (CUTOFF+MARGIN*2)*(CUTOFF+MARGIN*2);
 double CL2 = (CUTOFF*CUTOFF);
-double MARGIN_PEG = 3.0;	/*	A	*/
-double ML2_PEG = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
 int OBSERVE=10000000;
 
 void
-Physical::PhysicalProp_set(char* condfile, char* file, FLAG *flags){	
+Physical::PhysicalProp_set(char* condfile, char* file, FLAG *flags){
 	set_condition(condfile, flags, file);
 	read(file);
 	if(gastype==1) {
@@ -87,7 +85,7 @@ Physical::read(char* infile){
 		if (str=="atoms") {iflag=2; continue;}
 		if (str=="bonds") {break;}
 	    string tmp;
-    	istringstream stream(str);		
+    	istringstream stream(str);
 		if (iflag==1) {
 			int loop=0;
 			double mass;
@@ -110,7 +108,7 @@ Physical::read(char* infile){
 			Mion+=mass;
 			z+=charge;
 		}
-	}	
+	}
 }
 
 
@@ -135,43 +133,43 @@ Physical::set_condition(char* condfile, FLAG *flags, char* file){
 		if (str=="Number of steps for relax") {iflag=7; continue;}
 		if (str=="Vapor") {iflag=8; continue;}
 		if (str=="Cut off length") {iflag=9; continue;}
-		if (str=="Margin size") {iflag=10; continue;}	
-		if (str=="Diffusion coefficient in He") {iflag=11; continue;}	
-		if (str=="Diffusion coefficient in N2") {iflag=12; continue;}	
-		if (str=="Number of steps for repre") {iflag=13; continue;}	
-		if (str=="Collision distance") {iflag=14; continue;}	
+		if (str=="Margin size") {iflag=10; continue;}
+		if (str=="Diffusion coefficient in He") {iflag=11; continue;}
+		if (str=="Diffusion coefficient in N2") {iflag=12; continue;}
+		if (str=="Number of steps for repre") {iflag=13; continue;}
+		if (str=="Collision distance") {iflag=14; continue;}
 		if (str=="Diffusion coefficient in Ar") {iflag=15; continue;}
-		if (str=="Gyration path") {iflag=16; continue;}	
-		if (str=="RDF path") {iflag=17; continue;}	
-		if (str=="gas gas interaction") {iflag=18; continue;}	
-		if (str=="gas ion interaction") {iflag=19; continue;}	
-		if (str=="ion ion interaction") {iflag=20; continue;}	
-		if (str=="Nose-Hoover ion") {iflag=21; continue;}	
-		if (str=="Nose-Hoover gas") {iflag=22; continue;}	
-		if (str=="Output") {iflag=23; continue;}	
-		if (str=="Coarse grain") {iflag=24; continue;}	
-		if (str=="Electric field") {iflag=25; continue;}	
-		if (str=="Input") {iflag=26; continue;}	
+		if (str=="Gyration path") {iflag=16; continue;}
+		if (str=="RDF path") {iflag=17; continue;}
+		if (str=="gas gas interaction") {iflag=18; continue;}
+		if (str=="gas ion interaction") {iflag=19; continue;}
+		if (str=="ion ion interaction") {iflag=20; continue;}
+		if (str=="Nose-Hoover ion") {iflag=21; continue;}
+		if (str=="Nose-Hoover gas") {iflag=22; continue;}
+		if (str=="Output") {iflag=23; continue;}
+		if (str=="Coarse grain") {iflag=24; continue;}
+		if (str=="Electric field") {iflag=25; continue;}
+		if (str=="Input") {iflag=26; continue;}
 		if (iflag==1) {
-			istringstream stream(str);	
+			istringstream stream(str);
 			string tmp;
 			int loop=0;
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0){
 					if(tmp=="He"){
-						gastype=1;					
+						gastype=1;
 						cout<<"Gastype\t\t\tHe"<<endl;
 					}
 					if(tmp=="N2"){
-						gastype=2;					
+						gastype=2;
 						cout<<"Gastype\t\t\tN2(diatomic)"<<endl;
 					}
 					if(tmp=="N2monoatomic"){
-						gastype=3;					
+						gastype=3;
 						cout<<"Gastype\t\t\tN2(monoatomic)"<<endl;
 					}
 					if(tmp=="Ar"){
-						gastype=4;					
+						gastype=4;
 						cout<<"Gastype\t\t\tAr"<<endl;
 					}
 				}
@@ -208,21 +206,21 @@ Physical::set_condition(char* condfile, FLAG *flags, char* file){
 			cout<<"Relax steps\t\t"<<float(step_relax)<<endl;
 		}
 		if (iflag==8) {
-			istringstream stream(str);	
+			istringstream stream(str);
 			string tmp;
 			int loop=0;
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0){
 					if(tmp=="MeOH"){
-						vaportype=1;					
+						vaportype=1;
 						cout<<"Vapor type\t\tMeOH"<<endl;
 					}
 					if(tmp=="H2O"){
-						vaportype=2;					
+						vaportype=2;
 						cout<<"Vapor type\t\tH2O"<<endl;
 					}
 					if(tmp=="EtOH"){
-						vaportype=3;					
+						vaportype=3;
 						cout<<"Vapor type\t\tEtOH"<<endl;
 					}
 				}
@@ -332,7 +330,7 @@ Physical::set_condition(char* condfile, FLAG *flags, char* file){
 			}
 		}
 		if (iflag==23) {
-			istringstream stream(str);	
+			istringstream stream(str);
 			string tmp;
 			int loop=0;
 			while(getline(stream,tmp,'\t')) {
@@ -356,7 +354,7 @@ Physical::set_condition(char* condfile, FLAG *flags, char* file){
 
 		}
 		if (iflag==24) {
-			istringstream stream(str);	
+			istringstream stream(str);
 			string tmp;
 			int loop=0;
 			double mass;
@@ -367,7 +365,7 @@ Physical::set_condition(char* condfile, FLAG *flags, char* file){
 			}
 		}
 		if (iflag==25) {
-			istringstream stream(str);	
+			istringstream stream(str);
 			string tmp;
 			int loop=0;
 			double mass;
@@ -388,5 +386,3 @@ Physical::set_condition(char* condfile, FLAG *flags, char* file){
 	ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
 	cout<<"Domain size\t\t"<<d_size<<" ang."<<endl;
 }
-
-

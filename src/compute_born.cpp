@@ -21,7 +21,15 @@ PotentialBorn::compute(Variables *vars, FLAG *flags) {
 			double r=sqrt(rsq);
 			int type1=ions[i].type-11;
 			int type2=ions[j].type-11;
-			double force1 = vars->bornCoeff[type1][type2][0]*vars->bornCoeff[type1][type2][4]*exp(vars->bornCoeff[type1][type2][4]*(vars->bornCoeff[type1][type2][3]-r))*r;
+
+//vars->bornCoeff[type1][type2][0]=A
+//vars->bornCoeff[type1][type2][1]=6C
+//vars->bornCoeff[type1][type2][2]=8D
+//vars->bornCoeff[type1][type2][3]=sigma
+//vars->bornCoeff[type1][type2][4]=1/rho
+
+			double rexp=exp(vars->bornCoeff[type1][type2][4]*(vars->bornCoeff[type1][type2][3]-r));
+			double force1 = vars->bornCoeff[type1][type2][4]*vars->bornCoeff[type1][type2][0]*r*rexp;
 			double force2 = -vars->bornCoeff[type1][type2][1]*r6inv;
 			double force3 = -vars->bornCoeff[type1][type2][2]*r6inv*r2inv;
 			double force_coul = qqrd2e*ions[i].charge*ions[j].charge*sqrt(r2inv);
@@ -33,9 +41,13 @@ PotentialBorn::compute(Variables *vars, FLAG *flags) {
 			ions[j].fx -= force_pair * dx;
 			ions[j].fy -= force_pair * dy;
 			ions[j].fz -= force_pair * dz;
-			//if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+			if(flags->eflag) {
+				vars->Uion+=force_coul;
+				vars->Uion+=rexp*vars->bornCoeff[type1][type2][0];
+				vars->Uion-=vars->bornCoeff[type1][type2][1]/6.0*r6inv;
+				vars->Uion-=vars->bornCoeff[type1][type2][2]/8.0*r6inv*r2inv;
+			}
 			//vars->totalVirial+=force_lj;
 		}
 	}
 }
-
