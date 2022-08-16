@@ -48,7 +48,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			vapors[I].inAtoms[j].fx -= force_bond_harmonic * dx1;
 			vapors[I].inAtoms[j].fy -= force_bond_harmonic * dy1;
 			vapors[I].inAtoms[j].fz -= force_bond_harmonic * dz1;
-			//if(flags->eflag) vars->totalPotential+=rk*dr;
+			if(flags->eflag) vars->Uvap+=rk*dr;
 		}
 
 		for (auto &c : vapors[I].angles) {
@@ -88,7 +88,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			vapors[I].inAtoms[k].fx += f3[0];
 			vapors[I].inAtoms[k].fy += f3[1];
 			vapors[I].inAtoms[k].fz += f3[2];
-//			if (flags->eflag) vars->totalPotential += tk*dtheta;
+			if (flags->eflag) vars->Uvap+= tk*dtheta;
 		}
 
 		for (auto &d : vapors[I].dihedrals) {
@@ -126,15 +126,15 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			rabinv = sqrt(ra2inv*rb2inv);
 			c = (ax*bx + ay*by + az*bz)*rabinv;
 			s = rg*rabinv*(ax*vb3x + ay*vb3y + az*vb3z);
-		
+
 			df = 0.0;
 			int J= dtypes[type].multi;
-			
+
 			for(int JJ=0;JJ<J;JJ++){
 				int JJ5=JJ*5;
 				p_=1.0;
 				ddf1=df1=0.0;
-				for (int loop=0; loop<dtypes[type].coeff[JJ5+1]; loop++){        
+				for (int loop=0; loop<dtypes[type].coeff[JJ5+1]; loop++){
 					ddf1 = p_*c - df1*s;
 					df1 = p_*s + df1*c;
 					p_ = ddf1;
@@ -148,7 +148,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 		            df1=0.0;
 		        }
 				df += (-dtypes[type].coeff[JJ5] * df1);
-				if (flags->eflag) vars->totalPotential += dtypes[type].coeff[JJ5] * p_;
+				if (flags->eflag) vars->Uvap+= dtypes[type].coeff[JJ5] * p_;
 			}
 
 			fg = vb1x*vb2xm + vb1y*vb2ym + vb1z*vb2zm;
@@ -194,8 +194,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			vapors[I].inAtoms[l].fx += ff4[0];
 			vapors[I].inAtoms[l].fy += ff4[1];
 			vapors[I].inAtoms[l].fz += ff4[2];
-	
+
 		}
 	}
 }
-

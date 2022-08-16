@@ -95,6 +95,18 @@ public:
 	double zeta_ion;
 	double zeta_gas;
 
+	double Uion;
+	double Ugas;
+	double Uvap;
+	double Ugi;
+	double Ugg;
+	double Uvg;
+	double Uvi;
+	double Uvv;
+
+	void Uzero(void)	{Uion=Ugas=Uvap=Ugi=Ugg=Uvg=Uvi=Uvv=0;}
+	double Usum(void)	{return Uion+Ugas+Uvap+Ugi+Ugg+Uvg+Uvi+Uvv;}
+
 	std::vector<int> gas_in;	/*	gas list around ion1	*/
 	std::vector<int> gas_out;	/*	gas list far from ion1	*/
 	std::vector<int> vapor_in;	/*	gas list around ion1	*/

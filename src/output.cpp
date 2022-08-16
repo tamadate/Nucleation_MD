@@ -96,19 +96,19 @@ MD::display(int output_ONOFF){
 		obs->computeVaporProps(vars);
     double virial=0;//ters->compute_tersoff_virial(vars)/3.0/V*Cpress;
     double gaspress=(kb*Nof_around_gas*obs->T_g + vars->totalVirial/3.0*6.95e-21)/(V*1e-30);
-    double U = vars->totalPotential;
+    double U = vars->Usum();
 		double Kin=obs->Kion+obs->Kin_g+obs->Kin_v;
 		double Kout=obs->Kout_g+obs->Kout_v;
     std::cout << "----------------------TIME = " << vars->time/1000.0 << " ps-------------------------" << endl;
 		cout<<"Inside propeties"<<endl;
-    printf("  Kion = %1.2e  Tion = %1.2f  Uion = %1.2e	\n  Kgas = %1.2e  Tgas = %1.2f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %1.2f  Uvap = %1.2e	\n  Kin = %1.2e    Uin = %1.2e	\n",
-		obs->Kion, obs->Tion, U, obs->Kin_g, obs->Tin_g, U, obs->Kin_v, obs->Tin_v, U, Kin, U);
+    printf("  Kion = %1.2e  Kgas = %1.2e  Kvap = %1.2e\n  Tion = %1.2f  Tgas = %1.2f  Tvap = %1.2f\n  Uion = %1.2e  Ugas = %1.2e  Uvap = %1.2e\n  Ugi = %1.2e  Ugg = %1.2e  Uvi = %1.2e	\n  Uvg = %1.2e	Uvv= %1.2e  \n",
+		obs->Kion, obs->Kin_g, obs->Kin_v, obs->Tion, obs->Tin_g, obs->Tin_v, vars->Uion, vars->Ugas, vars->Uvap, vars->Ugi, vars->Ugg,	vars->Uvi, vars->Uvg, vars->Uvv);
 		cout<<"Out side propeties"<<endl;
 		printf("  Kgas = %1.2e  Tgas = %1.2f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %1.2f  Uvap = %1.2e	\n  Kout = %1.2e    Uout = %1.2e	\n",
 		obs->Kout_g, obs->Tout_g, 0.0, obs->Kout_v, obs->Tout_v, 0.0, Kout, 0.0);
 		cout<<"System propeties"<<endl;
-		printf("  K = %1.2e  T = %1.2f  U = %1.2e  Press = %f\n",
-		Kin+Kout, (Kin+Kout)/(obs->Ngas+obs->Nion+obs->Nvap), U, gaspress/101300.0);
+		printf("  K = %1.2e	U = %1.2e	Press = %f\n",
+		Kin+Kout, U, gaspress/101300.0);
 		cout <<endl;
 /*    FILE*f=fopen("T-E.dat", "a");
     fprintf(f, "%e\t%e\n", iontemp, U);

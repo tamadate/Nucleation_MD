@@ -36,7 +36,7 @@ PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
 		ions[j].fx -= force_bond_harmonic * dx;
 		ions[j].fy -= force_bond_harmonic * dy;
 		ions[j].fz -= force_bond_harmonic * dz;
-		if(flags->eflag) vars->totalPotential+=rk*dr;
+		if(flags->eflag) vars->Uion+=rk*dr;
 	}
 }
 
@@ -83,7 +83,7 @@ PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
 		ions[k].fx += f3[0];
 		ions[k].fy += f3[1];
 		ions[k].fz += f3[2];
-	    if (flags->eflag) vars->totalPotential += tk*dtheta;
+	    if (flags->eflag) vars->Uion+= tk*dtheta;
 	}
 }
 
@@ -142,7 +142,7 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 			int JJ5=JJ*5;
 			p_=1.0;
 			ddf1=df1=0.0;
-			for (int loop=0; loop<dtypes[type].coeff[JJ5+1]; loop++){        
+			for (int loop=0; loop<dtypes[type].coeff[JJ5+1]; loop++){
 				ddf1 = p_*c - df1*s;
 				df1 = p_*s + df1*c;
 				p_ = ddf1;
@@ -156,7 +156,7 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 	            df1=0.0;
 	        }
 			df += (-dtypes[type].coeff[JJ5] * df1);
-			if (flags->eflag) vars->totalPotential += dtypes[type].coeff[JJ5] * p_;
+			if (flags->eflag) vars->Uion+= dtypes[type].coeff[JJ5] * p_;
 		}
 
        // cout<<df<<endl;
@@ -203,6 +203,6 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 		ions[l].fx += ff4[0];
 		ions[l].fy += ff4[1];
 		ions[l].fz += ff4[2];
-	
+
 	}
 }

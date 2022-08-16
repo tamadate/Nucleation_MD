@@ -30,7 +30,7 @@ class PotentialVaporVapor : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		void compute(Variables *vars, FLAG *flags);
 		PotentialVaporVapor(){};
-		~PotentialVaporVapor(){};	
+		~PotentialVaporVapor(){};
 };
 
 class PotentialVaporGas : public Potential {
@@ -40,7 +40,7 @@ class PotentialVaporGas : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		void compute(Variables *vars, FLAG *flags);
 		PotentialVaporGas(){};
-		~PotentialVaporGas(){};	
+		~PotentialVaporGas(){};
 };
 
 class PotentialVaporIon : public Potential {
@@ -50,7 +50,7 @@ class PotentialVaporIon : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		void compute(Variables *vars, FLAG *flags);
 		PotentialVaporIon(){};
-		~PotentialVaporIon(){};	
+		~PotentialVaporIon(){};
 };
 
 class PotentialGasGas : public Potential {
@@ -60,7 +60,7 @@ class PotentialGasGas : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		void compute(Variables *vars, FLAG *flags);
 		PotentialGasGas(){};
-		~PotentialGasGas(){};	
+		~PotentialGasGas(){};
 };
 
 
@@ -74,7 +74,7 @@ class PotentialAMBER : public Potential {
 		void computeAngle(Variables *vars, FLAG *flags);
 		void computeDihedral(Variables *vars, FLAG *flags);
 		PotentialAMBER(){};
-		~PotentialAMBER(){};	
+		~PotentialAMBER(){};
 };
 
 
@@ -85,7 +85,7 @@ class PotentialGasIntra : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		void compute(Variables *vars, FLAG *flags);
 		PotentialGasIntra(){};
-		~PotentialGasIntra(){};	
+		~PotentialGasIntra(){};
 };
 
 class PotentialBorn : public Potential {
@@ -95,7 +95,7 @@ class PotentialBorn : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		void compute(Variables *vars, FLAG *flags);
 		PotentialBorn(){};
-		~PotentialBorn(){};	
+		~PotentialBorn(){};
 };
 
 class PotentialEfield : public Potential {
@@ -106,7 +106,7 @@ class PotentialEfield : public Potential {
 		double Ecoeff[3];
 		void compute(Variables *vars, FLAG *flags);
 		PotentialEfield(){};
-		~PotentialEfield(){};	
+		~PotentialEfield(){};
 };
 
 class PotentialIonDipole : public Potential {
@@ -118,7 +118,7 @@ class PotentialIonDipole : public Potential {
 		double zion;
 		void compute(Variables *vars, FLAG *flags);
 		PotentialIonDipole(){};
-		~PotentialIonDipole(){};	
+		~PotentialIonDipole(){};
 };
 
 class PotentialVaporIntra : public Potential {
@@ -128,7 +128,7 @@ class PotentialVaporIntra : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		void compute(Variables *vars, FLAG *flags);
 		PotentialVaporIntra(){};
-		~PotentialVaporIntra(){};	
+		~PotentialVaporIntra(){};
 };
 
 class PotentialIntraTIP3P : public Potential {
@@ -138,7 +138,7 @@ class PotentialIntraTIP3P : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		void compute(Variables *vars, FLAG *flags);
 		PotentialIntraTIP3P(){};
-		~PotentialIntraTIP3P(){};	
+		~PotentialIntraTIP3P(){};
 };
 
 
@@ -188,13 +188,13 @@ class PotentialSW : public Potential {
 
 	public:
 		void compute(Variables *vars, FLAG *flags);
-		double energy;
+		double U;
 		double Pressure;
 		double virial;
 
 
 		PotentialSW(){};
-		~PotentialSW(){};	
+		~PotentialSW(){};
 };
 
 
@@ -204,7 +204,7 @@ class PotentialTersoff : public Potential{
 		double compute_virial(Variables *vars);
 		void check_pairlist(Variables *vars);
 		void make_pair(Variables *vars);
-		double energy;
+		double U;
 		double Pressure;
 
 	private:

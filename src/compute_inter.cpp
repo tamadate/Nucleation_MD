@@ -31,6 +31,9 @@ PotentialGasIon::compute(Variables *vars, FLAG *flags) {
 			ions[j].fx -= force_pair * dx;
 			ions[j].fy -= force_pair * dy;
 			ions[j].fz -= force_pair * dz;
+			if(flags->eflag) {
+				vars->Ugi+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+			}
 				//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 				//	vars->totalVirial+=force_lj;
 		}
@@ -68,6 +71,9 @@ PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
 				ag.fx -= force_pair * dx;
 				ag.fy -= force_pair * dy;
 				ag.fz -= force_pair * dz;
+				if(flags->eflag) {
+					vars->Uvg+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+				}
 					//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 					//	vars->totalVirial+=force_lj;
 			}
@@ -108,7 +114,10 @@ PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 				ai.fx -= force_pair * dx;
 				ai.fy -= force_pair * dy;
 				ai.fz -= force_pair * dz;
-				//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+				if(flags->eflag) {
+					vars->Uvi+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+					vars->Uvi+=force_coul;
+				}
 				//	vars->totalVirial+=force_lj;
 			}
 		}
@@ -148,7 +157,10 @@ PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
 						av2.fx -= force_pair * dx;
 						av2.fy -= force_pair * dy;
 						av2.fz -= force_pair * dz;
-						//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+						if(flags->eflag) {
+							vars->Uvv+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+							vars->Uvv+=force_coul;
+						}
 						//	vars->totalVirial+=force_lj;
 					}
 				}
@@ -228,8 +240,10 @@ PotentialGasGas::compute(Variables *vars, FLAG *flags) {
 				ag2.fx -= force_pair * dx;
 				ag2.fy -= force_pair * dy;
 				ag2.fz -= force_pair * dz;
-						//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-						//	vars->totalVirial+=force_lj;
+				if(flags->eflag) {
+					vars->Ugg+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+				}
+				//vars->totalVirial+=force_lj;
 			}
 		}
 	}

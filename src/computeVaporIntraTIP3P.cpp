@@ -12,7 +12,6 @@ PotentialIntraTIP3P::compute(Variables *vars, FLAG *flags) {
 	Bond_type *btypes = vars->btypes.data();
 	Angle_type *ctypes = vars->ctypes.data();
 
-
 	double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
 
 	for(auto &I : vars->vapor_in){
@@ -46,7 +45,7 @@ PotentialIntraTIP3P::compute(Variables *vars, FLAG *flags) {
 		vapors[I].inAtoms[0].fx -= force_bond_harmonic * dx2;
 		vapors[I].inAtoms[0].fy -= force_bond_harmonic * dy2;
 		vapors[I].inAtoms[0].fz -= force_bond_harmonic * dz2;
-		//if(flags->eflag) vars->totalPotential+=rk*dr;
+		if(flags->eflag) vars->Uvap+=rk*dr;
 
 		C = dx1*dx2 + dy1*dy2 + dz1*dz2;
 		C /= r1*r2;
@@ -72,7 +71,6 @@ PotentialIntraTIP3P::compute(Variables *vars, FLAG *flags) {
 		vapors[I].inAtoms[2].fx += f3[0];
 		vapors[I].inAtoms[2].fy += f3[1];
 		vapors[I].inAtoms[2].fz += f3[2];
-//			if (flags->eflag) vars->totalPotential += tk*dtheta;
+		if (flags->eflag) vars->Uvap += tk*dtheta;
 	}
 }
-

@@ -28,7 +28,7 @@ MD::verlet(void) {
 	if(flags->nose_hoover_ion==1)	nosehoover_zeta();
 	//if(flags->nose_hoover_gas==1)	nosehoover_zeta_gas();
 	check_pairlist();
-	vars->totalPotential=0;
+	vars->Uzero();
 	vars->totalVirial=0;
 
 	for (auto &a : InterInter) a->compute(vars,flags);
@@ -37,6 +37,7 @@ MD::verlet(void) {
 	velocity_calculation();	//	v(t+dt/2) -> v(t+dt) using F(x(t+dt))
 	if(flags->nose_hoover_ion==1)	nosehoover_ion();
 	//(flags->nose_hoover_gas==1)	nosehoover_gas();
+	flags->eflag=0;
 }
 
 /////////////////////////////////////////////////////////////////////
