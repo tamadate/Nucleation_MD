@@ -113,8 +113,8 @@ Variables::read_initial(char* infile) {
 			int loop=0;
 			int atom1, atom2, type;
 			while(getline(stream,tmp,'\t')) {
-				if (loop==0) b.atom1 = stoi(tmp);
-				if (loop==1) b.atom2 = stoi(tmp);
+				if (loop==0) b.atom1 = stoi(tmp)-1;
+				if (loop==1) b.atom2 = stoi(tmp)-1;
 				if (loop==2) b.type=stoi(tmp)-1;
 				loop++;
 			}
@@ -124,9 +124,9 @@ Variables::read_initial(char* infile) {
 			Angle c;
 			int loop=0;
 			while(getline(stream,tmp,'\t')) {
-				if (loop==0) c.atom1=stoi(tmp);
-				if (loop==1) c.atom2=stoi(tmp);
-				if (loop==2) c.atom3=stoi(tmp);
+				if (loop==0) c.atom1=stoi(tmp)-1;
+				if (loop==1) c.atom2=stoi(tmp)-1;
+				if (loop==2) c.atom3=stoi(tmp)-1;
 				if (loop==3) c.type=stoi(tmp)-1;
 				loop++;
 			}
@@ -136,10 +136,10 @@ Variables::read_initial(char* infile) {
 			Dihedral d;
 			int loop=0;
 			while(getline(stream,tmp,'\t')) {
-				if (loop==0) d.atom1=stoi(tmp);
-				if (loop==1) d.atom2=stoi(tmp);
-				if (loop==2) d.atom3=stoi(tmp);
-				if (loop==3) d.atom4=stoi(tmp);
+				if (loop==0) d.atom1=stoi(tmp)-1;
+				if (loop==1) d.atom2=stoi(tmp)-1;
+				if (loop==2) d.atom3=stoi(tmp)-1;
+				if (loop==3) d.atom4=stoi(tmp)-1;
 				if (loop==4) d.type=stoi(tmp)-1;
 				loop++;
 			}

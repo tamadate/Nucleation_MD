@@ -9,23 +9,18 @@
 void
 PotentialAMBER::compute(Variables *vars, FLAG *flags) {
 	computeLong(vars,flags);
-	cout<<"bond"<<endl;
 	computeBond(vars,flags);
-	cout<<"angle"<<endl;
 	computeAngle(vars,flags);
-	cout<<"dihedral"<<endl;
 	computeDihedral(vars,flags);
-	cout<<"done"<<endl;
 }
 
 
 void
 PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
 	Atom *ions = vars->ions.data();
-/*intra-molecular interaction (bond)*/
-	Bond_type *btypes = vars->btypes.data();
 	for (auto &p : longPair) {
-		int i=p.i, j=p.j;
+		int i=p.i;
+		int j=p.j;
 		double dx = ions[i].qx - ions[j].qx;
 		double dy = ions[i].qy - ions[j].qy;
 		double dz = ions[i].qz - ions[j].qz;
@@ -47,6 +42,31 @@ PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
 			vars->Uion+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 			vars->Uion+=force_coul;
 		}
+	}
+}
+
+void
+PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
+	Atom *ions = vars->ions.data();
+	Bond_type *btypes = vars->btypes.data();
+	for (auto &b : vars-> bonds) {
+		int i=b.atom1, j=b.atom2, type=(b.type);
+		double dx = ions[i].qx - ions[j].qx;
+		double dy = ions[i].qy - ions[j].qy;
+		double dz = ions[i].qz - ions[j].qz;
+		double rsq = (dx * dx + dy * dy + dz * dz);
+		double r = sqrt(rsq);
+		double dr = (r-btypes[type].coeff[1]);
+		double rk = btypes[type].coeff[0] * dr;
+		double force_bond_harmonic;
+		force_bond_harmonic = -2.0*rk/r;
+		ions[i].fx += force_bond_harmonic * dx;
+		ions[i].fy += force_bond_harmonic * dy;
+		ions[i].fz += force_bond_harmonic * dz;
+		ions[j].fx -= force_bond_harmonic * dx;
+		ions[j].fy -= force_bond_harmonic * dy;
+		ions[j].fz -= force_bond_harmonic * dz;
+		if(flags->eflag) vars->Uion+=rk*dr;
 	}
 }
 
@@ -75,25 +95,25 @@ PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
 		dtheta = acos(C) - ctypes[type].coeff[1];
 		tk = ctypes[type].coeff[0] * dtheta;
 		a = -2.0 * tk * Cs;
-    	a11 = a*C / rsq1;
-    	a12 = -a / (r1*r2);
-    	a22 = a*C / rsq2;
+  	a11 = a*C / rsq1;
+  	a12 = -a / (r1*r2);
+  	a22 = a*C / rsq2;
 		f1[0] = a11*dx1 + a12*dx2;
 		f1[1] = a11*dy1 + a12*dy2;
-    	f1[2] = a11*dz1 + a12*dz2;
-    	f3[0] = a22*dx2 + a12*dx1;
-    	f3[1] = a22*dy2 + a12*dy1;
-    	f3[2] = a22*dz2 + a12*dz1;
-    	ions[i].fx += f1[0];
+  	f1[2] = a11*dz1 + a12*dz2;
+  	f3[0] = a22*dx2 + a12*dx1;
+  	f3[1] = a22*dy2 + a12*dy1;
+  	f3[2] = a22*dz2 + a12*dz1;
+  	ions[i].fx += f1[0];
 		ions[i].fy += f1[1];
 		ions[i].fz += f1[2];
-    	ions[j].fx -= f1[0] + f3[0];
+  	ions[j].fx -= f1[0] + f3[0];
 		ions[j].fy -= f1[1] + f3[1];
 		ions[j].fz -= f1[2] + f3[2];
 		ions[k].fx += f3[0];
 		ions[k].fy += f3[1];
 		ions[k].fz += f3[2];
-	    if (flags->eflag) vars->Uion+= tk*dtheta;
+    if (flags->eflag) vars->Uion+= tk*dtheta;
 	}
 }
 
@@ -108,10 +128,7 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 	double dtfx,dtfy,dtfz,dtgx,dtgy,dtgz,dthx,dthy,dthz;
 	double c,s,p_,sx2,sy2,sz2, m;
 	Dihedral_type *dtypes = vars->dtypes.data();
-	int loop=0;
 	for (auto &d : vars-> dihedrals) {
-		loop++;
-		cout<<"dihedral"<<loop<<endl;
 		int i=d.atom1, j=d.atom2, k=d.atom3, l=d.atom4, type=d.type;
    //     cout<<i<<" "<<j<<" "<<k<<" "<<l<<" "<<endl;
 		// 1st bond
@@ -150,7 +167,6 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 
 		df = 0.0;
 		int J= dtypes[type].multi;
-		cout<<J<<endl;
 
 		for(int JJ=0;JJ<J;JJ++){
 			int JJ5=JJ*5;
@@ -221,7 +237,8 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 	}
 }
 
-void initialAMBER(Variables *vars, FLAG *flags){
+void
+PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 	std::vector<Pair> noLong;
 	Pair p;
 	for (auto &b : vars-> bonds) {
@@ -231,7 +248,7 @@ void initialAMBER(Variables *vars, FLAG *flags){
 			p.i=b.atom2;
 			p.j=b.atom1;
 		}
-		noLong.push_back(p)
+		noLong.push_back(p);
 	}
 	for (auto &b : vars-> angles) {
 		p.i=b.atom1;
@@ -240,7 +257,7 @@ void initialAMBER(Variables *vars, FLAG *flags){
 			p.i=b.atom3;
 			p.j=b.atom1;
 		}
-		noLong.push_back(p)
+		noLong.push_back(p);
 	}
 	for (auto &b : vars-> dihedrals) {
 		p.i=b.atom1;
@@ -249,23 +266,25 @@ void initialAMBER(Variables *vars, FLAG *flags){
 			p.i=b.atom4;
 			p.j=b.atom1;
 		}
-		noLong.push_back(p)
+		noLong.push_back(p);
 	}
 
 	Atom *ions=vars->ions.data();
 	const int is=vars->ions.size();
 	for(int i=0;i<is-1;i++){
 		for(int j=i+1;j<is;j++){
-			p.i=i;
-			p.i=j;
 			int flag=1;
 			for(auto &a : noLong){
-				if(a.i==p.i && a.j==p.j){
+				if(a.i==i && a.j==j){
 					flag=0;
 					break;
 				}
 			}
-			if(flag) longPair.push_back(p);
+			if(flag==1) {
+				p.i=i;
+				p.j=j;
+				longPair.push_back(p);
+			}
 		}
 	}
 }

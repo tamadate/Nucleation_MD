@@ -16,7 +16,7 @@
 void
 MD::run_diff(char** argv) {
 /****Thermal relaxation****/
-    const int logger=10000;
+    const int logger=100;
 	flags->inter_vi=0;
   flags->inter_vg=0;
 	flags->force_lj=0;

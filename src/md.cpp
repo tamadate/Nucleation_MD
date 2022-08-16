@@ -4,7 +4,7 @@
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	constructor
 */
 /////////////////////////////////////////////////////////////////////
@@ -23,7 +23,7 @@ MD::MD(char* condfile) {
 	vars->set_initial_velocity(pp);
 	setPotential(flags);
 	initialization_gas();	//Set initial positions & velocities for gas
-    initialization_vapor();	//Set initial positions & velocities for vapor
+  initialization_vapor();	//Set initial positions & velocities for vapor
 	analysis_ion();
 	make_pair();
 	margin_length = MARGIN;
@@ -31,7 +31,7 @@ MD::MD(char* condfile) {
 }
 
 /////////////////////////////////////////////////////////////////////
-/*	
+/*
 	destructor
 */
 /////////////////////////////////////////////////////////////////////
@@ -80,6 +80,3 @@ MD::analysis_gas(void) {
 	for ( int i = 0; i < 3; i++ ) gas_r[ i ] /= pp -> Mgas;
 	for ( int i = 0; i < 3; i++) gas_v[ i ] /= pp -> Mgas;
 }
-
-
-
