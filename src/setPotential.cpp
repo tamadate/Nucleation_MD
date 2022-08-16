@@ -21,12 +21,12 @@ MD::setPotential(FLAG *flags){
 		flag=1;
 	}
 	if(flags->intra_AMBER) {
-		IntraInter.push_back(new PotentialAMBER());
+		IntraInter.push_back(new PotentialAMBER(vars,flags));
 		cout<<"ion\t|\tAMBER\t";
 		flag=1;
 	}
 	if(flags->force_born) {
-		IntraInter.push_back(new PotentialBorn());	
+		IntraInter.push_back(new PotentialBorn());
 		cout<<"ion\t|\tBMH\t";
 		flag=1;
 	}
@@ -115,4 +115,3 @@ MD::setPotential(FLAG *flags){
 
 
 }
-

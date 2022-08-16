@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------
 #include "variables.hpp"
 //------------------------------------------------------------------------
-void 
+void
 Variables::read_initial(char* infile) {
 	ifstream stream(infile);
 	string str;
@@ -19,7 +19,7 @@ Variables::read_initial(char* infile) {
 		if (str=="dihedrals") {iflag=8; continue;}
 		if (str=="molecules") {iflag=9; continue;}
 	    string tmp;
-    	istringstream stream(str);		
+    	istringstream stream(str);
 		if (iflag==1) {
 			Atom_type at;
 			int loop=0;
@@ -115,7 +115,7 @@ Variables::read_initial(char* infile) {
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0) b.atom1 = stoi(tmp);
 				if (loop==1) b.atom2 = stoi(tmp);
-				if (loop==2) b.type=stoi(tmp);
+				if (loop==2) b.type=stoi(tmp)-1;
 				loop++;
 			}
 			bonds.push_back(b);
@@ -127,7 +127,7 @@ Variables::read_initial(char* infile) {
 				if (loop==0) c.atom1=stoi(tmp);
 				if (loop==1) c.atom2=stoi(tmp);
 				if (loop==2) c.atom3=stoi(tmp);
-				if (loop==3) c.type=stoi(tmp);
+				if (loop==3) c.type=stoi(tmp)-1;
 				loop++;
 			}
 			angles.push_back(c);
@@ -140,7 +140,7 @@ Variables::read_initial(char* infile) {
 				if (loop==1) d.atom2=stoi(tmp);
 				if (loop==2) d.atom3=stoi(tmp);
 				if (loop==3) d.atom4=stoi(tmp);
-				if (loop==4) d.type=stoi(tmp);
+				if (loop==4) d.type=stoi(tmp)-1;
 				loop++;
 			}
 			dihedrals.push_back(d);
@@ -223,7 +223,7 @@ Variables::read_initial(char* infile) {
             }
         }
     }
-    
+
 }
 
 //------------------------------------------------------------------------

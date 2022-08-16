@@ -30,7 +30,6 @@ MD::verlet(void) {
 	check_pairlist();
 	vars->Uzero();
 	vars->totalVirial=0;
-
 	for (auto &a : InterInter) a->compute(vars,flags);
 	for (auto &a : IntraInter) a->compute(vars,flags);
 
