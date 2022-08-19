@@ -113,8 +113,7 @@ MD::display(int output_ONOFF){
 		printf("  Kgas = %1.2e  Tgas = %1.2f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %1.2f  Uvap = %1.2e	\n  Kout = %1.2e    Uout = %1.2e	\n",
 		obs->Kout_g, obs->Tout_g, 0.0, obs->Kout_v, obs->Tout_v, 0.0, Kout, 0.0);
 		cout<<"System propeties"<<endl;
-		printf("  K = %1.2e	U = %1.2e	Press = %f\n",
-		Kin+Kout, U, gaspress/101300.0);
+		printf("  K = %1.2e	U = %1.2e	Press = %f\n",Kin+Kout, U, gaspress/101300.0);
 		cout <<endl;
 
 		sprintf(filepath, "K_%d.dat", int(calculation_number));

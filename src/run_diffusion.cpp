@@ -47,6 +47,7 @@ step of simulation, reset the margine size.
 	flags->inter_vi=1;
 	flags->inter_vg=1;
 	flags->force_lj=1;
+	flags->force_vv=1;
 	setPotential(flags);
 	for (auto &a : vars->ions) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
 	for (auto &a : vars->gases) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
