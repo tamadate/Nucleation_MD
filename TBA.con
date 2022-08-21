@@ -1,0 +1,46 @@
+
+Input
+TBA.atom
+
+Vapor
+H2O	100
+
+Gas
+N2	10000
+
+Temperature
+300
+
+Pressure
+100000
+
+Time step
+1.0
+
+Total number of steps
+1000000000
+
+Number of steps for relax
+20000000
+
+Number of steps for repre
+10000
+
+gas gas interaction
+OFF
+
+gas ion interaction
+LJ
+
+ion ion interaction
+AMBER
+
+Nose-Hoover ion
+300
+
+Nose-Hoover gas
+OFF
+
+Output
+TBA	100	w
+
