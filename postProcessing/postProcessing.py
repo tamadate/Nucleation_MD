@@ -3,15 +3,8 @@ import math
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 
+                ##Cunningham
 #-----------------------------------------------------------------------------#
-#Cunningham
-def calc_Cc(dp):
-    ram=67e-9
-    Kn=ram*2/dp
-    A=1.165
-    B=0.483
-    C=0.997
-    return 1+Kn*(A+B*np.exp(-C/Kn))
 
 def pltNormal():
     plt.rcParams['ytick.direction'] = 'in'
@@ -35,11 +28,14 @@ for i in np.arange(4):
 
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=0.6e-6		# equilibliumed time [s]
+teq=0.01e-6     # equilibliumed time [s]
 tcut=1e-9       # cut residence time [s]
-t_tot=0.8e-6	# total simulation time [s]
-directory="../../../nucleation/NaCl/1000/"
+Nmax=15         # Max number of sticking vapors
+dt=1e-15	    # simulation time step, dt [s]
+dt_post=1e-11   # dt in analysis, dt_post [s]
+directory="../../../nucleation/NaCl/Na2Cl/200/"
 I=1
+checkMode=1
 #-----------------------------------------------------------------------------#
 
 
@@ -51,14 +47,19 @@ U=np.loadtxt(str(directory)+"U_"+str(I)+".dat")
 #K=np.loadtxt("K_1.dat")
 labels=["Uion","Ugas","Uvap","Ugi","Ugg","Uvg","Uvi","Uvv"]
 
+t_tot=np.max(U.T[0])*1e-15  # total simulation time [s]
+
 axs.flat[0].set_xlabel("Time [ns]")
 axs.flat[0].set_ylabel("Energy [kcal/mol]")
 for i in np.arange(np.size(U[0])-1):
 	axs.flat[0].plot(U.T[0]*1e-6,U.T[i+1],label=labels[i])
 axs.flat[0].plot(U.T[0]*1e-6,np.sum(U.T[1:],axis=0),label="Total")
 axs.flat[0].axvline(x = teq*1e9, ls='--', color = 'black')
+axs.flat[0].axvline(x = t_tot*1e9, ls='--', color = 'black')
 axs.flat[0].legend()
+
 #-----------------------------------------------------------------------------#
+
 
 
 				## Reading vapor in out time files
@@ -67,11 +68,8 @@ axs.flat[0].legend()
 inVapor=np.loadtxt(str(directory)+"vapor_in_"+str(I)+".dat")
 outVapor=np.loadtxt(str(directory)+"vapor_out_"+str(I)+".dat")
 
-dt=1e-15	# simulation time step, dt [s]
-dt_post=1e-11								# dt in analysis, dt_post [s]
-postStep=int(1e-11/dt)								# dt in analysis, dt_post [s]
+postStep=int(dt_post/dt)								# dt in analysis, dt_post [s]
 Npost=int(t_tot/dt_post)					# total number of steps in analysis, Npost=/dt_post
-
 
 times=np.arange(Npost)*dt_post
 Nstick=np.zeros(Npost)	# Number of vapors [N(t0),N(t0+dt_post),N(t1+2*dt_post),...,N(t_tot)]
@@ -133,6 +131,9 @@ axs.flat[2].set_yscale("log")
 axs.flat[2].hist(np.log10(np.delete(ts,negs)),bins=50)
 axs.flat[2].axvline(x = np.log10(tcut), color = 'black', ls="--")
 
+if(checkMode==1):
+    plt.show()
+
 #-----------------------------------------------------------------------------#
 
 
@@ -142,9 +143,9 @@ axs.flat[2].axvline(x = np.log10(tcut), color = 'black', ls="--")
 negs=np.where(ts<tcut)	# indexes of ts<1e-9
 tsave=np.average(np.delete(ts,negs))	# average sticking time [s]
 betaC=np.size(np.delete(ts,negs))/t_tot	# vapor collision flux with ion [1/s]
+print(tsave)
 ram=betaC*tsave		# ramda for Poisson distribution
 
-Nmax=180
 nv=np.arange(Nmax)
 ppoi=np.zeros(Nmax)
 psim=np.zeros(Nmax)
