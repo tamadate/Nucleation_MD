@@ -169,6 +169,7 @@ PotentialTersoff::compute_virial(Variables *vars) {
 		}
 	}
 	return virial*23.06;*/
+	return 0;
 }
 
 
