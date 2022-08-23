@@ -28,14 +28,14 @@ for i in np.arange(4):
 
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=0.01e-6     # equilibliumed time [s]
-tcut=1e-9       # cut residence time [s]
-Nmax=15         # Max number of sticking vapors
+teq=0.001e-6     # equilibliumed time [s]
+tcut=1e-10       # cut residence time [s]
+Nmax=16         # Max number of sticking vapors
 dt=1e-15	    # simulation time step, dt [s]
 dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/NaCl/Na2Cl/200/"
+directory="../../../nucleation/angio2+/100/"
 I=1
-checkMode=1
+checkMode=0
 #-----------------------------------------------------------------------------#
 
 
@@ -75,8 +75,10 @@ times=np.arange(Npost)*dt_post
 Nstick=np.zeros(Npost)	# Number of vapors [N(t0),N(t0+dt_post),N(t1+2*dt_post),...,N(t_tot)]
 usedLines=np.arange(np.size(outVapor.T[0]))		# Flag for outVapor (equal to -1 if it is used)
 ts=np.zeros(np.size(inVapor.T[0]))	# Number of vapors [N(t0),N(t0+dt_post),N(t1+2*dt_post),...,N(t_tot)]
+tth=np.zeros(np.size(inVapor.T[0]))	# Number of vapors [N(t0),N(t0+dt_post),N(t1+2*dt_post),...,N(t_tot)]
 
 delta=1e-8	# diameter of interaction sphere [m]
+delta2=(delta*1e10)**2      # square of delta [ang^2]
 M=1/(1/0.018+1/0.023)		# vapor mass [kg/mol]
 kb=1.38e-23	# boltzmann constant [J/K]
 R=8.314		# gas constant	[Jmol/K]
@@ -92,7 +94,7 @@ def function(t,v,x0):
 	fac=0
 	if(t<0):
 		fac=1e200
-	return (delta*1e10-r)**2+fac
+	return (delta2-r)**2+fac
 
 for iin in np.arange(np.size(inVapor.T[0])):
     time1=inVapor[iin][1]*dt
@@ -108,10 +110,11 @@ for iin in np.arange(np.size(inVapor.T[0])):
         Nstick[int(time1/dt_post):int(time2/dt_post)]+=1
     else:
         Nstick[int(time1/dt_post):int(t_tot/dt_post)]+=1
-    result=minimize(function,x0=10000,args=(inVapor[iin][5:8],inVapor[iin][2:5]))	# args=((vx,vy,vz),(x,y,z))
+    result=minimize(function,x0=100000,args=(inVapor[iin][5:8],inVapor[iin][2:5]))	# args=((vx,vy,vz),(x,y,z))
     if(time1<teq):
         time1=t_tot
     ts[iin]=time2-time1-result.x[0]*dt	# result.x[0] is theoretical residence time in interaction sphere
+    tth[iin]=time2-time1	# result.x[0] is theoretical residence time in interaction sphere
 
 #np.savetxt("ts.dat",ts)
 
@@ -124,12 +127,14 @@ axs.flat[1].set_ylabel("Number of vapor in efective domain, $\it {N}$$_ {vap}$ [
 axs.flat[1].axvline(x = teq*1e9, color = 'black', ls="--")
 axs.flat[1].scatter(times*1e9,Nstick)
 
-negs=np.where(ts<0)
+negs=np.where(ts<=0)
 axs.flat[2].set_xlabel("Logarithm of time [-]")
 axs.flat[2].set_ylabel("Number of event [-]")
 axs.flat[2].set_yscale("log")
-axs.flat[2].hist(np.log10(np.delete(ts,negs)),bins=50)
+axs.flat[2].hist(np.log10(np.delete(ts,negs)),alpha=0.3,bins=50,label="$\it {t}$$_{sim}$")
+axs.flat[2].hist(np.log10(np.delete(tth,negs)),alpha=0.3,bins=30,label="$\it {t}$$_ {sim}$-$\it t$$_ {th}$")
 axs.flat[2].axvline(x = np.log10(tcut), color = 'black', ls="--")
+axs.flat[2].legend()
 
 if(checkMode==1):
     plt.show()
@@ -149,8 +154,9 @@ ram=betaC*tsave		# ramda for Poisson distribution
 nv=np.arange(Nmax)
 ppoi=np.zeros(Nmax)
 psim=np.zeros(Nmax)
-for i in np.arange(Nmax):
+for i in nv:
 	ppoi[i]=ram**i*np.exp(-ram)/math.factorial(i)
+print(ppoi[0])
 for i in Nstick[int(teq/dt_post):]:
     psim[int(i)]+=1
 psim/=np.size(Nstick[int(teq/dt_post):])
