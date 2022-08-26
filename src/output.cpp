@@ -11,12 +11,12 @@ MD::output_initial(void){
 	sprintf(filepath, "ion_%d_%d.dat", int(T), int(calculation_number));
 	FILE*f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "%d_%d_relax.dat", int(T), int(calculation_number));
+	/*sprintf(filepath, "%d_%d_relax.dat", int(T), int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
 	sprintf(filepath, "gas_%d_%d.dat", int(T), int(calculation_number));
 	f=fopen(filepath, "w");
-	fclose(f);
+	fclose(f);*/
 	sprintf(filepath, "vapor_collision_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
@@ -26,9 +26,9 @@ MD::output_initial(void){
 	sprintf(filepath, "vapor_out_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "gas_collision_%d.dat", int(calculation_number));
+	/*sprintf(filepath, "gas_collision_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
-	fclose(f);
+	fclose(f);*/
 	sprintf(filepath, "K_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);

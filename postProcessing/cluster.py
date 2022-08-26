@@ -11,7 +11,8 @@ def pltNormal():
     plt.rcParams['xtick.direction'] = 'in'
     #plt.rcParams['figure.subplot.bottom'] = 0.2
     #plt.rcParams['figure.subplot.left'] = 0.2
-    plt.rcParams['font.family'] = 'Arial'
+    #plt.rcParams['font.family'] = 'Arial'
+    plt.rcParams["font.size"]=12
 
 def axNormal(ax):
     ax.xaxis.set_ticks_position('both')
@@ -28,14 +29,15 @@ for i in np.arange(4):
 
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=0.001e-6     # equilibliumed time [s]
-tcut=1e-10       # cut residence time [s]
-Nmax=16         # Max number of sticking vapors
+teq=0.2e-6     # equilibliumed time [s]
+tcut=1e-9       # cut residence time [s]
+Nmax=30         # Max number of sticking vapors
 dt=1e-15	    # simulation time step, dt [s]
 dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/angio2+/100/"
+directory="../../../nucleation/glycine/100/"
+#directory="../../../nucleation/angio2+/100/"
 I=1
-checkMode=0
+checkMode=1
 #-----------------------------------------------------------------------------#
 
 
@@ -48,9 +50,12 @@ U=np.loadtxt(str(directory)+"U_"+str(I)+".dat")
 labels=["Uion","Ugas","Uvap","Ugi","Ugg","Uvg","Uvi","Uvv"]
 
 t_tot=np.max(U.T[0])*1e-15  # total simulation time [s]
+Xmax=int(t_tot/200e-9)*200
+Xmax*=1.4
 
-axs.flat[0].set_xlabel("Time [ns]")
-axs.flat[0].set_ylabel("Energy [kcal/mol]")
+#axs.flat[0].set_xlim([0,Xmax])
+axs.flat[0].set_xlabel("Time [ns]",fontsize=20)
+axs.flat[0].set_ylabel("Energy [kcal/mol]",fontsize=20)
 for i in np.arange(np.size(U[0])-1):
 	axs.flat[0].plot(U.T[0]*1e-6,U.T[i+1],label=labels[i])
 axs.flat[0].plot(U.T[0]*1e-6,np.sum(U.T[1:],axis=0),label="Total")
@@ -122,14 +127,14 @@ f_sim=np.size(ts)/t_tot	# vapor flux into the interaction sphere [1/s]
 print ("f_FM="+str(f_FM*1e-9)+"[1/ns]\tf_sim="+str(f_sim*1e-9)+"[1/ns]")
 
 
-axs.flat[1].set_xlabel("Time [ns]")
-axs.flat[1].set_ylabel("Number of vapor in efective domain, $\it {N}$$_ {vap}$ [-]")
+axs.flat[1].set_xlabel("Time [ns]",fontsize=20)
+axs.flat[1].set_ylabel("$\it {N}$$_ {vap}$ [-]",fontsize=20)
 axs.flat[1].axvline(x = teq*1e9, color = 'black', ls="--")
 axs.flat[1].scatter(times*1e9,Nstick)
 
 negs=np.where(ts<=0)
-axs.flat[2].set_xlabel("Logarithm of time [-]")
-axs.flat[2].set_ylabel("Number of event [-]")
+axs.flat[2].set_xlabel("Logarithm of time [-]",fontsize=20)
+axs.flat[2].set_ylabel("Number of event [-]",fontsize=20)
 axs.flat[2].set_yscale("log")
 axs.flat[2].hist(np.log10(np.delete(ts,negs)),alpha=0.3,bins=50,label="$\it {t}$$_{sim}$")
 axs.flat[2].hist(np.log10(np.delete(tth,negs)),alpha=0.3,bins=30,label="$\it {t}$$_ {sim}$-$\it t$$_ {th}$")
@@ -148,7 +153,6 @@ if(checkMode==1):
 negs=np.where(ts<tcut)	# indexes of ts<1e-9
 tsave=np.average(np.delete(ts,negs))	# average sticking time [s]
 betaC=np.size(np.delete(ts,negs))/t_tot	# vapor collision flux with ion [1/s]
-print(tsave)
 ram=betaC*tsave		# ramda for Poisson distribution
 
 nv=np.arange(Nmax)
@@ -156,21 +160,21 @@ ppoi=np.zeros(Nmax)
 psim=np.zeros(Nmax)
 for i in nv:
 	ppoi[i]=ram**i*np.exp(-ram)/math.factorial(i)
-print(ppoi[0])
 for i in Nstick[int(teq/dt_post):]:
     psim[int(i)]+=1
 psim/=np.size(Nstick[int(teq/dt_post):])
 
 
-axs.flat[3].set_xlabel("Number of sticking vapor")
-axs.flat[3].set_ylabel("Frequency [-]")
+axs.flat[3].set_xlabel("Number of sticking vapor",fontsize=20)
+axs.flat[3].set_ylabel("Frequency [-]",fontsize=20)
 axs.flat[3].set_yscale("log")
 axs.flat[3].set_ylim([1e-5,1])
 axs.flat[3].scatter(nv,ppoi,label="Poisson")
 axs.flat[3].scatter(nv,psim,label="Simulation")
+axs.flat[3].scatter(nv-8,psim,label="Simulation(-8)")
 axs.flat[3].legend()
 
 #-----------------------------------------------------------------------------#
 
-#plt.savefig("fig.png", dpi=1000)
+plt.savefig("fig.png", dpi=1000)
 plt.show()
