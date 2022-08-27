@@ -10,6 +10,7 @@
 void
 Potential::compute(Variables *vars, FLAG *flags){
 	Atom *ions = vars->ions.data();
+	vars->tion-=clock();
 	for (auto &a : vars->ion_pairs){
 		int i=a.i;
 		int j=a.j;
@@ -38,11 +39,13 @@ Potential::compute(Variables *vars, FLAG *flags){
 			vars->totalVirial+=force_lj+force_coul;
 		}*/
 	}
+	vars->tion+=clock();
 }
 
 
 void
 PotentialGasIntra::compute(Variables *vars, FLAG *flags){
+	vars->tgas-=clock();
 	for(auto &i : vars->gas_in){
 		Atom *g1= & vars->gases[i].inAtoms[0];
 		Atom *g2= & vars->gases[i].inAtoms[1];
@@ -62,4 +65,5 @@ PotentialGasIntra::compute(Variables *vars, FLAG *flags){
     g2->fz -= force_bond_harmonic * dz;
 		if(flags->eflag) vars->Ugas+=rk*dr;
 	}
+	vars->tgas+=clock();
 }

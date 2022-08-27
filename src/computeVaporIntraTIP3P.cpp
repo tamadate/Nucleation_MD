@@ -13,7 +13,7 @@ PotentialIntraTIP3P::compute(Variables *vars, FLAG *flags) {
 	Angle_type *ctypes = vars->ctypes.data();
 
 	double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
-
+	vars->tvap-=clock();
 	for(auto &I : vars->vapor_in){
 		dx1 = vapors[I].inAtoms[1].qx - vapors[I].inAtoms[0].qx;
 		dy1 = vapors[I].inAtoms[1].qy - vapors[I].inAtoms[0].qy;
@@ -73,4 +73,5 @@ PotentialIntraTIP3P::compute(Variables *vars, FLAG *flags) {
 		vapors[I].inAtoms[2].fz += f3[2];
 		if (flags->eflag) vars->Uvap += tk*dtheta;
 	}
+	vars->tvap+=clock();
 }

@@ -11,6 +11,7 @@ void
 PotentialGasIon::compute(Variables *vars, FLAG *flags) {
 	Molecule *gases = vars->gases.data();
 	Atom *ions = vars->ions.data();
+	vars->tgi-=clock();
 	for(auto &p : vars->pairs_gi){
 		int i=p.i;
 		int j=p.j;
@@ -38,6 +39,7 @@ PotentialGasIon::compute(Variables *vars, FLAG *flags) {
 				//	vars->totalVirial+=force_lj;
 		}
 	}
+	vars->tgi+=clock();
 }
 
 
@@ -50,6 +52,7 @@ void
 PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
 	Molecule *gases = vars->gases.data();
 	Molecule *vapors = vars->vapors.data();
+	vars->tvg-=clock();
 	for(auto &p : vars->pairs_gv){
 		int i=p.i;
 		int j=p.j;
@@ -79,6 +82,7 @@ PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
 			}
 		}
 	}
+	vars->tvg+=clock();
 
 }
 
@@ -93,6 +97,7 @@ PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 	Molecule *vapors = vars->vapors.data();
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
+	vars->tvi-=clock();
 	for(auto &I : vars->vapor_in){
 		for (auto &av : vapors[I].inAtoms){
 			for(auto &ai : vars->ions){
@@ -122,6 +127,7 @@ PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 			}
 		}
 	}
+	vars->tvi+=clock();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -133,6 +139,7 @@ void
 PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
 	Molecule *vapors = vars->vapors.data();
 	const int vs = vars->vapor_in.size();
+	vars->tvv-=clock();
 	if(vs>1){
 		for(int i1=0; i1<vs-1; i1++){
 			int I=vars->vapor_in[i1];
@@ -167,6 +174,7 @@ PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
 			}
 		}
 	}
+	vars->tvv+=clock();
 }
 
 

@@ -7,6 +7,7 @@ Variables::read_initial(char* infile) {
 	string str;
 	int iflag=0;
 	int num_atoms=0;
+	
 	while(getline(stream,str)) {
 		if(str.length()==0) continue;
 		if (str=="atom type name mass coeff1 coeff2") {iflag=1; continue;}

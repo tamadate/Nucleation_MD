@@ -237,6 +237,7 @@ MD::make_pair_gasgas(void){
 /////////////////////////////////////////////////////////////////////
 void
 MD::check_pairlist(void){
+	vars->tpair-=clock();
 	loop++;
 	if(loop>loop_update){
 		Molecule *gases = vars->gases.data();
@@ -259,4 +260,5 @@ MD::check_pairlist(void){
 	}
 //	if(flags->force_sw==1) sw->check_pairlist(vars);
 //	if(flags->force_ters==1) ters->check_pairlist(vars);
+	vars->tpair+=clock();
 }

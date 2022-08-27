@@ -29,7 +29,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 	double c2mag,sc1,sc2,s1,s12,p,pd;
 	double a33,a13,a23;
 	double s2,cx,cy,cz,cmag,dx,phi,si,siinv,sin2;
-
+	vars->tvap-=clock();
 	for(auto &I : vars->vapor_in){
 		for (auto &b : vapors[I].bonds) {
 			int i=b.atom1, j=b.atom2, type=(b.type);
@@ -197,4 +197,5 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 
 		}
 	}
+	vars->tvap+=clock();
 }

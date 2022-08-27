@@ -27,6 +27,7 @@ MD::MD(char* condfile) {
 	analysis_ion();
 	make_pair();
 	margin_length = MARGIN;
+	vars->tzero();
 
 }
 

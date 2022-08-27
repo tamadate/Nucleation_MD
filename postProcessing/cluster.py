@@ -29,15 +29,15 @@ for i in np.arange(4):
 
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=0.2e-6     # equilibliumed time [s]
+teq=0.1e-6     # equilibliumed time [s]
 tcut=1e-9       # cut residence time [s]
 Nmax=30         # Max number of sticking vapors
 dt=1e-15	    # simulation time step, dt [s]
 dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/glycine/100/"
+directory="../../../nucleation/lysine/"
 #directory="../../../nucleation/angio2+/100/"
-I=1
-checkMode=1
+I=10
+checkMode=0
 #-----------------------------------------------------------------------------#
 
 
