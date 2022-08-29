@@ -11,7 +11,9 @@ PotentialBorn::compute(Variables *vars, FLAG *flags) {
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
 	vars->tion-=omp_get_wtime();
+	#pragma omp parallel for
 	for(int i=0; i<is-1; i++){
+		int nth=omp_get_thread_num();
 		for(int j=i+1; j<is; j++){
 			double dx = ions[i].qx - ions[j].qx;
 			double dy = ions[i].qy - ions[j].qy;
@@ -36,17 +38,17 @@ PotentialBorn::compute(Variables *vars, FLAG *flags) {
 			double force_coul = qqrd2e*ions[i].charge*ions[j].charge*sqrt(r2inv);
 			double force_pair = (force1+force2+force3+force_coul)*r2inv;
 
-			ions[i].fx += force_pair * dx;
-			ions[i].fy += force_pair * dy;
-			ions[i].fz += force_pair * dz;
-			ions[j].fx -= force_pair * dx;
-			ions[j].fy -= force_pair * dy;
-			ions[j].fz -= force_pair * dz;
+			ions[i].fxMP[nth] += force_pair * dx;
+			ions[i].fyMP[nth] += force_pair * dy;
+			ions[i].fzMP[nth] += force_pair * dz;
+			ions[j].fxMP[nth] -= force_pair * dx;
+			ions[j].fyMP[nth] -= force_pair * dy;
+			ions[j].fzMP[nth] -= force_pair * dz;
 			if(flags->eflag) {
-				vars->Uion+=force_coul;
-				vars->Uion+=rexp*vars->bornCoeff[type1][type2][0];
-				vars->Uion-=vars->bornCoeff[type1][type2][1]/6.0*r6inv;
-				vars->Uion-=vars->bornCoeff[type1][type2][2]/8.0*r6inv*r2inv;
+				vars->UionMP[nth]+=force_coul;
+				vars->UionMP[nth]+=rexp*vars->bornCoeff[type1][type2][0];
+				vars->UionMP[nth]-=vars->bornCoeff[type1][type2][1]/6.0*r6inv;
+				vars->UionMP[nth]-=vars->bornCoeff[type1][type2][2]/8.0*r6inv*r2inv;
 			}
 			//vars->totalVirial+=force_lj;
 		}

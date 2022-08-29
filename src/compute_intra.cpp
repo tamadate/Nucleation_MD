@@ -11,11 +11,12 @@ void
 Potential::compute(Variables *vars, FLAG *flags){
 	Atom *ions = vars->ions.data();
 	vars->tion-=omp_get_wtime();
+	int ipsize=vars->ion_pairs.size();
 	#pragma omp parallel for
-	for (auto &a : vars->ion_pairs){
+	for (int ip=0;ip<ipsize;ip++){
 		int nth=omp_get_thread_num();
-		int i=a.i;
-		int j=a.j;
+		int i=vars->ion_pairs[ip].i;
+		int j=vars->ion_pairs[ip].j;
 		double dx = ions[i].qx - ions[j].qx;
 		double dy = ions[i].qy - ions[j].qy;
 		double dz = ions[i].qz - ions[j].qz;

@@ -92,7 +92,6 @@ Variables::read_initial(char* infile) {
 			Atom a;
 			int loop=0;
 			a.fx=a.fy=a.fz=a.px=a.py=a.pz=0;
-			int Nth=omp_get_num_threads();
 			for (int thread=0;thread<Nth;thread++){
 				a.fxMP.push_back(0);
 				a.fyMP.push_back(0);
