@@ -31,7 +31,7 @@ MD::run_diff(char** argv) {
 			vars->time=(itime*dt);
 		}
     verlet();
-		if ((itime+1)%OBSERVE==0) flags->eflag=1;
+		//if ((itime+1)%OBSERVE==0) flags->eflag=1;
 	}
 
 /*
@@ -61,7 +61,7 @@ step of simulation, reset the margine size.
         if(itime%logger==0)   {
             analysis_gas();
             output();
-            output_gas();
+            //output_gas();
             vars->time+=(logger*dt);
             if (itime%OBSERVE==0) {
                 display(0);

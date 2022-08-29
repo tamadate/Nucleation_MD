@@ -11,12 +11,12 @@ MD::output_initial(void){
 	sprintf(filepath, "ion_%d_%d.dat", int(T), int(calculation_number));
 	FILE*f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "%d_%d_relax.dat", int(T), int(calculation_number));
+	/*sprintf(filepath, "%d_%d_relax.dat", int(T), int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
 	sprintf(filepath, "gas_%d_%d.dat", int(T), int(calculation_number));
 	f=fopen(filepath, "w");
-	fclose(f);
+	fclose(f);*/
 	sprintf(filepath, "vapor_collision_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
@@ -26,9 +26,9 @@ MD::output_initial(void){
 	sprintf(filepath, "vapor_out_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
-	sprintf(filepath, "gas_collision_%d.dat", int(calculation_number));
+	/*sprintf(filepath, "gas_collision_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
-	fclose(f);
+	fclose(f);*/
 	sprintf(filepath, "K_%d.dat", int(calculation_number));
 	f=fopen(filepath, "w");
 	fclose(f);
@@ -114,6 +114,11 @@ MD::display(int output_ONOFF){
 		obs->Kout_g, obs->Tout_g, 0.0, obs->Kout_v, obs->Tout_v, 0.0, Kout, 0.0);
 		cout<<"System propeties"<<endl;
 		printf("  K = %1.2e	U = %1.2e	Press = %f\n",Kin+Kout, U, gaspress/101300.0);
+		cout<<"Times"<<endl;
+		printf("  tion = %1.0ld s	tgas = %1.0ld s  tvap = %1.0ld s\n",vars->tion/CLOCKS_PER_SEC,vars->tgas/CLOCKS_PER_SEC,vars->tvap/CLOCKS_PER_SEC);
+		printf("  tvi = %1.0ld s	tgi = %1.0ld s	tvg = %1.0ld s  tvv = %1.0ld s\n",vars->tvi/CLOCKS_PER_SEC,vars->tgi/CLOCKS_PER_SEC,vars->tvg/CLOCKS_PER_SEC,vars->tvv/CLOCKS_PER_SEC);
+		printf("  tpair = %1.0ld s	tpot = %1.0ld s	ttot = %1.0ld s\n",vars->tpair/CLOCKS_PER_SEC,(vars->tvi+vars->tgi+vars->tvv+vars->tvg+vars->tion+vars->tgas+vars->tvap)/CLOCKS_PER_SEC, clock()/CLOCKS_PER_SEC);
+
 		cout <<endl;
 
 		sprintf(filepath, "K_%d.dat", int(calculation_number));

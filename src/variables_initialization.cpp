@@ -7,6 +7,7 @@ Variables::read_initial(char* infile) {
 	string str;
 	int iflag=0;
 	int num_atoms=0;
+
 	while(getline(stream,str)) {
 		if(str.length()==0) continue;
 		if (str=="atom type name mass coeff1 coeff2") {iflag=1; continue;}
@@ -162,8 +163,8 @@ Variables::read_initial(char* infile) {
 		for (int j=0;j<num_atoms;j++){
 			double epu, sigma;
 			epu=sqrt(atypes[i].coeff1*atypes[j].coeff1);
-			//sigma=(atypes[i].coeff2+atypes[j].coeff2)*0.5;
-			sigma=sqrt(atypes[i].coeff2*atypes[j].coeff2);
+			sigma=(atypes[i].coeff2+atypes[j].coeff2)*0.5;
+			//sigma=sqrt(atypes[i].coeff2*atypes[j].coeff2);
 			pair_coeff[atypes[i].type][atypes[j].type][0]=48 * epu*pow(sigma,12.0);
 			pair_coeff[atypes[i].type][atypes[j].type][1]=24 * epu*pow(sigma,6.0);
 		}

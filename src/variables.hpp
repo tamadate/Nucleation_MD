@@ -104,7 +104,18 @@ public:
 	double Uvi;
 	double Uvv;
 
+  long int tion;
+  long int tgas;
+  long int tgi;
+  long int tvap;
+  long int tvv;
+  long int tvg;
+  long int tvi;
+  long int tpair;
+
+
 	void Uzero(void)	{Uion=Ugas=Uvap=Ugi=Ugg=Uvg=Uvi=Uvv=0;}
+  void tzero(void)	{tion=tgas=tvap=tgi=tvv=tvg=tvi=tpair=0;}
 	double Usum(void)	{return Uion+Ugas+Uvap+Ugi+Ugg+Uvg+Uvi+Uvv;}
 
 	std::vector<int> gas_in;	/*	gas list around ion1	*/
