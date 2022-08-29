@@ -10,7 +10,7 @@ void
 PotentialBorn::compute(Variables *vars, FLAG *flags) {
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
-	vars->tion-=clock();
+	vars->tion-=omp_get_wtime();
 	for(int i=0; i<is-1; i++){
 		for(int j=i+1; j<is; j++){
 			double dx = ions[i].qx - ions[j].qx;
@@ -51,5 +51,5 @@ PotentialBorn::compute(Variables *vars, FLAG *flags) {
 			//vars->totalVirial+=force_lj;
 		}
 	}
-	vars->tion+=clock();
+	vars->tion+=omp_get_wtime();
 }

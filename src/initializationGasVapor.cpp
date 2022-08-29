@@ -12,8 +12,8 @@ This makes connection between thermal relaxation and main diffusion coeficient c
 #######################################################################################*/
 
 /////////////////////////////////////////////////////////////////////
-/*	
-	- Randomly arraying gas molecule around an ion with avoiding the 
+/*
+	- Randomly arraying gas molecule around an ion with avoiding the
 	overlapping. The velocity is picked from  the Maxwell-Boltzumann
 	distribution
 	- Set ion's center of mass (maybe -> 0), make pair list for initial
@@ -26,14 +26,14 @@ MD::initialization_gas(void) {
 	double nion=vars->ions.size();
 	double dx,dy,dz, d;
 	double dis=5;	/*	minimum gas-gas, gas-ion distance */
-    
+
     // Set random number generator
 	random_device seed;
 	default_random_engine engine(seed());
 	normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mgas));
 	mt19937 mt(seed());
 	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
-    
+
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
 	do {
@@ -64,6 +64,14 @@ MD::initialization_gas(void) {
 			a.pz=distgas(engine)*1e-5;
 			a.mass=pp->Mgas;
 			a.inAtoms=vars->atomGas();
+			for (auto &b : a.inAtoms){
+				for (int thread=0;thread<Nth;thread++){
+					b.fxMP.push_back(0);
+					b.fyMP.push_back(0);
+					b.fzMP.push_back(0);
+				}
+			}
+
 			a.inFlag=0;
 			vars->gases.push_back(a);
 			i++;
@@ -74,8 +82,8 @@ MD::initialization_gas(void) {
 
 
 /////////////////////////////////////////////////////////////////////
-/*	
-	- Randomly arraying gas molecule around an ion with avoiding the 
+/*
+	- Randomly arraying gas molecule around an ion with avoiding the
 	overlapping. The velocity is picked from  the Maxwell-Boltzumann
 	distribution
 	- Set ion's center of mass (maybe -> 0), make pair list for initial
@@ -88,14 +96,14 @@ MD::initialization_vapor(void) {
 	double nion=vars->ions.size();
 	double dx,dy,dz, d,min_gv, min_iv, min_vv, gv, iv, vv;
 	gv=10, iv=10, vv=10;	/*	minimum vapor-vapor, vapor-ion, vapor-gas distance */
-    
+
     // Set random number generator
 	random_device seed;
 	default_random_engine engine(seed());
 	normal_distribution<> distvapor(0.0, sqrt(kb*T/pp->mvapor));
 	mt19937 mt(seed());
 	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
-    
+
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
 	do {
@@ -134,6 +142,13 @@ MD::initialization_vapor(void) {
 			a.pz=distvapor(engine)*1e-5;
 			a.mass=pp->Mvapor;
 			a.inAtoms=vars->atomVapor;
+			for (auto &b : a.inAtoms){
+				for (int thread=0;thread<Nth;thread++){
+					b.fxMP.push_back(0);
+					b.fyMP.push_back(0);
+					b.fzMP.push_back(0);
+				}
+			}
 			a.bonds=vars->bondMeOH();
 			a.angles=vars->angleMeOH();
 			a.dihedrals=vars->dihedralMeOH();
@@ -144,5 +159,3 @@ MD::initialization_vapor(void) {
 		collisionFlagVapor.push_back(0);
 	} while(i<Nof_around_vapor);
 }
-
-

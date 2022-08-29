@@ -2,7 +2,7 @@ NAME        = ../../test/myprogram
 SRCS        = ./src/*cpp
 OBJS        = $(SRCS:.cpp=.o)
 CXX         = g++
-CXXFLAGS    = -std=c++11
+CXXFLAGS    = -std=c++11 -fopenmp
 
 .PHONY: all
 all: $(NAME)

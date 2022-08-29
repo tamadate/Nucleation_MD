@@ -68,7 +68,10 @@ step of simulation, reset the margine size.
                 export_dump_close();
             }
         }
-			if ((itime+1)%OBSERVE==0) flags->eflag=1;
+			if ((itime+1)%OBSERVE==0) {
+        flags->eflag=1;
+        vars->Uzero();
+      }
     	verlet();
 	}
 }

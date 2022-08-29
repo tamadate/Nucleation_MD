@@ -40,6 +40,9 @@ struct Atom {
 	double fx, fy, fz;
 	double mass;
 	int ix, iy, iz;
+  std::vector<double> fxMP;
+  std::vector<double> fyMP;
+  std::vector<double> fzMP;
 };
 
 //------------------------------------------------------------------------
@@ -85,12 +88,30 @@ public:
 
 	Variables(void) {
 		time = 0.0;
+    #pragma omp parallel
+    {
+      #pragma omp single
+      {
+        Nth=omp_get_num_threads();
+      }
+    }
+    for (int thread=0;thread<Nth;thread++){
+      UionMP.push_back(0);
+      UgasMP.push_back(0);
+      UvapMP.push_back(0);
+      UgiMP.push_back(0);
+      UggMP.push_back(0);
+      UvgMP.push_back(0);
+      UviMP.push_back(0);
+      UvvMP.push_back(0);
+    }
 	}
 
 	/*variables*/
+  int Nth;
 	std::vector<Atom> ions;
 	std::vector<Molecule> gases;
-    std::vector<Molecule> vapors;
+  std::vector<Molecule> vapors;
 	double time;
 	double zeta_ion;
 	double zeta_gas;
@@ -104,17 +125,50 @@ public:
 	double Uvi;
 	double Uvv;
 
-  long int tion;
-  long int tgas;
-  long int tgi;
-  long int tvap;
-  long int tvv;
-  long int tvg;
-  long int tvi;
-  long int tpair;
+  std::vector<double> UionMP;
+  std::vector<double> UgasMP;
+  std::vector<double> UvapMP;
+  std::vector<double> UgiMP;
+  std::vector<double> UggMP;
+  std::vector<double> UvgMP;
+  std::vector<double> UviMP;
+  std::vector<double> UvvMP;
+
+  double tion;
+  double tgas;
+  double tgi;
+  double tvap;
+  double tvv;
+  double tvg;
+  double tvi;
+  double tpair;
 
 
-	void Uzero(void)	{Uion=Ugas=Uvap=Ugi=Ugg=Uvg=Uvi=Uvv=0;}
+	void Uzero(void)	{
+    Uion=Ugas=Uvap=Ugi=Ugg=Uvg=Uvi=Uvv=0;
+    for (int thread=0;thread<Nth;thread++){
+      UionMP.push_back(0);
+      UgasMP.push_back(0);
+      UvapMP.push_back(0);
+      UgiMP.push_back(0);
+      UggMP.push_back(0);
+      UvgMP.push_back(0);
+      UviMP.push_back(0);
+      UvvMP.push_back(0);
+    }
+  }
+  void Ucombine(void)	{
+    for (int nth=0;nth<Nth;nth++){
+      Uion+=UionMP[nth];
+      Uvap+=UvapMP[nth];
+      Ugas+=UgasMP[nth];
+      Ugi+=UgiMP[nth];
+      Ugg+=UggMP[nth];
+      Uvg+=UvgMP[nth];
+      Uvi+=UviMP[nth];
+      Uvv+=UvvMP[nth];
+    }
+  }
   void tzero(void)	{tion=tgas=tvap=tgi=tvv=tvg=tvi=tpair=0;}
 	double Usum(void)	{return Uion+Ugas+Uvap+Ugi+Ugg+Uvg+Uvi+Uvv;}
 

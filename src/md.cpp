@@ -9,6 +9,14 @@
 */
 /////////////////////////////////////////////////////////////////////
 MD::MD(char* condfile) {
+	startTime=omp_get_wtime();
+	#pragma omp parallel
+	{
+		#pragma omp single
+		{
+			Nth=omp_get_num_threads();
+		}
+	}
 	vars = new Variables();
 	obs = new Observer();
 	pp = new Physical();

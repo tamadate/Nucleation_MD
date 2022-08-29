@@ -8,12 +8,12 @@
 /**********************************Force calculation******************************************/
 void
 PotentialAMBER::compute(Variables *vars, FLAG *flags) {
-	vars->tion-=clock();
+	vars->tion-=omp_get_wtime();
 	computeLong(vars,flags);
 	computeBond(vars,flags);
 	computeAngle(vars,flags);
 	computeDihedral(vars,flags);
-	vars->tion+=clock();
+	vars->tion+=omp_get_wtime();
 }
 
 

@@ -14,6 +14,7 @@
 #include <cstring>
 #include <string>
 #include <algorithm>
+#include <omp.h>
 
 using namespace std;
 extern int gastype;	/*1:He, 2:Ar, 3:N2*/

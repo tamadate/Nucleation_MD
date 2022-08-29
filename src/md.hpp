@@ -13,6 +13,9 @@ class MD {
 
   public:
 
+	double startTime;
+	int Nth;
+
 	long int itime;
 	std::vector<long int> collisionFlagGas;
 	std::vector<long int> collisionFlagVapor;
@@ -28,7 +31,7 @@ class MD {
 	MBdist *mbdistV;
 
 //	vectors for pairlist
-	double margin_length;	
+	double margin_length;
 
 //	velocity verlet
 	void run_diff(char** argv);
@@ -37,6 +40,7 @@ class MD {
 	void velocity_calculation(void);
   void update_position_constrained(void);
   void update_velocity_constrained(void);
+	void forceCombine(void);
 
 	//	pair list
 	void update_vapor_in(void);
@@ -105,6 +109,7 @@ class MD {
 		double zeta;
 		void setNVE(void);
 		void setNVTion(double temp);
+
 
 		double del2,CD2,rmin2;
 		double totalPotential;
