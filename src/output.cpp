@@ -101,7 +101,7 @@ MD::display(int output_ONOFF){
 		obs->computeIonProps(vars);
 		obs->computeVaporProps(vars);
     double virial=0;//ters->compute_tersoff_virial(vars)/3.0/V*Cpress;
-    double gaspress=(kb*Nof_around_gas*obs->T_g + vars->totalVirial/3.0*6.95e-21)/(V*1e-30);
+    double gaspress=(kb*pp->Nof_around_gas*obs->T_g + vars->totalVirial/3.0*6.95e-21)/(V*1e-30);
     double U = vars->Usum();
 		double Kin=obs->Kion+obs->Kin_g+obs->Kin_v;
 		double Kout=obs->Kout_g+obs->Kout_v;
@@ -146,7 +146,7 @@ MD::export_dump(void) {
 	Ngas+=int(vars->gas_out.size());
 	Ngas+=vars->gases[0].inAtoms.size()*int(vars->gas_in.size());
 
-	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
+	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -pp->d_size*0.5, pp->d_size*0.5, -pp->d_size*0.5, pp->d_size*0.5, -pp->d_size*0.5, pp->d_size*0.5);
 
 	double X,Y,Z;
 	X=Y=Z=0;
@@ -189,7 +189,7 @@ MD::export_dump_close(void) {
 	int Nvapor=vars->vapors[0].inAtoms.size()*int(vars->vapor_in.size());;
 	int Ngas=vars->gases[0].inAtoms.size()*int(vars->gas_in.size());
 
-	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
+	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -pp->d_size*0.5, pp->d_size*0.5, -pp->d_size*0.5, pp->d_size*0.5, -pp->d_size*0.5, pp->d_size*0.5);
 
 	double X,Y,Z;
 	X=Y=Z=0;

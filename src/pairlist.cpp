@@ -78,7 +78,7 @@ MD::update_gas_in(void){
 	vars->gas_out.clear();
 
 
-	for (int i=0;i<Nof_around_gas;i++){
+	for (int i=0;i<pp->Nof_around_gas;i++){
 		double dx = gases[i].qx - ion_r[0];
 		double dy = gases[i].qy - ion_r[1];
 		double dz = gases[i].qz - ion_r[2];
@@ -136,7 +136,7 @@ MD::update_vapor_in(void){
 	vars->vapor_in.clear();
 	vars->vapor_out.clear();
 
-	for (int i=0;i<Nof_around_vapor;i++){
+	for (int i=0;i<pp->Nof_around_vapor;i++){
 		double dx = vapors[i].qx - ion_r[0];
 		double dy = vapors[i].qy - ion_r[1];
 		double dz = vapors[i].qz - ion_r[2];

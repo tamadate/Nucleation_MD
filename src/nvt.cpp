@@ -37,7 +37,7 @@ MD::nosehoover_ion(void){
 void
 MD::nosehoover_zeta_gas(void){
 	obs->computeGasProps(vars);
-	int g=Nof_around_gas*3;
+	int g=pp->Nof_around_gas*3;
 	double Q_inv = 0.001;
 	vars->zeta_gas += (obs->T_g - pp->Tnh_gas)*g*kb_real*Q_inv*dt;
 }

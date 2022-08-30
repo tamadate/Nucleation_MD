@@ -32,7 +32,7 @@ MD::initialization_gas(void) {
 	default_random_engine engine(seed());
 	normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mgas));
 	mt19937 mt(seed());
-	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
+	uniform_real_distribution<double> r(-pp->d_size*0.5,pp->d_size*0.5);
 
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
@@ -77,7 +77,7 @@ MD::initialization_gas(void) {
 			i++;
 		}
 		collisionFlagGas.push_back(0);
-	} while(i<Nof_around_gas);
+	} while(i<pp->Nof_around_gas);
 }
 
 
@@ -102,7 +102,7 @@ MD::initialization_vapor(void) {
 	default_random_engine engine(seed());
 	normal_distribution<> distvapor(0.0, sqrt(kb*T/pp->mvapor));
 	mt19937 mt(seed());
-	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
+	uniform_real_distribution<double> r(-pp->d_size*0.5,pp->d_size*0.5);
 
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
@@ -157,5 +157,5 @@ MD::initialization_vapor(void) {
 			i++;
 		}
 		collisionFlagVapor.push_back(0);
-	} while(i<Nof_around_vapor);
+	} while(i<pp->Nof_around_vapor);
 }

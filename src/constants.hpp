@@ -17,28 +17,6 @@
 #include <omp.h>
 
 using namespace std;
-
-extern int gastype;	/*1:He, 2:Ar, 3:N2*/
-extern int vaportype;	/*1:MeOH, 2:H2O, 3:EtOH*/
-extern long int Noftimestep;
-extern double p;
-extern double T;
-extern int calculation_number;
-extern int Nof_around_gas;
-extern int Nof_around_vapor;
-extern int OBSERVE;
-extern double d_size;
-extern double V;
-extern double Ex,Ey,Ez;
-
-
-//------------------------------------------------------------------------
-extern double dt;
-extern double CUTOFF;
-extern double MARGIN;
-extern double ML2;
-extern double ML2_V;
-extern double CL2;
 //------------------------------------------------------------------------
 
 const double Nw = 6.02e23;
@@ -46,16 +24,23 @@ const double kb = 1.38e-23;     /* boltzmann constant */
 const double kb_real = kb*Nw/4184.0;     /* boltzmann constant with real unit kcal/molK*/
 const double e0 = 8.85e-12;     /* permittivity of vacuum */
 const double e = 1.602e-19;     /* elementary charge */
-const double MN2=28.0, MHe=4.0026;
-const double Rinter=100;	// Radius of interaction area
-const double RI2=Rinter*Rinter;
+
+const double MN2=28.0, MHe=4.0026, MAr=39.948;
+const double MMeOH=32.0, MH2O=18.0, MEtOH=46.0;
+const double mN2=MN2/Nw/1000.0;
+const double myuHe=1.47e-5;
+const double alphaHe=0.208, alphaN2=1.7*0.5, alphaAr=1.664;
+const double SAr=114, TrefAr=273.0, myuAr=2.125e-5; // REF
+const double SN2=107, TrefN2=273.0, myuN2=1.663e-5; // REF
+
 
 void adjust_periodic(double &dx, double &dy, double &dz);
 //------------------------------------------------------------------------
 
-const double cal=4187;
-
 /*******************Coeff.************************/
+const double Rinter=100;	// Radius of interaction area
+const double RI2=Rinter*Rinter;
+const double cal=4187;
 const double qqrd2e=e*e/4.0/M_PI/e0*Nw*1e10/4184.0;
 const double Cpress=1e30/Nw*4184;
 const double eV_to_kcalmol=23.061;

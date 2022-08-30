@@ -5,7 +5,7 @@ std::vector<Atom>
 Variables::atomGas(void) {
  	std::vector<Atom> atms;
 	Atom a;
-	a.type=gastype;
+	a.type=pp->gastype;
 	a.px=a.py=a.pz=a.fx=a.fy=a.fz=a.charge=a.ix=a.iy=a.iz=0;
 
   for (int thread=0;thread<Nth;thread++){
@@ -15,7 +15,7 @@ Variables::atomGas(void) {
   }
 
 
-	if(gastype==1){
+	if(pp->gastype==1){
 		a.id = 0;
 		a.qx = 0;
 		a.qy = 0;
@@ -23,7 +23,7 @@ Variables::atomGas(void) {
 		a.mass = 4.027;
 		atms.push_back(a);
 	}
-	if(gastype==2){
+	if(pp->gastype==2){
 		a.id = 0;
 		a.qx = -0.549;
 		a.qy = 0;
@@ -38,7 +38,7 @@ Variables::atomGas(void) {
 		a.mass = 14.01;
 		atms.push_back(a);
 	}
-	if(gastype==3){
+	if(pp->gastype==3){
 		a.id = 0;
 		a.qx = 0;
 		a.qy = 0;
@@ -46,7 +46,7 @@ Variables::atomGas(void) {
 		a.mass = 28.02;
 		atms.push_back(a);
 	}
-	if(gastype==4){
+	if(pp->gastype==4){
 		a.id = 0;
 		a.qx = 0;
 		a.qy = 0;

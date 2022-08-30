@@ -15,6 +15,15 @@ class MD {
 
 	double startTime;
 	int Nth;
+	int calculation_number;
+
+	double dt;
+	double CUTOFF;
+	double MARGIN;
+	double ML2;
+	double CL2;
+	double d_size;
+	double V;
 
 	long int itime;
 	std::vector<long int> collisionFlagGas;
@@ -116,7 +125,7 @@ class MD {
 
 
 
-		MD(char* condfile);
+		MD(char* condfile,int calcNumber);
 		~MD(void);
 		void run(char** argv);
 		int yesno;	/*	flag for collision or not collision	*/

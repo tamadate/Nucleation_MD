@@ -16,7 +16,7 @@
 void
 MD::run_diff(char** argv) {
 /****Thermal relaxation****/
-    const int logger=10000;
+  const int logger=10000;
 	flags->inter_vi=0;
   flags->inter_vg=0;
 	flags->force_lj=0;
@@ -24,13 +24,13 @@ MD::run_diff(char** argv) {
 	for (auto &a : IntraInter) {a->printName();}
 	for (auto &a : InterInter) {a->printName();}
 	for (itime=0; itime < pp->step_relax; itime++) {
-		if (itime%OBSERVE==0) {
+		if (itime%pp->OBSERVE==0) {
 			display(1);
 			export_dump_close();
 			vars->time=(itime*dt);
 		}
     verlet();
-		//if ((itime+1)%OBSERVE==0) flags->eflag=1;
+		//if ((itime+1)%pp->OBSERVE==0) flags->eflag=1;
 	}
 
 /*
@@ -56,18 +56,18 @@ step of simulation, reset the margine size.
 	setNVE();
 
 /****Main simulaiton****/
-	for (itime=0; itime<Noftimestep; itime++) {
+	for (itime=0; itime<pp->Noftimestep; itime++) {
         if(itime%logger==0)   {
             analysis_gas();
             output();
             //output_gas();
             vars->time+=(logger*dt);
-            if (itime%OBSERVE==0) {
+            if (itime%pp->OBSERVE==0) {
                 display(0);
                 export_dump_close();
             }
         }
-			if ((itime+1)%OBSERVE==0) {
+			if ((itime+1)%pp->OBSERVE==0) {
         flags->eflag=1;
         vars->Uzero();
       }

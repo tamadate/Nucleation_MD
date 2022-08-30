@@ -1,5 +1,5 @@
 #pragma once
-#include "CalculationCond.hpp"
+#include "constants.hpp"
 
 class FLAG{
 public:

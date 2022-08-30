@@ -8,8 +8,9 @@
 	constructor
 */
 /////////////////////////////////////////////////////////////////////
-MD::MD(char* condfile) {
+MD::MD(char* condfile, int calcNumber) {
 	startTime=omp_get_wtime();
+	calculation_number =  calcNumber;
 	#pragma omp parallel
 	{
 		#pragma omp single
@@ -24,9 +25,20 @@ MD::MD(char* condfile) {
 	mbdist = new MBdist();
 	mbdistV = new MBdist();
 	output_initial();
-	pp->PhysicalProp_set(condfile, atomFile, flags);
-	if(vaportype==1) vars->atomVapor = vars->makeAtomMeOH();
-	if(vaportype==2) vars->atomVapor = vars->makeAtomTIP3P();
+	setCondition(condfile, atomFile);
+
+	d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;
+	V=d_size*d_size*d_size;
+	dt = 0.5;	/*	fs	*/
+	CUTOFF = 20.0;	/*	A	*/
+	MARGIN = 10.0;	/*	A	*/
+	ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
+	CL2 = (CUTOFF*CUTOFF);
+	OBSERVE=10000000;
+
+
+	if(pp->vaportype==1) vars->atomVapor = vars->makeAtomMeOH();
+	if(pp->vaportype==2) vars->atomVapor = vars->makeAtomTIP3P();
 	vars->read_initial(atomFile);
 	vars->set_initial_velocity(pp);
 	setPotential(flags);
