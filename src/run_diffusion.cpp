@@ -22,7 +22,6 @@ MD::run_diff(char** argv) {
 	flags->force_lj=0;
 	setPotential(flags);
 	for (auto &a : IntraInter) {a->printName();}
-	cout<<endl;
 	for (auto &a : InterInter) {a->printName();}
 	for (itime=0; itime < pp->step_relax; itime++) {
 		if (itime%OBSERVE==0) {

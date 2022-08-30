@@ -17,6 +17,7 @@
 #include <omp.h>
 
 using namespace std;
+
 extern int gastype;	/*1:He, 2:Ar, 3:N2*/
 extern int vaportype;	/*1:MeOH, 2:H2O, 3:EtOH*/
 extern long int Noftimestep;

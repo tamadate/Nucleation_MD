@@ -95,7 +95,7 @@ public:
         Nth=omp_get_num_threads();
       }
     }
-    for (int thread=0;thread<Nth;thread++){
+    for (int nth=0;nth<Nth;nth++){
       UionMP.push_back(0);
       UgasMP.push_back(0);
       UvapMP.push_back(0);
@@ -146,15 +146,15 @@ public:
 
 	void Uzero(void)	{
     Uion=Ugas=Uvap=Ugi=Ugg=Uvg=Uvi=Uvv=0;
-    for (int thread=0;thread<Nth;thread++){
-      UionMP.push_back(0);
-      UgasMP.push_back(0);
-      UvapMP.push_back(0);
-      UgiMP.push_back(0);
-      UggMP.push_back(0);
-      UvgMP.push_back(0);
-      UviMP.push_back(0);
-      UvvMP.push_back(0);
+    for (int nth=0;nth<Nth;nth++){
+      UionMP[nth]=0;
+      UgasMP[nth]=0;
+      UvapMP[nth]=0;
+      UgiMP[nth]=0;
+      UggMP[nth]=0;
+      UvgMP[nth]=0;
+      UviMP[nth]=0;
+      UvvMP[nth]=0;
     }
   }
   void Ucombine(void)	{
