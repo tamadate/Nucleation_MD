@@ -18,7 +18,6 @@ MD::readCondFile(char* condfile, char* file){
 	cout<<"************--------------------------************"<<endl;
 	cout<<"**************************************************"<<endl;
 	while(getline(stream,str)) {
-		cout<<iflag<<endl;
 		if(str.length()==0) continue;
 		if (str=="Gas") {iflag=1; continue;}
 		if (str=="Calculation number") {iflag=2; continue;}

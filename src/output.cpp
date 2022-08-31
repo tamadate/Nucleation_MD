@@ -116,9 +116,10 @@ MD::display(int output_ONOFF){
 		cout<<"System propeties"<<endl;
 		printf("  K = %1.2e	U = %1.2e	Press = %f\n",Kin+Kout, U, gaspress/101300.0);
 		cout<<"Times"<<endl;
-		printf("  tion = %1.1f s	tgas = %1.1f s  tvap = %1.1f s\n",vars->times.tion,vars->times.tgas,vars->times.tvap);
-		printf("  tvi = %1.1f s	tgi = %1.1f s	tvg = %1.1f s  tvv = %1.1f s\n",vars->times.tvi,vars->times.tgi,vars->times.tvg,vars->times.tvv);
-		printf("  tpair = %1.1f s	tpot = %1.1f s	ttot = %1.1f s\n",vars->times.tpair,(vars->times.tvi+vars->times.tgi+vars->times.tvv+vars->times.tvg+vars->times.tion+vars->times.tgas+vars->times.tvap), omp_get_wtime()-startTime);
+		printf("  tion  = %1.1f s	tgas = %1.1f s 	tvap = %1.1f s\n",vars->times.tion,vars->times.tgas,vars->times.tvap);
+		printf("  tvi   = %1.1f s	tgi  = %1.1f s	tvg  = %1.1f s	tvv  = %1.1f s\n",vars->times.tvi,vars->times.tgi,vars->times.tvg,vars->times.tvv);
+		printf("  tpair = %1.1f s	tpos = %1.1f s	tvel = %1.1f s	tetc = %1.1f s\n",vars->times.tpair,vars->times.tpos,vars->times.tvel,vars->times.tetc);
+		printf("  tpot  = %1.1f s	ttot = %1.1f s\n",(vars->times.tvi+vars->times.tgi+vars->times.tvv+vars->times.tvg+vars->times.tion+vars->times.tgas+vars->times.tvap), omp_get_wtime()-startTime);
 		printf("  NCPU = %d\n",Nth);
 
 		cout <<endl;
