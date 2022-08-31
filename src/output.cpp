@@ -105,7 +105,6 @@ MD::display(int output_ONOFF){
     double U = vars->Usum();
 		double Kin=obs->Kion+obs->Kin_g+obs->Kin_v;
 		double Kout=obs->Kout_g+obs->Kout_v;
-		vars->Ucombine();
     std::cout << "----------------------TIME = " << vars->time/1000.0 << " ps-------------------------" << endl;
 		cout<<"Inside propeties"<<endl;
     printf("  Kion = %1.2e  Kgas = %1.2e  Kvap = %1.2e\n  Tion = %1.2f  Tgas = %1.2f  Tvap = %1.2f\n  Uion = %1.2e  Ugas = %1.2e  Uvap = %1.2e\n  Ugi = %1.2e  Ugg = %1.2e  Uvi = %1.2e	\n  Uvg = %1.2e	Uvv= %1.2e  \n",

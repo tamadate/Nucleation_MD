@@ -63,7 +63,6 @@ class MD {
 	void velocity_calculation(void);
   void update_position_constrained(void);
   void update_velocity_constrained(void);
-	void forceCombine(void);
 
 	//	pair list
 	void update_vapor_in(void);

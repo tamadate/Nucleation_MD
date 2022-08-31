@@ -18,27 +18,12 @@ public:
 	double zeta_gas;
 
 	Potentials Utotal;
-  std::vector<Potentials> U_MP;
 	Times times;
 
 	void Uzero(void)	{
 		Utotal.Uion=Utotal.Ugas=Utotal.Uvap=Utotal.Ugi=Utotal.Ugg=Utotal.Uvg=Utotal.Uvi=Utotal.Uvv=0;
-		for (int nth=0;nth<Nth;nth++){
-			U_MP[nth].Uion=U_MP[nth].Ugas=U_MP[nth].Uvap=U_MP[nth].Ugi=U_MP[nth].Ugg=U_MP[nth].Uvg=U_MP[nth].Uvi=U_MP[nth].Uvv=0;
-		}
   }
-  void Ucombine(void)	{
-    for (int nth=0;nth<Nth;nth++){
-      Utotal.Uion+=U_MP[nth].Uion;
-      Utotal.Uvap+=U_MP[nth].Uvap;
-      Utotal.Ugas+=U_MP[nth].Ugas;
-      Utotal.Ugi+=U_MP[nth].Ugi;
-      Utotal.Ugg+=U_MP[nth].Ugg;
-      Utotal.Uvg+=U_MP[nth].Uvg;
-      Utotal.Uvi+=U_MP[nth].Uvi;
-      Utotal.Uvv+=U_MP[nth].Uvv;
-    }
-  }
+
   void tzero(void)	{times.tion=times.tgas=times.tvap=times.tgi=times.tvv=times.tvg=times.tvi=times.tpair=0;}
 	double Usum(void)	{return Utotal.Uion+Utotal.Ugas+Utotal.Uvap+Utotal.Ugi+Utotal.Ugg+Utotal.Uvg+Utotal.Uvi+Utotal.Uvv;}
 

@@ -2,19 +2,7 @@
 
 Variables::Variables(void) {
   time = 0.0;
-  #pragma omp parallel
-  {
-    #pragma omp single
-    {
-      Nth=omp_get_num_threads();
-    }
-  }
   Utotal.Uion=Utotal.Ugas=Utotal.Uvap=Utotal.Ugi=Utotal.Ugg=Utotal.Uvg=Utotal.Uvi=Utotal.Uvv=0;
-  for (int nth=0;nth<Nth;nth++){
-    Potentials Us;
-    Us.Uion=Us.Ugas=Us.Uvap=Us.Ugi=Us.Ugg=Us.Uvg=Us.Uvi=Us.Uvv=0;
-    U_MP.push_back(Us);
-  }
 }
 
 
