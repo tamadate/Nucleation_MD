@@ -6,7 +6,7 @@ Variables::makeAtomMeOH(void) {
  	std::vector<Atom> atms;
 	Atom a;
 	a.id = 0;
-	a.type = 5; 
+	a.type = 5;
 	a.qx = -0.71259375;
 	a.qy = 0.06896875;
 	a.qz = 0.03515625;
@@ -21,10 +21,15 @@ Variables::makeAtomMeOH(void) {
 	a.ix=0;
 	a.iy=0;
 	a.iz=0;
-	atms.push_back(a);
+  for (int thread=0;thread<Nth;thread++){
+    a.fxMP.push_back(0);
+    a.fyMP.push_back(0);
+    a.fzMP.push_back(0);
+  }
+  atms.push_back(a);
 
 	a.id = 1;
-	a.type = 6; 
+	a.type = 6;
 	a.qx = 0.67140625;
 	a.qy = -0.10003125;
 	a.qz = -0.07584375;
@@ -33,7 +38,7 @@ Variables::makeAtomMeOH(void) {
 	atms.push_back(a);
 
 	a.id = 2;
-	a.type = 8; 
+	a.type = 8;
 	a.qx = 1.07240625;
 	a.qy = 0.46096875;
 	a.qz = 0.63715625;
@@ -42,7 +47,7 @@ Variables::makeAtomMeOH(void) {
 	atms.push_back(a);
 
 	a.id = 3;
-	a.type = 7; 
+	a.type = 7;
 	a.qx = -1.21259375;
 	a.qy = -0.54203125;
 	a.qz = -0.74484375;
@@ -51,7 +56,7 @@ Variables::makeAtomMeOH(void) {
 	atms.push_back(a);
 
 	a.id = 4;
-	a.type = 7; 
+	a.type = 7;
 	a.qx = -0.98559375;
 	a.qy = 1.13396875;
 	a.qz = -0.12984375;
@@ -60,7 +65,7 @@ Variables::makeAtomMeOH(void) {
 	atms.push_back(a);
 
 	a.id = 5;
-	a.type = 7; 
+	a.type = 7;
 	a.qx = -1.06559375;
 	a.qy = -0.28003125;
 	a.qz = 1.02915625;
@@ -167,5 +172,3 @@ Variables::dihedralMeOH(void) {
 
 	return dihedralsMeOH;
 }
-
-

@@ -11,7 +11,7 @@
 
 /**************************periodic**********************************/
 void
-adjust_periodic(double &dx, double &dy, double &dz) {
+adjust_periodic(double &dx, double &dy, double &dz, double d_size) {
 	const double LH = d_size * 0.5;
 	if (dx < -LH)dx += d_size;
 	if (dx > LH) dx -= d_size;
@@ -20,7 +20,6 @@ adjust_periodic(double &dx, double &dy, double &dz) {
 	if (dz < -LH)dz += d_size;
 	if (dz > LH) dz -= d_size;
 }
-
 /************************periodec condition for in gas***************************/
 void
 MD::periodic(void) {
@@ -60,7 +59,7 @@ MD::boundary_scaling_gas_move(void){
 		if (gases[i].qy > ion_r[1]+HL) gases[i].qy -= d_size, flagy++, flag++;
 		if (gases[i].qz > ion_r[2]+HL) gases[i].qz -= d_size, flagz++, flag++;
 		if (flag>0) {
-			if(mbdist->number>mbdist->vflux.size()*0.9) {mbdist->makeWeightedMB(pp->cgas,pp->mgas);}
+			if(mbdist->number>mbdist->vflux.size()*0.9) {mbdist->makeWeightedMB(pp->cgas,pp->mgas,T);}
 		    vx=gases[i].px*gases[i].mass;
 		    vy=gases[i].py*gases[i].mass;
 		    vz=gases[i].pz*gases[i].mass;
@@ -106,7 +105,7 @@ MD::boundary_scaling_vapor_move(void){
 		if (vapors[i].qy > ion_r[1]+HL) vapors[i].qy -= d_size, flagy++, flag++;
 		if (vapors[i].qz > ion_r[2]+HL) vapors[i].qz -= d_size, flagz++, flag++;
 		if (flag>0) {
-			if(mbdistV->number>mbdistV->vflux.size()*0.9) {mbdistV->makeWeightedMB(pp->cvapor,pp->mvapor);}
+			if(mbdistV->number>mbdistV->vflux.size()*0.9) {mbdistV->makeWeightedMB(pp->cvapor,pp->mvapor,T);}
 		    vx=vapors[i].px;
 		    vy=vapors[i].py;
 		    vz=vapors[i].pz;

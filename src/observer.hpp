@@ -29,7 +29,7 @@ public:
 	void computeIonProps(Variables *vars);
 	void computeVaporProps(Variables *vars);
 	double potential_energy(Variables *vars) {return vars->totalPotential;}
-	double pressure(Variables *vars, std::vector<Pair> &pairs, double Treal, double virial);
+	double pressure(Variables *vars, std::vector<Pair> &pairs, double Treal, double virial,double p,double T);
 	double total_energy(Variables *vars, std::vector<Pair> &pairs) {return K_g + potential_energy(vars);}
 };
 //------------------------------------------------------------------------

@@ -21,6 +21,12 @@ Variables::makeAtomTIP3P(void) {
 	a.ix=0;
 	a.iy=0;
 	a.iz=0;
+  
+  for (int thread=0;thread<Nth;thread++){
+    a.fxMP.push_back(0);
+    a.fyMP.push_back(0);
+    a.fzMP.push_back(0);
+  }
 	atms.push_back(a);
 
 	a.id = 1;

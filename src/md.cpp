@@ -8,19 +8,39 @@
 	constructor
 */
 /////////////////////////////////////////////////////////////////////
-MD::MD(char* condfile) {
+MD::MD(char* condfile, int calcNumber) {
+	startTime=omp_get_wtime();
+	calculation_number =  calcNumber;
+	#pragma omp parallel
+	{
+		#pragma omp single
+		{
+			Nth=omp_get_num_threads();
+		}
+	}
 	vars = new Variables();
 	obs = new Observer();
 	pp = new Physical();
 	flags = new FLAG();
 	mbdist = new MBdist();
 	mbdistV = new MBdist();
+
+	dt = 0.5;	/*	fs	*/
+	CUTOFF = 20.0;	/*	A	*/
+	MARGIN = 10.0;	/*	A	*/
+	OBSERVE=10000000;
+	T=300;
+	p=1e5;
+
+	setCondition(condfile, atomFile);
 	output_initial();
-	pp->PhysicalProp_set(condfile, atomFile, flags);
+
 	if(vaportype==1) vars->atomVapor = vars->makeAtomMeOH();
 	if(vaportype==2) vars->atomVapor = vars->makeAtomTIP3P();
+
 	vars->read_initial(atomFile);
-	vars->set_initial_velocity(pp);
+	vars->ionInitialVelocity(T);
+
 	setPotential(flags);
 	initialization_gas();	//Set initial positions & velocities for gas
   initialization_vapor();	//Set initial positions & velocities for vapor
@@ -29,6 +49,8 @@ MD::MD(char* condfile) {
 	margin_length = MARGIN;
 	vars->tzero();
 
+	mbdist -> makeWeightedMB(pp->cgas,pp->mgas,T);
+	mbdistV -> makeWeightedMB(pp->cvapor,pp->mvapor,T);
 }
 
 /////////////////////////////////////////////////////////////////////

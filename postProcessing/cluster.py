@@ -21,7 +21,7 @@ def axNormal(ax):
     ax.tick_params(axis='y')
 
 pltNormal()
-fig, axs = plt.subplots(2,2,figsize=(15,15))
+fig, axs = plt.subplots(2,2,figsize=(15,10))
 for i in np.arange(4):
 	axNormal(axs.flat[i])
 #-----------------------------------------------------------------------------#
@@ -29,12 +29,12 @@ for i in np.arange(4):
 
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=0.1e-6     # equilibliumed time [s]
-tcut=1e-9       # cut residence time [s]
+teq=0.2e-6     # equilibliumed time [s]
+tcut=1e-13       # cut residence time [s]
 Nmax=30         # Max number of sticking vapors
 dt=1e-15	    # simulation time step, dt [s]
 dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/lysine/"
+directory="../../../nucleation/valine/"
 #directory="../../../nucleation/angio2+/100/"
 I=10
 checkMode=0
@@ -84,7 +84,7 @@ tth=np.zeros(np.size(inVapor.T[0]))	# Number of vapors [N(t0),N(t0+dt_post),N(t1
 
 delta=1e-8	# diameter of interaction sphere [m]
 delta2=(delta*1e10)**2      # square of delta [ang^2]
-M=1/(1/0.018+1/0.023)		# vapor mass [kg/mol]
+M=1/(1/0.032)		# vapor mass [kg/mol]
 kb=1.38e-23	# boltzmann constant [J/K]
 R=8.314		# gas constant	[Jmol/K]
 T=300.0		# temperature	[K]
@@ -164,17 +164,17 @@ for i in Nstick[int(teq/dt_post):]:
     psim[int(i)]+=1
 psim/=np.size(Nstick[int(teq/dt_post):])
 
-
+Nbase=np.min(Nstick[int(teq/dt_post):])
 axs.flat[3].set_xlabel("Number of sticking vapor",fontsize=20)
 axs.flat[3].set_ylabel("Frequency [-]",fontsize=20)
 axs.flat[3].set_yscale("log")
 axs.flat[3].set_ylim([1e-5,1])
 axs.flat[3].scatter(nv,ppoi,label="Poisson")
 axs.flat[3].scatter(nv,psim,label="Simulation")
-axs.flat[3].scatter(nv-8,psim,label="Simulation(-8)")
+axs.flat[3].scatter(nv-Nbase,psim,label="Simulation("+str(int(-Nbase))+")")
 axs.flat[3].legend()
 
 #-----------------------------------------------------------------------------#
 
-plt.savefig("fig.png", dpi=1000)
+plt.savefig(str(directory)+"fig.png", dpi=1000)
 plt.show()

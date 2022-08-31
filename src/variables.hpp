@@ -1,122 +1,46 @@
 #pragma once
-#include <vector>
-#include <stdio.h>
-#include <stdlib.h>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include "CalculationCond.hpp"
-#include "PhysicalProp.hpp"
+#include "constants.hpp"
 
-using namespace std;
-//------------------------------------------------------------------------
-struct Atom_type {
- 	int type;
-	double mass;
-	double coeff1, coeff2;
-};
-//------------------------------------------------------------------------
-struct Bond_type {
- 	int type;
-	double coeff[2];
-};
-//------------------------------------------------------------------------
-struct Angle_type {
- 	int type;
-	double coeff[2];
-};
-//------------------------------------------------------------------------
-struct Dihedral_type {
- 	int type, multi;
-	double coeff[15];
-};
-//------------------------------------------------------------------------
-struct Atom {
- 	double qx, qy, qz;
-	double px, py, pz;
-	double charge;
-	int type;
-	int id;
-	double fx, fy, fz;
-	double mass;
-	int ix, iy, iz;
-};
-
-//------------------------------------------------------------------------
-struct Bond {
-	int atom1, atom2, type;
-};
-//------------------------------------------------------------------------
-struct Angle {
-	int atom1, atom2, atom3, type;
-};
-//------------------------------------------------------------------------
-struct Dihedral {
-	int atom1, atom2, atom3, atom4, type;
-};
-//------------------------------------------------------------------------
-struct Pair{
-	int i,j;
-};
-struct Pair_many{
-	int i;
-	std::vector<int> j;	/*	pair list	*/
-};
-
-//------------------------------------------------------------------------
-struct N2_relative{
-	double x,y,z,vx1,vy1,vz1,vx2,vy2,vz2;
-};
-//------------------------------------------------------------------------
-struct Molecule {
- 	double qx, qy, qz;
-	double px, py, pz;
-	double mass;
-	int ix, iy, iz;
-	std::vector<Atom> inAtoms;
-	std::vector<Bond> bonds;
-	std::vector<Angle> angles;
-	std::vector<Dihedral> dihedrals;
-	int inFlag;
-};
 //------------------------------------------------------------------------
 class Variables {
 public:
 
-	Variables(void) {
-		time = 0.0;
-	}
+	Variables(void);
+	~Variables(void){};
 
 	/*variables*/
+  int Nth;
 	std::vector<Atom> ions;
 	std::vector<Molecule> gases;
-    std::vector<Molecule> vapors;
+  std::vector<Molecule> vapors;
 	double time;
 	double zeta_ion;
 	double zeta_gas;
 
-	double Uion;
-	double Ugas;
-	double Uvap;
-	double Ugi;
-	double Ugg;
-	double Uvg;
-	double Uvi;
-	double Uvv;
+	Potentials Utotal;
+  std::vector<Potentials> U_MP;
+	Times times;
 
-  long int tion;
-  long int tgas;
-  long int tgi;
-  long int tvap;
-  long int tvv;
-  long int tvg;
-  long int tvi;
-  long int tpair;
-
-
-	void Uzero(void)	{Uion=Ugas=Uvap=Ugi=Ugg=Uvg=Uvi=Uvv=0;}
-  void tzero(void)	{tion=tgas=tvap=tgi=tvv=tvg=tvi=tpair=0;}
-	double Usum(void)	{return Uion+Ugas+Uvap+Ugi+Ugg+Uvg+Uvi+Uvv;}
+	void Uzero(void)	{
+		Utotal.Uion=Utotal.Ugas=Utotal.Uvap=Utotal.Ugi=Utotal.Ugg=Utotal.Uvg=Utotal.Uvi=Utotal.Uvv=0;
+		for (int nth=0;nth<Nth;nth++){
+			U_MP[nth].Uion=U_MP[nth].Ugas=U_MP[nth].Uvap=U_MP[nth].Ugi=U_MP[nth].Ugg=U_MP[nth].Uvg=U_MP[nth].Uvi=U_MP[nth].Uvv=0;
+		}
+  }
+  void Ucombine(void)	{
+    for (int nth=0;nth<Nth;nth++){
+      Utotal.Uion+=U_MP[nth].Uion;
+      Utotal.Uvap+=U_MP[nth].Uvap;
+      Utotal.Ugas+=U_MP[nth].Ugas;
+      Utotal.Ugi+=U_MP[nth].Ugi;
+      Utotal.Ugg+=U_MP[nth].Ugg;
+      Utotal.Uvg+=U_MP[nth].Uvg;
+      Utotal.Uvi+=U_MP[nth].Uvi;
+      Utotal.Uvv+=U_MP[nth].Uvv;
+    }
+  }
+  void tzero(void)	{times.tion=times.tgas=times.tvap=times.tgi=times.tvv=times.tvg=times.tvi=times.tpair=0;}
+	double Usum(void)	{return Utotal.Uion+Utotal.Ugas+Utotal.Uvap+Utotal.Ugi+Utotal.Ugg+Utotal.Uvg+Utotal.Uvi+Utotal.Uvv;}
 
 	std::vector<int> gas_in;	/*	gas list around ion1	*/
 	std::vector<int> gas_out;	/*	gas list far from ion1	*/
@@ -140,13 +64,13 @@ public:
 	std::vector<Bond> bondMeOH(void);
 	std::vector<Angle> angleMeOH(void);
 	std::vector<Dihedral> dihedralMeOH(void);
-	std::vector<Atom> atomGas(void);
+	std::vector<Atom> atomGas(int gastype);
 	std::vector<vector<vector<double>>> pair_coeff;
 	double bornCoeff[2][2][5];
 
 	/*initialization and export to dump file*/
 	void read_initial(char* infile);
-	void set_initial_velocity(Physical *pp);
+	void ionInitialVelocity(double T);
 	double totalPotential;
 	double totalVirial;
 

@@ -105,19 +105,21 @@ MD::display(int output_ONOFF){
     double U = vars->Usum();
 		double Kin=obs->Kion+obs->Kin_g+obs->Kin_v;
 		double Kout=obs->Kout_g+obs->Kout_v;
+		vars->Ucombine();
     std::cout << "----------------------TIME = " << vars->time/1000.0 << " ps-------------------------" << endl;
 		cout<<"Inside propeties"<<endl;
     printf("  Kion = %1.2e  Kgas = %1.2e  Kvap = %1.2e\n  Tion = %1.2f  Tgas = %1.2f  Tvap = %1.2f\n  Uion = %1.2e  Ugas = %1.2e  Uvap = %1.2e\n  Ugi = %1.2e  Ugg = %1.2e  Uvi = %1.2e	\n  Uvg = %1.2e	Uvv= %1.2e  \n",
-		obs->Kion, obs->Kin_g, obs->Kin_v, obs->Tion, obs->Tin_g, obs->Tin_v, vars->Uion, vars->Ugas, vars->Uvap, vars->Ugi, vars->Ugg,	vars->Uvi, vars->Uvg, vars->Uvv);
+		obs->Kion, obs->Kin_g, obs->Kin_v, obs->Tion, obs->Tin_g, obs->Tin_v, vars->Utotal.Uion, vars->Utotal.Ugas, vars->Utotal.Uvap, vars->Utotal.Ugi, vars->Utotal.Ugg,	vars->Utotal.Uvi, vars->Utotal.Uvg, vars->Utotal.Uvv);
 		cout<<"Out side propeties"<<endl;
 		printf("  Kgas = %1.2e  Tgas = %1.2f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %1.2f  Uvap = %1.2e	\n  Kout = %1.2e    Uout = %1.2e	\n",
 		obs->Kout_g, obs->Tout_g, 0.0, obs->Kout_v, obs->Tout_v, 0.0, Kout, 0.0);
 		cout<<"System propeties"<<endl;
 		printf("  K = %1.2e	U = %1.2e	Press = %f\n",Kin+Kout, U, gaspress/101300.0);
 		cout<<"Times"<<endl;
-		printf("  tion = %1.0ld s	tgas = %1.0ld s  tvap = %1.0ld s\n",vars->tion/CLOCKS_PER_SEC,vars->tgas/CLOCKS_PER_SEC,vars->tvap/CLOCKS_PER_SEC);
-		printf("  tvi = %1.0ld s	tgi = %1.0ld s	tvg = %1.0ld s  tvv = %1.0ld s\n",vars->tvi/CLOCKS_PER_SEC,vars->tgi/CLOCKS_PER_SEC,vars->tvg/CLOCKS_PER_SEC,vars->tvv/CLOCKS_PER_SEC);
-		printf("  tpair = %1.0ld s	tpot = %1.0ld s	ttot = %1.0ld s\n",vars->tpair/CLOCKS_PER_SEC,(vars->tvi+vars->tgi+vars->tvv+vars->tvg+vars->tion+vars->tgas+vars->tvap)/CLOCKS_PER_SEC, clock()/CLOCKS_PER_SEC);
+		printf("  tion = %1.1f s	tgas = %1.1f s  tvap = %1.1f s\n",vars->times.tion,vars->times.tgas,vars->times.tvap);
+		printf("  tvi = %1.1f s	tgi = %1.1f s	tvg = %1.1f s  tvv = %1.1f s\n",vars->times.tvi,vars->times.tgi,vars->times.tvg,vars->times.tvv);
+		printf("  tpair = %1.1f s	tpot = %1.1f s	ttot = %1.1f s\n",vars->times.tpair,(vars->times.tvi+vars->times.tgi+vars->times.tvv+vars->times.tvg+vars->times.tion+vars->times.tgas+vars->times.tvap), omp_get_wtime()-startTime);
+		printf("  NCPU = %d\n",Nth);
 
 		cout <<endl;
 
@@ -128,7 +130,7 @@ MD::display(int output_ONOFF){
 
 		sprintf(filepath, "U_%d.dat", int(calculation_number));
 		f=fopen(filepath, "a");
-		fprintf(f,"%e %e %e %e %e %e %e %e %e\n",vars->time,vars->Uion,vars->Ugas,vars->Uvap,vars->Ugi,vars->Ugg,vars->Uvg,vars->Uvi,vars->Uvv);
+		fprintf(f,"%e %e %e %e %e %e %e %e %e\n",vars->time,vars->Utotal.Uion,vars->Utotal.Ugas,vars->Utotal.Uvap,vars->Utotal.Ugi,vars->Utotal.Ugg,vars->Utotal.Uvg,vars->Utotal.Uvi,vars->Utotal.Uvv);
 		fclose(f);
 }
 

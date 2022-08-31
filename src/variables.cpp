@@ -1,6 +1,23 @@
-//------------------------------------------------------------------------
 #include "variables.hpp"
-//------------------------------------------------------------------------
+
+Variables::Variables(void) {
+  time = 0.0;
+  #pragma omp parallel
+  {
+    #pragma omp single
+    {
+      Nth=omp_get_num_threads();
+    }
+  }
+  Utotal.Uion=Utotal.Ugas=Utotal.Uvap=Utotal.Ugi=Utotal.Ugg=Utotal.Uvg=Utotal.Uvi=Utotal.Uvv=0;
+  for (int nth=0;nth<Nth;nth++){
+    Potentials Us;
+    Us.Uion=Us.Ugas=Us.Uvap=Us.Ugi=Us.Ugg=Us.Uvg=Us.Uvi=Us.Uvv=0;
+    U_MP.push_back(Us);
+  }
+}
+
+
 void
 Variables::read_initial(char* infile) {
 	ifstream stream(infile);
@@ -92,6 +109,11 @@ Variables::read_initial(char* infile) {
 			Atom a;
 			int loop=0;
 			a.fx=a.fy=a.fz=a.px=a.py=a.pz=0;
+			for (int thread=0;thread<Nth;thread++){
+				a.fxMP.push_back(0);
+				a.fyMP.push_back(0);
+				a.fzMP.push_back(0);
+			}
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0) a.id=stoi(tmp);
 				if (loop==1) a.type=stoi(tmp);
@@ -229,12 +251,12 @@ Variables::read_initial(char* infile) {
 
 //------------------------------------------------------------------------
 void
-Variables::set_initial_velocity(Physical *pp) {
+Variables::ionInitialVelocity(double T) {
 	random_device seed;
 	default_random_engine engine(seed());
-    for(auto &a : ions) {
-        double matom=a.mass/6.02e23/1000.0;
-        normal_distribution<> dist(0.0, sqrt(kb*T/matom));
+  for(auto &a : ions) {
+    double matom=a.mass*1e-3/Nw;
+    normal_distribution<> dist(0.0, sqrt(kb*T/matom));
 		a.px=dist(engine)*1e-5;
 		a.py=dist(engine)*1e-5;
 		a.pz=dist(engine)*1e-5;

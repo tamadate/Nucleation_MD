@@ -1,5 +1,4 @@
-#pragma once
-#include "CalculationCond.hpp"
+# pragma once
 
 class FLAG{
 public:
@@ -62,4 +61,3 @@ public:
 private:
 
 };
-

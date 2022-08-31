@@ -25,7 +25,7 @@ PotentialSW::compute(Variables *vars, FLAG *flags) {
 			delr[0]=ions[i].qx-ions[j].qx;
 			delr[1]=ions[i].qy-ions[j].qy;
 			delr[2]=ions[i].qz-ions[j].qz;
-			adjust_periodic(delr[0], delr[1], delr[2]);
+			//adjust_periodic(delr[0], delr[1], delr[2]);
 			double rsq = (delr[0]*delr[0] + delr[1]*delr[1] + delr[2]*delr[2]);
 			if(rsq>cut2) continue;
 			double force_pair=twobody(rsq)*0.5;
@@ -46,7 +46,7 @@ PotentialSW::compute(Variables *vars, FLAG *flags) {
 			delr[0]=ions[i].qx-ions[j].qx;
 			delr[1]=ions[i].qy-ions[j].qy;
 			delr[2]=ions[i].qz-ions[j].qz;
-			adjust_periodic(delr[0], delr[1], delr[2]);
+			//adjust_periodic(delr[0], delr[1], delr[2]);
 			double rsq = (delr[0]*delr[0] + delr[1]*delr[1] + delr[2]*delr[2]);
 
 //			virial+=force_pair*r*r;
@@ -56,7 +56,7 @@ PotentialSW::compute(Variables *vars, FLAG *flags) {
 				delr2[0] = ions[i].qx - ions[k].qx;
 				delr2[1] = ions[i].qy - ions[k].qy;
 				delr2[2] = ions[i].qz - ions[k].qz;
-				adjust_periodic(delr2[0], delr2[1], delr2[2]);
+			//	adjust_periodic(delr2[0], delr2[1], delr2[2]);
 				double rsq2 = (delr2[0]*delr2[0] + delr2[1]*delr2[1] + delr2[2]*delr2[2]);
 				if(rsq2>cut2) continue;
 				double fi[3],fj[3],fk[3];
@@ -190,7 +190,7 @@ PotentialSW::make_pair(Variables *vars){
 			double dx = ions[i].qx - ions[j].qx;
 			double dy = ions[i].qy - ions[j].qy;
 			double dz = ions[i].qz - ions[j].qz;
-			adjust_periodic(dx, dy, dz);
+	//		adjust_periodic(dx, dy, dz);
 			double rsq = (dx * dx + dy * dy + dz * dz);
 			if (rsq < sw_ML2) js.push_back(j);
 		}

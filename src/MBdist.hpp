@@ -1,9 +1,5 @@
 #pragma once
-#include <random>
-#include <algorithm>
-#include <dirent.h>
-#include <vector>
-#include "PhysicalProp.hpp"
+#include "constants.hpp"
 #define N 5000000
 #define M 1000
 
@@ -15,7 +11,7 @@ class MBdist {
 		std::vector<double> vflux;	/*	seed of vf(v)/c	*/
 		int* dis;	/*	number of gas molecuole v(dv*i)<v<v(dv*(i+1)) */
 
-		void makeWeightedMB(double meanVel, double mass){
+		void makeWeightedMB(double meanVel, double mass, double T){
 			number=0;
 			double vmax=5.0*meanVel;	/*	max velocity of gas molecule in flux velocity distribution */
 			double dv=vmax/M;	/*	resolution of flux velocity distribution */
@@ -50,4 +46,3 @@ class MBdist {
 		MBdist(){};
 		~MBdist(){};
 };
-

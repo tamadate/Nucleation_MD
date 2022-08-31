@@ -12,7 +12,7 @@ MD::makeDiatomicProp_in(int i){
     normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mgas));
 		uniform_real_distribution<double> r(0,1);
 
-		gases[i].inAtoms=vars->atomGas(); //check name
+		gases[i].inAtoms=vars->atomGas(gastype); //check name
 
 		int gasInSize=vars->gas_in.size();
 		int breakFlag=0;

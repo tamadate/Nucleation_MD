@@ -13,6 +13,32 @@ class MD {
 
   public:
 
+	double startTime;
+	int Nth;
+	int calculation_number;
+
+	int gastype;	/*1:He, 2:Ar, 3:N2*/
+	int vaportype;	/*1:MeOH, 2:H2O, 3:EtOH*/
+	long int step_relax;
+	long int step_repre;
+	long int Noftimestep;
+	double p;
+	double T;
+	int Nof_around_gas;
+	int Nof_around_vapor;
+	int OBSERVE;
+	double Ecoeff[3];
+
+	double dt;
+	double CUTOFF;
+	double MARGIN;
+	double ML2;
+	double CL2;
+	double d_size;
+	double V;
+	void setCondition(char* condfile, char* file);
+	void readCondFile(char* condfile, char* file);
+
 	long int itime;
 	std::vector<long int> collisionFlagGas;
 	std::vector<long int> collisionFlagVapor;
@@ -28,7 +54,7 @@ class MD {
 	MBdist *mbdistV;
 
 //	vectors for pairlist
-	double margin_length;	
+	double margin_length;
 
 //	velocity verlet
 	void run_diff(char** argv);
@@ -37,6 +63,7 @@ class MD {
 	void velocity_calculation(void);
   void update_position_constrained(void);
   void update_velocity_constrained(void);
+	void forceCombine(void);
 
 	//	pair list
 	void update_vapor_in(void);
@@ -54,7 +81,7 @@ class MD {
 
 	//	initialization
 		void initialization_gas(void);
-        void initialization_vapor(void);
+    void initialization_vapor(void);
 
 	//	periodic
 		void periodic(void);	/*	periodic condition for gas_in	*/
@@ -106,12 +133,12 @@ class MD {
 		void setNVE(void);
 		void setNVTion(double temp);
 
+
 		double del2,CD2,rmin2;
 		double totalPotential;
 
 
-
-		MD(char* condfile);
+		MD(char* condfile,int calcNumber);
 		~MD(void);
 		void run(char** argv);
 		int yesno;	/*	flag for collision or not collision	*/
