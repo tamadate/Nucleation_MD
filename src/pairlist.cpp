@@ -78,7 +78,7 @@ MD::update_gas_in(void){
 	vars->gas_out.clear();
 
 
-	for (int i=0;i<pp->Nof_around_gas;i++){
+	for (int i=0;i<Nof_around_gas;i++){
 		double dx = gases[i].qx - ion_r[0];
 		double dy = gases[i].qy - ion_r[1];
 		double dz = gases[i].qz - ion_r[2];
@@ -136,7 +136,7 @@ MD::update_vapor_in(void){
 	vars->vapor_in.clear();
 	vars->vapor_out.clear();
 
-	for (int i=0;i<pp->Nof_around_vapor;i++){
+	for (int i=0;i<Nof_around_vapor;i++){
 		double dx = vapors[i].qx - ion_r[0];
 		double dy = vapors[i].qy - ion_r[1];
 		double dz = vapors[i].qz - ion_r[2];
@@ -217,7 +217,7 @@ MD::make_pair_gasgas(void){
 			double dx = gases[i].qx - gases[j].qx;
 			double dy = gases[i].qy - gases[j].qy;
 			double dz = gases[i].qz - gases[j].qz;
-			adjust_periodic(dx, dy, dz);
+			adjust_periodic(dx, dy, dz, d_size);
 			double r2 = (dx * dx + dy * dy + dz * dz);
 			if (r2 < ML2){
 				Pair p;
@@ -237,7 +237,7 @@ MD::make_pair_gasgas(void){
 /////////////////////////////////////////////////////////////////////
 void
 MD::check_pairlist(void){
-	vars->tpair-=omp_get_wtime();
+	vars->times.tpair-=omp_get_wtime();
 	loop++;
 	if(loop>loop_update){
 		Molecule *gases = vars->gases.data();
@@ -260,5 +260,5 @@ MD::check_pairlist(void){
 	}
 //	if(flags->force_sw==1) sw->check_pairlist(vars);
 //	if(flags->force_ters==1) ters->check_pairlist(vars);
-	vars->tpair+=omp_get_wtime();
+	vars->times.tpair+=omp_get_wtime();
 }

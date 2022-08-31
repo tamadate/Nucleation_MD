@@ -1,31 +1,12 @@
 #pragma once
-#include "struct.hpp"
-#include "PhysicalProp.hpp"
+#include "constants.hpp"
 
 //------------------------------------------------------------------------
 class Variables {
 public:
 
-	Variables(void) {
-		time = 0.0;
-    #pragma omp parallel
-    {
-      #pragma omp single
-      {
-        Nth=omp_get_num_threads();
-      }
-    }
-    for (int nth=0;nth<Nth;nth++){
-      UionMP.push_back(0);
-      UgasMP.push_back(0);
-      UvapMP.push_back(0);
-      UgiMP.push_back(0);
-      UggMP.push_back(0);
-      UvgMP.push_back(0);
-      UviMP.push_back(0);
-      UvvMP.push_back(0);
-    }
-	}
+	Variables(void);
+	~Variables(void){};
 
 	/*variables*/
   int Nth;
@@ -36,61 +17,30 @@ public:
 	double zeta_ion;
 	double zeta_gas;
 
-	double Uion;
-	double Ugas;
-	double Uvap;
-	double Ugi;
-	double Ugg;
-	double Uvg;
-	double Uvi;
-	double Uvv;
-
-  std::vector<double> UionMP;
-  std::vector<double> UgasMP;
-  std::vector<double> UvapMP;
-  std::vector<double> UgiMP;
-  std::vector<double> UggMP;
-  std::vector<double> UvgMP;
-  std::vector<double> UviMP;
-  std::vector<double> UvvMP;
-
-  double tion;
-  double tgas;
-  double tgi;
-  double tvap;
-  double tvv;
-  double tvg;
-  double tvi;
-  double tpair;
-
+	Potentials Utotal;
+  std::vector<Potentials> U_MP;
+	Times times;
 
 	void Uzero(void)	{
-    Uion=Ugas=Uvap=Ugi=Ugg=Uvg=Uvi=Uvv=0;
-    for (int nth=0;nth<Nth;nth++){
-      UionMP[nth]=0;
-      UgasMP[nth]=0;
-      UvapMP[nth]=0;
-      UgiMP[nth]=0;
-      UggMP[nth]=0;
-      UvgMP[nth]=0;
-      UviMP[nth]=0;
-      UvvMP[nth]=0;
-    }
+		Utotal.Uion=Utotal.Ugas=Utotal.Uvap=Utotal.Ugi=Utotal.Ugg=Utotal.Uvg=Utotal.Uvi=Utotal.Uvv=0;
+		for (int nth=0;nth<Nth;nth++){
+			U_MP[nth].Uion=U_MP[nth].Ugas=U_MP[nth].Uvap=U_MP[nth].Ugi=U_MP[nth].Ugg=U_MP[nth].Uvg=U_MP[nth].Uvi=U_MP[nth].Uvv=0;
+		}
   }
   void Ucombine(void)	{
     for (int nth=0;nth<Nth;nth++){
-      Uion+=UionMP[nth];
-      Uvap+=UvapMP[nth];
-      Ugas+=UgasMP[nth];
-      Ugi+=UgiMP[nth];
-      Ugg+=UggMP[nth];
-      Uvg+=UvgMP[nth];
-      Uvi+=UviMP[nth];
-      Uvv+=UvvMP[nth];
+      Utotal.Uion+=U_MP[nth].Uion;
+      Utotal.Uvap+=U_MP[nth].Uvap;
+      Utotal.Ugas+=U_MP[nth].Ugas;
+      Utotal.Ugi+=U_MP[nth].Ugi;
+      Utotal.Ugg+=U_MP[nth].Ugg;
+      Utotal.Uvg+=U_MP[nth].Uvg;
+      Utotal.Uvi+=U_MP[nth].Uvi;
+      Utotal.Uvv+=U_MP[nth].Uvv;
     }
   }
-  void tzero(void)	{tion=tgas=tvap=tgi=tvv=tvg=tvi=tpair=0;}
-	double Usum(void)	{return Uion+Ugas+Uvap+Ugi+Ugg+Uvg+Uvi+Uvv;}
+  void tzero(void)	{times.tion=times.tgas=times.tvap=times.tgi=times.tvv=times.tvg=times.tvi=times.tpair=0;}
+	double Usum(void)	{return Utotal.Uion+Utotal.Ugas+Utotal.Uvap+Utotal.Ugi+Utotal.Ugg+Utotal.Uvg+Utotal.Uvi+Utotal.Uvv;}
 
 	std::vector<int> gas_in;	/*	gas list around ion1	*/
 	std::vector<int> gas_out;	/*	gas list far from ion1	*/
@@ -114,13 +64,13 @@ public:
 	std::vector<Bond> bondMeOH(void);
 	std::vector<Angle> angleMeOH(void);
 	std::vector<Dihedral> dihedralMeOH(void);
-	std::vector<Atom> atomGas(void);
+	std::vector<Atom> atomGas(int gastype);
 	std::vector<vector<vector<double>>> pair_coeff;
 	double bornCoeff[2][2][5];
 
 	/*initialization and export to dump file*/
 	void read_initial(char* infile);
-	void set_initial_velocity(Physical *pp);
+	void ionInitialVelocity(double T);
 	double totalPotential;
 	double totalVirial;
 

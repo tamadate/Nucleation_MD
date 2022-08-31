@@ -89,7 +89,7 @@ MD::setPotential(FLAG *flags){
 
 
 	if(flags->vapor_intra==1) {
-		if(pp->vaportype==2){
+		if(vaportype==2){
 			IntraInter.push_back(new PotentialIntraTIP3P());
 			cout<<"vepor intra -->TIP3P\t"<<endl;
 		}

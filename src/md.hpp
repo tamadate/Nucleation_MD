@@ -17,6 +17,18 @@ class MD {
 	int Nth;
 	int calculation_number;
 
+	int gastype;	/*1:He, 2:Ar, 3:N2*/
+	int vaportype;	/*1:MeOH, 2:H2O, 3:EtOH*/
+	long int step_relax;
+	long int step_repre;
+	long int Noftimestep;
+	double p;
+	double T;
+	int Nof_around_gas;
+	int Nof_around_vapor;
+	int OBSERVE;
+	double Ecoeff[3];
+
 	double dt;
 	double CUTOFF;
 	double MARGIN;
@@ -24,6 +36,8 @@ class MD {
 	double CL2;
 	double d_size;
 	double V;
+	void setCondition(char* condfile, char* file);
+	void readCondFile(char* condfile, char* file);
 
 	long int itime;
 	std::vector<long int> collisionFlagGas;
@@ -67,7 +81,7 @@ class MD {
 
 	//	initialization
 		void initialization_gas(void);
-        void initialization_vapor(void);
+    void initialization_vapor(void);
 
 	//	periodic
 		void periodic(void);	/*	periodic condition for gas_in	*/
@@ -122,7 +136,6 @@ class MD {
 
 		double del2,CD2,rmin2;
 		double totalPotential;
-
 
 
 		MD(char* condfile,int calcNumber);

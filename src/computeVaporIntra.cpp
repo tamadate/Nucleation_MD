@@ -29,7 +29,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 	double c2mag,sc1,sc2,s1,s12,p,pd;
 	double a33,a13,a23;
 	double s2,cx,cy,cz,cmag,dx,phi,si,siinv,sin2;
-	vars->tvap-=omp_get_wtime();
+	vars->times.tvap-=omp_get_wtime();
 	for(auto &I : vars->vapor_in){
 		for (auto &b : vapors[I].bonds) {
 			int i=b.atom1, j=b.atom2, type=(b.type);
@@ -48,7 +48,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			vapors[I].inAtoms[j].fx -= force_bond_harmonic * dx1;
 			vapors[I].inAtoms[j].fy -= force_bond_harmonic * dy1;
 			vapors[I].inAtoms[j].fz -= force_bond_harmonic * dz1;
-			if(flags->eflag) vars->Uvap+=rk*dr;
+			if(flags->eflag) vars->Utotal.Uvap+=rk*dr;
 		}
 
 		for (auto &c : vapors[I].angles) {
@@ -88,8 +88,9 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			vapors[I].inAtoms[k].fx += f3[0];
 			vapors[I].inAtoms[k].fy += f3[1];
 			vapors[I].inAtoms[k].fz += f3[2];
-			if (flags->eflag) vars->Uvap+= tk*dtheta;
+			if (flags->eflag) vars->Utotal.Uvap+= tk*dtheta;
 		}
+		
 
 		for (auto &d : vapors[I].dihedrals) {
 			int i=d.atom1, j=d.atom2, k=d.atom3, l=d.atom4, type=d.type;
@@ -148,7 +149,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 		            df1=0.0;
 		        }
 				df += (-dtypes[type].coeff[JJ5] * df1);
-				if (flags->eflag) vars->Uvap+= dtypes[type].coeff[JJ5] * p_;
+				if (flags->eflag) vars->Utotal.Uvap+= dtypes[type].coeff[JJ5] * p_;
 			}
 
 			fg = vb1x*vb2xm + vb1y*vb2ym + vb1z*vb2zm;
@@ -197,5 +198,5 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 
 		}
 	}
-	vars->tvap+=omp_get_wtime();
+	vars->times.tvap+=omp_get_wtime();
 }

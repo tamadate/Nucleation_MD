@@ -1,6 +1,5 @@
 #include "md.hpp"
-#include <random>
-#include <algorithm>
+
 /*########################################################################################
 
 -----Initialization-----
@@ -32,7 +31,7 @@ MD::initialization_gas(void) {
 	default_random_engine engine(seed());
 	normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mgas));
 	mt19937 mt(seed());
-	uniform_real_distribution<double> r(-pp->d_size*0.5,pp->d_size*0.5);
+	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
 
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
@@ -45,7 +44,7 @@ MD::initialization_gas(void) {
 				dx=a.qx-b.qx;
 				dy=a.qy-b.qx;
 				dz=a.qx-b.qx;
-				adjust_periodic(dx, dy, dz);
+				adjust_periodic(dx, dy, dz, d_size);
 				d=sqrt(dx*dx+dy*dy+dz*dz);
 				if(d<min_dis) min_dis=d; // minimum gas-gas distance
 			}
@@ -54,7 +53,7 @@ MD::initialization_gas(void) {
 			dx=a.qx-b.qx;
 			dy=a.qy-b.qy;
 			dz=a.qz-b.qz;
-			adjust_periodic(dx, dy, dz);
+			adjust_periodic(dx, dy, dz, d_size);
 			d=sqrt(dx*dx+dy*dy+dz*dz);
 			if(d<min_dis) min_dis=d; // minimum gas-ion distance
 		}
@@ -63,7 +62,7 @@ MD::initialization_gas(void) {
 			a.py=distgas(engine)*1e-5;
 			a.pz=distgas(engine)*1e-5;
 			a.mass=pp->Mgas;
-			a.inAtoms=vars->atomGas();
+			a.inAtoms=vars->atomGas(gastype);
 			for (auto &b : a.inAtoms){
 				for (int thread=0;thread<Nth;thread++){
 					b.fxMP.push_back(0);
@@ -77,7 +76,7 @@ MD::initialization_gas(void) {
 			i++;
 		}
 		collisionFlagGas.push_back(0);
-	} while(i<pp->Nof_around_gas);
+	} while(i<Nof_around_gas);
 }
 
 
@@ -102,7 +101,7 @@ MD::initialization_vapor(void) {
 	default_random_engine engine(seed());
 	normal_distribution<> distvapor(0.0, sqrt(kb*T/pp->mvapor));
 	mt19937 mt(seed());
-	uniform_real_distribution<double> r(-pp->d_size*0.5,pp->d_size*0.5);
+	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
 
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
@@ -115,7 +114,7 @@ MD::initialization_vapor(void) {
 				dx = a.qx - b.qx;
 				dy = a.qy - b.qy;
 				dz = a.qz - b.qz;
-				adjust_periodic(dx, dy, dz);
+				adjust_periodic(dx, dy, dz, d_size);
 				d=sqrt(dx*dx+dy*dy+dz*dz);
 				if(d<min_vv) min_vv=d; // minimum vapor-vapor distance
 			}
@@ -124,7 +123,7 @@ MD::initialization_vapor(void) {
 			dx=a.qx-b.qx;
 			dy=a.qy-b.qy;
 			dz=a.qz-b.qz;
-			adjust_periodic(dx, dy, dz);
+			adjust_periodic(dx, dy, dz, d_size);
 			d=sqrt(dx*dx+dy*dy+dz*dz);
 			if(d<min_iv) min_iv=d; // minimum vapor-ion distance
 		}
@@ -132,7 +131,7 @@ MD::initialization_vapor(void) {
 			dx=a.qx-b.qx;
 			dy=a.qy-b.qy;
 			dz=a.qz-b.qz;
-			adjust_periodic(dx, dy, dz);
+			adjust_periodic(dx, dy, dz, d_size);
 			d=sqrt(dx*dx+dy*dy+dz*dz);
 			if(d<min_gv) min_gv=d; // minimum gas-vapor distance
 		}
@@ -157,5 +156,5 @@ MD::initialization_vapor(void) {
 			i++;
 		}
 		collisionFlagVapor.push_back(0);
-	} while(i<pp->Nof_around_vapor);
+	} while(i<Nof_around_vapor);
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include "variables.hpp"
-#include "flags.hpp"
 
 //------------------------------------------------------------------------
 class Potential {

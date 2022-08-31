@@ -1,20 +1,22 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <algorithm>
+#include <cstring>
+#include <dirent.h>
 #include <fstream>
 #include <iostream>
-#include <sstream>
-#include <random>
-#include <stdlib.h>
-#include <vector>
-#include <stdio.h>
-#include <cstring>
-#include <string>
-#include <algorithm>
+#include <math.h>
 #include <omp.h>
+#include <random>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <vector>
+
+#include "struct.hpp"
+#include "flags.hpp"
 
 using namespace std;
 //------------------------------------------------------------------------
@@ -33,8 +35,6 @@ const double alphaHe=0.208, alphaN2=1.7*0.5, alphaAr=1.664;
 const double SAr=114, TrefAr=273.0, myuAr=2.125e-5; // REF
 const double SN2=107, TrefN2=273.0, myuN2=1.663e-5; // REF
 
-
-void adjust_periodic(double &dx, double &dy, double &dz);
 //------------------------------------------------------------------------
 
 /*******************Coeff.************************/
@@ -46,3 +46,6 @@ const double Cpress=1e30/Nw*4184;
 const double eV_to_kcalmol=23.061;
 const double real_to_kcalmol=10000/4.184;	/*	A^2 g fs^-2 mol^-1 to kcal/mol*/
 const double kb_real_inv = 1/kb_real;     /* boltzmann constant with real unit kcal/molK*/
+
+
+void adjust_periodic(double &dx, double &dy, double &dz, double d_size);

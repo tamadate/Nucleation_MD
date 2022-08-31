@@ -86,7 +86,7 @@ Observer::computeVaporProps(Variables *vars){
 
 
 double
-Observer::pressure(Variables *vars, std::vector<Pair> &pairs, double Treal, double virial) {
+Observer::pressure(Variables *vars, std::vector<Pair> &pairs, double Treal, double virial,double p,double T) {
 	double phi = 0.0;
 	/*const int ps = pairs.size();
 	Gas *gases = vars->gases.data();

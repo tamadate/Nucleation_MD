@@ -8,12 +8,12 @@
 /**********************************Force calculation******************************************/
 void
 PotentialAMBER::compute(Variables *vars, FLAG *flags) {
-	vars->tion-=omp_get_wtime();
+	vars->times.tion-=omp_get_wtime();
 	computeLong(vars,flags);
 	computeBond(vars,flags);
 	computeAngle(vars,flags);
 	computeDihedral(vars,flags);
-	vars->tion+=omp_get_wtime();
+	vars->times.tion+=omp_get_wtime();
 }
 
 
@@ -44,8 +44,8 @@ PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
 		ions[j].fyMP[nth] -= force_pair * dy;
 		ions[j].fzMP[nth] -= force_pair * dz;
 		if(flags->eflag) {
-			vars->UionMP[nth]+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-			vars->UionMP[nth]+=force_coul;
+			vars->U_MP[nth].Uion+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+			vars->U_MP[nth].Uion+=force_coul;
 		}
 	}
 }
@@ -74,7 +74,7 @@ PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
 		ions[j].fxMP[nth] -= force_bond_harmonic * dx;
 		ions[j].fyMP[nth] -= force_bond_harmonic * dy;
 		ions[j].fzMP[nth] -= force_bond_harmonic * dz;
-		if(flags->eflag) vars->UionMP[nth]+=rk*dr;
+		if(flags->eflag) vars->U_MP[nth].Uion+=rk*dr;
 	}
 }
 
@@ -124,7 +124,7 @@ PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
 		ions[k].fxMP[nth] += f3[0];
 		ions[k].fyMP[nth] += f3[1];
 		ions[k].fzMP[nth] += f3[2];
-    if (flags->eflag) vars->UionMP[nth]+= tk*dtheta;
+    if (flags->eflag) vars->U_MP[nth].Uion+= tk*dtheta;
 	}
 }
 
@@ -200,7 +200,7 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 	            df1=0.0;
 	        }
 			df += (-dtypes[type].coeff[JJ5] * df1);
-			if (flags->eflag) vars->UionMP[nth]+= dtypes[type].coeff[JJ5] * p_;
+			if (flags->eflag) vars->U_MP[nth].Uion+= dtypes[type].coeff[JJ5] * p_;
 		}
 
        // cout<<df<<endl;

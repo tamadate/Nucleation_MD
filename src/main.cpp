@@ -18,13 +18,10 @@ int main ( int argc,char *argv[] ) {
 */
 /////////////////////////////////////////////////////////////////////
 
-	if ( argc==3 ) {
-		MD *md = new MD ( argv[ 1 ], stoi ( argv[ 2 ] );
-		md -> mbdist -> makeWeightedMB(md->pp->cgas,md->pp->mgas);
-		md -> mbdistV -> makeWeightedMB(md->pp->cvapor,md->pp->mvapor);
-		md -> run_diff ( argv );
+	if(argc==3){
+		MD *md=new MD(argv[1],stoi(argv[2]));
+		md->run_diff(argv);
 	}
-
-	if ( argc != 3 ) cout<<"Error:Number of input parameters. -> Diffusion coefficient simulation require 2 input parameters \n1:molecular infomation file name \n2:calculation condition file name \n3:Calculation number"<<endl;
+	if (argc!=3) cout<<"Error:Number of input parameters. -> Diffusion coefficient simulation require 2 input parameters \n1:molecular infomation file name \n2:calculation condition file name \n3:Calculation number"<<endl;
 	return 0;
 }

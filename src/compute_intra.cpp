@@ -10,7 +10,7 @@
 void
 Potential::compute(Variables *vars, FLAG *flags){
 	Atom *ions = vars->ions.data();
-	vars->tion-=omp_get_wtime();
+	vars->times.tion-=omp_get_wtime();
 	int ipsize=vars->ion_pairs.size();
 	#pragma omp parallel for
 	for (int ip=0;ip<ipsize;ip++){
@@ -35,20 +35,20 @@ Potential::compute(Variables *vars, FLAG *flags){
 		ions[j].fyMP[nth] -= force_pair * dy;
 		ions[j].fzMP[nth] -= force_pair * dz;
 		if(flags->eflag) {
-			vars->UionMP[nth]+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-			vars->UionMP[nth]+=force_coul;
+			vars->U_MP[nth].Uion+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+			vars->U_MP[nth].Uion+=force_coul;
 		}
 /*		if(flags->vflag){
 			vars->totalVirial+=force_lj+force_coul;
 		}*/
 	}
-	vars->tion+=omp_get_wtime();
+	vars->times.tion+=omp_get_wtime();
 }
 
 
 void
 PotentialGasIntra::compute(Variables *vars, FLAG *flags){
-	vars->tgas-=omp_get_wtime();
+	vars->times.tgas-=omp_get_wtime();
 	for(auto &i : vars->gas_in){
 		Atom *g1= & vars->gases[i].inAtoms[0];
 		Atom *g2= & vars->gases[i].inAtoms[1];
@@ -66,7 +66,7 @@ PotentialGasIntra::compute(Variables *vars, FLAG *flags){
     g2->fx -= force_bond_harmonic * dx;
     g2->fy -= force_bond_harmonic * dy;
     g2->fz -= force_bond_harmonic * dz;
-		if(flags->eflag) vars->Ugas+=rk*dr;
+		if(flags->eflag) vars->Utotal.Ugas+=rk*dr;
 	}
-	vars->tgas+=omp_get_wtime();
+	vars->times.tgas+=omp_get_wtime();
 }

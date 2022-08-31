@@ -24,23 +24,23 @@ MD::MD(char* condfile, int calcNumber) {
 	flags = new FLAG();
 	mbdist = new MBdist();
 	mbdistV = new MBdist();
-	output_initial();
-	setCondition(condfile, atomFile);
 
-	d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;
-	V=d_size*d_size*d_size;
 	dt = 0.5;	/*	fs	*/
 	CUTOFF = 20.0;	/*	A	*/
 	MARGIN = 10.0;	/*	A	*/
-	ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
-	CL2 = (CUTOFF*CUTOFF);
 	OBSERVE=10000000;
+	T=300;
+	p=1e5;
 
+	setCondition(condfile, atomFile);
+	output_initial();
 
-	if(pp->vaportype==1) vars->atomVapor = vars->makeAtomMeOH();
-	if(pp->vaportype==2) vars->atomVapor = vars->makeAtomTIP3P();
+	if(vaportype==1) vars->atomVapor = vars->makeAtomMeOH();
+	if(vaportype==2) vars->atomVapor = vars->makeAtomTIP3P();
+
 	vars->read_initial(atomFile);
-	vars->set_initial_velocity(pp);
+	vars->ionInitialVelocity(T);
+
 	setPotential(flags);
 	initialization_gas();	//Set initial positions & velocities for gas
   initialization_vapor();	//Set initial positions & velocities for vapor
@@ -49,6 +49,8 @@ MD::MD(char* condfile, int calcNumber) {
 	margin_length = MARGIN;
 	vars->tzero();
 
+	mbdist -> makeWeightedMB(pp->cgas,pp->mgas,T);
+	mbdistV -> makeWeightedMB(pp->cvapor,pp->mvapor,T);
 }
 
 /////////////////////////////////////////////////////////////////////

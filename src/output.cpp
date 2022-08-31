@@ -101,7 +101,7 @@ MD::display(int output_ONOFF){
 		obs->computeIonProps(vars);
 		obs->computeVaporProps(vars);
     double virial=0;//ters->compute_tersoff_virial(vars)/3.0/V*Cpress;
-    double gaspress=(kb*pp->Nof_around_gas*obs->T_g + vars->totalVirial/3.0*6.95e-21)/(V*1e-30);
+    double gaspress=(kb*Nof_around_gas*obs->T_g + vars->totalVirial/3.0*6.95e-21)/(V*1e-30);
     double U = vars->Usum();
 		double Kin=obs->Kion+obs->Kin_g+obs->Kin_v;
 		double Kout=obs->Kout_g+obs->Kout_v;
@@ -109,16 +109,16 @@ MD::display(int output_ONOFF){
     std::cout << "----------------------TIME = " << vars->time/1000.0 << " ps-------------------------" << endl;
 		cout<<"Inside propeties"<<endl;
     printf("  Kion = %1.2e  Kgas = %1.2e  Kvap = %1.2e\n  Tion = %1.2f  Tgas = %1.2f  Tvap = %1.2f\n  Uion = %1.2e  Ugas = %1.2e  Uvap = %1.2e\n  Ugi = %1.2e  Ugg = %1.2e  Uvi = %1.2e	\n  Uvg = %1.2e	Uvv= %1.2e  \n",
-		obs->Kion, obs->Kin_g, obs->Kin_v, obs->Tion, obs->Tin_g, obs->Tin_v, vars->Uion, vars->Ugas, vars->Uvap, vars->Ugi, vars->Ugg,	vars->Uvi, vars->Uvg, vars->Uvv);
+		obs->Kion, obs->Kin_g, obs->Kin_v, obs->Tion, obs->Tin_g, obs->Tin_v, vars->Utotal.Uion, vars->Utotal.Ugas, vars->Utotal.Uvap, vars->Utotal.Ugi, vars->Utotal.Ugg,	vars->Utotal.Uvi, vars->Utotal.Uvg, vars->Utotal.Uvv);
 		cout<<"Out side propeties"<<endl;
 		printf("  Kgas = %1.2e  Tgas = %1.2f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %1.2f  Uvap = %1.2e	\n  Kout = %1.2e    Uout = %1.2e	\n",
 		obs->Kout_g, obs->Tout_g, 0.0, obs->Kout_v, obs->Tout_v, 0.0, Kout, 0.0);
 		cout<<"System propeties"<<endl;
 		printf("  K = %1.2e	U = %1.2e	Press = %f\n",Kin+Kout, U, gaspress/101300.0);
 		cout<<"Times"<<endl;
-		printf("  tion = %1.1f s	tgas = %1.1f s  tvap = %1.1f s\n",vars->tion,vars->tgas,vars->tvap);
-		printf("  tvi = %1.1f s	tgi = %1.1f s	tvg = %1.1f s  tvv = %1.1f s\n",vars->tvi,vars->tgi,vars->tvg,vars->tvv);
-		printf("  tpair = %1.1f s	tpot = %1.1f s	ttot = %1.1f s\n",vars->tpair,(vars->tvi+vars->tgi+vars->tvv+vars->tvg+vars->tion+vars->tgas+vars->tvap), omp_get_wtime()-startTime);
+		printf("  tion = %1.1f s	tgas = %1.1f s  tvap = %1.1f s\n",vars->times.tion,vars->times.tgas,vars->times.tvap);
+		printf("  tvi = %1.1f s	tgi = %1.1f s	tvg = %1.1f s  tvv = %1.1f s\n",vars->times.tvi,vars->times.tgi,vars->times.tvg,vars->times.tvv);
+		printf("  tpair = %1.1f s	tpot = %1.1f s	ttot = %1.1f s\n",vars->times.tpair,(vars->times.tvi+vars->times.tgi+vars->times.tvv+vars->times.tvg+vars->times.tion+vars->times.tgas+vars->times.tvap), omp_get_wtime()-startTime);
 		printf("  NCPU = %d\n",Nth);
 
 		cout <<endl;
@@ -130,7 +130,7 @@ MD::display(int output_ONOFF){
 
 		sprintf(filepath, "U_%d.dat", int(calculation_number));
 		f=fopen(filepath, "a");
-		fprintf(f,"%e %e %e %e %e %e %e %e %e\n",vars->time,vars->Uion,vars->Ugas,vars->Uvap,vars->Ugi,vars->Ugg,vars->Uvg,vars->Uvi,vars->Uvv);
+		fprintf(f,"%e %e %e %e %e %e %e %e %e\n",vars->time,vars->Utotal.Uion,vars->Utotal.Ugas,vars->Utotal.Uvap,vars->Utotal.Ugi,vars->Utotal.Ugg,vars->Utotal.Uvg,vars->Utotal.Uvi,vars->Utotal.Uvv);
 		fclose(f);
 }
 
@@ -146,7 +146,7 @@ MD::export_dump(void) {
 	Ngas+=int(vars->gas_out.size());
 	Ngas+=vars->gases[0].inAtoms.size()*int(vars->gas_in.size());
 
-	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -pp->d_size*0.5, pp->d_size*0.5, -pp->d_size*0.5, pp->d_size*0.5, -pp->d_size*0.5, pp->d_size*0.5);
+	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
 
 	double X,Y,Z;
 	X=Y=Z=0;
@@ -189,7 +189,7 @@ MD::export_dump_close(void) {
 	int Nvapor=vars->vapors[0].inAtoms.size()*int(vars->vapor_in.size());;
 	int Ngas=vars->gases[0].inAtoms.size()*int(vars->gas_in.size());
 
-	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -pp->d_size*0.5, pp->d_size*0.5, -pp->d_size*0.5, pp->d_size*0.5, -pp->d_size*0.5, pp->d_size*0.5);
+	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
 
 	double X,Y,Z;
 	X=Y=Z=0;

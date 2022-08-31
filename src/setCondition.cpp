@@ -2,88 +2,10 @@
 
 void
 MD::setCondition(char* condfile, char* file){
-	readCondFile(condfile, flags, file);
-	readAtomsFile(file);
-	if(gastype==1) {
-		pp->Mgas=MHe;
-		pp->D0=D0_He;
-		pp->myu=myuHe;
-		pp->alphagas=alphaHe;
-	}
-	if(gastype==2) {
-		pp->Mgas=MN2;
-		pp->D0=D0_N2;
-		pp->myu=myuN2*pow(T/TrefN2,1.5)*(TrefN2+SN2)/(T+SN2);
-		pp->alphagas=alphaN2/2.0;
-	}
-	if(gastype==3) {
-		pp->Mgas=MN2;
-		pp->D0=D0_N2;
-		pp->myu=myuN2*pow(T/TrefN2,1.5)*(TrefN2+SN2)/(T+SN2);
-		pp->alphagas=alphaN2;
-	}
-	if(gastype==4) {
-		pp->Mgas=MAr;
-		pp->D0=D0_Ar;
-		pp->myu=myuAr*pow(T/TrefAr,1.5)*(TrefAr+SAr)/(T+SAr);
-		pp->alphagas=alphaAr;
-	}
-	if(vaportype==1) pp->Mvapor=MMeOH;
-	if(vaportype==2) pp->Mvapor=MH2O;
-	if(vaportype==3) pp->Mvapor=MEtOH;
-	mvapor=Mvapor/Nw/1000.0;
-	mgas=Mgas/Nw/1000.0;
-	m=Mion/Nw/1000.0;
-	m_gas=mgas*m/(mgas+m);
-	m_N2=mN2*m/(mN2+m);
-	c=sqrt(8*kb*T/M_PI/m);
-	cgas=sqrt(8*kb*T/M_PI/mgas);
-	cvapor=sqrt(8*kb*T/M_PI/mvapor);
-
-	printf("Ion mass\t\t%f g/mol\nIon charges\t\t%f\n", Mion,z);
-	cout<<"**************************************************"<<endl;
-	cout<<"**************************************************"<<endl;
-	cout<<"**************************************************"<<endl;
+	readCondFile(condfile, file);
+	pp->readAtomsFile(file);
+	pp->setPhysicalProp(gastype,vaportype,T,p);
 }
-
-
-void
-MD::readAtomsFile(char* infile){
-	ifstream stream(infile);
-	string str;
-	int iflag=0;
-	while(getline(stream,str)) {
-		if(str.length()==0) continue;
-		if (str=="atom type name mass coeff1 coeff2") {iflag=1; continue;}
-		if (str=="atoms") {iflag=2; continue;}
-		if (str=="bonds") {break;}
-	    string tmp;
-    	istringstream stream(str);
-		if (iflag==1) {
-			int loop=0;
-			double mass;
-			while(getline(stream,tmp,'\t')) {
-				if (loop==2) mass=stod(tmp);
-				loop++;
-			}
-			atype.push_back(mass);
-		}
-		if (iflag==2) {
-			int loop=0;
-			int type, id;
-			double charge, mass;
-			while(getline(stream,tmp,'\t')) {
-				if (loop==1) type=stoi(tmp);
-				if (loop==2) charge=stod(tmp);
-				loop++;
-			}
-			mass=atype[type-1];
-			Mion+=mass;
-			z+=charge;
-		}
-	}
-}
-
 
 void
 MD::readCondFile(char* condfile, char* file){
@@ -96,6 +18,7 @@ MD::readCondFile(char* condfile, char* file){
 	cout<<"************--------------------------************"<<endl;
 	cout<<"**************************************************"<<endl;
 	while(getline(stream,str)) {
+		cout<<iflag<<endl;
 		if(str.length()==0) continue;
 		if (str=="Gas") {iflag=1; continue;}
 		if (str=="Calculation number") {iflag=2; continue;}
@@ -107,11 +30,6 @@ MD::readCondFile(char* condfile, char* file){
 		if (str=="Vapor") {iflag=8; continue;}
 		if (str=="Cut off length") {iflag=9; continue;}
 		if (str=="Margin size") {iflag=10; continue;}
-		if (str=="Diffusion coefficient in He") {iflag=11; continue;}
-		if (str=="Diffusion coefficient in N2") {iflag=12; continue;}
-		if (str=="Number of steps for repre") {iflag=13; continue;}
-		if (str=="Collision distance") {iflag=14; continue;}
-		if (str=="Diffusion coefficient in Ar") {iflag=15; continue;}
 		if (str=="Gyration path") {iflag=16; continue;}
 		if (str=="RDF path") {iflag=17; continue;}
 		if (str=="gas gas interaction") {iflag=18; continue;}
@@ -120,7 +38,6 @@ MD::readCondFile(char* condfile, char* file){
 		if (str=="Nose-Hoover ion") {iflag=21; continue;}
 		if (str=="Nose-Hoover gas") {iflag=22; continue;}
 		if (str=="Output") {iflag=23; continue;}
-		if (str=="Coarse grain") {iflag=24; continue;}
 		if (str=="Electric field") {iflag=25; continue;}
 		if (str=="Input") {iflag=26; continue;}
 		if (iflag==1) {
@@ -212,39 +129,20 @@ MD::readCondFile(char* condfile, char* file){
 			MARGIN=stod(str);
 			cout<<"Margin size\t\t"<<MARGIN<<" ang."<<endl;
 		}
-		if (iflag==11) {
-			D0_He=stod(str);
-			cout<<"Diffusion coeff. in He\t"<<D0_He<<" cm^2 s^-1."<<endl;
-		}
-		if (iflag==12) {
-			D0_N2=stod(str);
-			cout<<"Diffusion coeff. in N2\t"<<D0_N2<<" cm^2 s^-1."<<endl;
-		}
-		if (iflag==13) {
-			step_repre=stoi(str);
-			cout<<"Re-relax steps\t\t"<<float(step_repre)<<endl;
-		}
-		if (iflag==14) {
-			/*CD=stod(str);*/
-		}
-		if (iflag==15) {
-			D0_Ar=stod(str);
-			cout<<"Diffusion coeff. in Ar\t"<<D0_Ar<<" cm^2 s^-1."<<endl;
-		}
 		if (iflag==16) {
 			ostringstream ss;
 			ss<<str<<"_"<<calculation_number<<".dat";
 			string tmp=ss.str();
-			gyration_path=new char[tmp.length()+10];
-			strcpy(gyration_path,tmp.c_str());
+			pp->gyration_path=new char[tmp.length()+10];
+			strcpy(pp->gyration_path,tmp.c_str());
 			flags->gyration=1;
-			FILE*f=fopen(gyration_path, "w");
+			FILE*f=fopen(pp->gyration_path, "w");
 			fclose(f);
 			cout<<"Gyration --> ON -->\t"<<tmp<<endl;
 		}
 		if (iflag==17) {
-			RDF_path=new char[str.length()+1];
-			strcpy(RDF_path,str.c_str());
+			pp->RDF_path=new char[str.length()+1];
+			strcpy(pp->RDF_path,str.c_str());
 			flags->RDF=1;
 			cout<<"RDF\tON\tPath="<<str<<endl;
 		}
@@ -289,8 +187,8 @@ MD::readCondFile(char* condfile, char* file){
                 if(str=="scale") {flags->nose_hoover_ion=0;flags->velocity_scaling=1; cout<<"Nose-Hoover for ion --> OFF\nVelocity scaling for ion --> ON"<<endl;}
                 else {
                     flags->nose_hoover_ion=1;
-                    Tnh_ion=stod(str);
-                    cout<<"Nose-Hoover for ion --> ON --> "<<Tnh_ion<<" K"<<endl;
+                    pp->Tnh_ion=stod(str);
+                    cout<<"Nose-Hoover for ion --> ON --> "<<pp->Tnh_ion<<" K"<<endl;
                 }
             }
 		}
@@ -298,8 +196,8 @@ MD::readCondFile(char* condfile, char* file){
 			if (str=="OFF") {flags->nose_hoover_gas=0; cout<<"Nose-Hoover for gas --> OFF"<<endl;}
 			else {
 				flags->nose_hoover_gas=1;
-				Tnh_gas=stod(str);
-				cout<<"Nose-Hoover for gas --> ON --> "<<Tnh_gas<<" K"<<endl;
+				pp->Tnh_gas=stod(str);
+				cout<<"Nose-Hoover for gas --> ON --> "<<pp->Tnh_gas<<" K"<<endl;
 			}
 		}
 		if (iflag==23) {
@@ -311,31 +209,20 @@ MD::readCondFile(char* condfile, char* file){
 					ostringstream ss;
 					ss<<tmp<<"_"<<calculation_number<<".dump";
 					string tmp2=ss.str();
-					dump_path=new char[tmp2.length()+1];
-					strcpy(dump_path,tmp2.c_str());
+					pp->dump_path=new char[tmp2.length()+1];
+					strcpy(pp->dump_path,tmp2.c_str());
 					cout<<"Dump file -->\t\t"<<tmp2<<endl;
 				}
 				if (loop==1) {
 					OBSERVE=stoi(tmp);
 				}
 				if (tmp=="w") {
-					FILE*f=fopen(dump_path, "w");
+					FILE*f=fopen(pp->dump_path, "w");
 					fclose(f);
 				}
 				loop++;
 			}
 
-		}
-		if (iflag==24) {
-			istringstream stream(str);
-			string tmp;
-			int loop=0;
-			double mass;
-			while(getline(stream,tmp,'\t')) {
-				if (loop==0) flags->cg=stoi(tmp);
-				if (loop==1) CG_r0=stod(tmp);
-				loop++;
-			}
 		}
 		if (iflag==25) {
 			istringstream stream(str);
@@ -357,5 +244,7 @@ MD::readCondFile(char* condfile, char* file){
 	V=d_size*d_size*d_size;
 	CL2 = (CUTOFF)*(CUTOFF);
 	ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
+	cout<<"Cut off length\t\t"<<CUTOFF<<" ang."<<endl;
+	cout<<"Margin length\t\t"<<MARGIN<<" ang."<<endl;
 	cout<<"Domain size\t\t"<<d_size<<" ang."<<endl;
 }

@@ -1,4 +1,3 @@
-#include "constants.hpp"
 
 struct Atom_type {
  	int type;
@@ -71,4 +70,26 @@ struct Molecule {
 	std::vector<Angle> angles;
 	std::vector<Dihedral> dihedrals;
 	int inFlag;
+};
+
+struct Potentials {
+  double Uion;
+	double Ugas;
+	double Uvap;
+	double Ugi;
+	double Ugg;
+	double Uvg;
+	double Uvi;
+	double Uvv;
+};
+
+struct Times {
+  double tion;
+  double tgas;
+  double tgi;
+  double tvap;
+  double tvv;
+  double tvg;
+  double tvi;
+  double tpair;
 };

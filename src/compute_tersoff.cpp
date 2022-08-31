@@ -23,7 +23,7 @@ PotentialTersoff::compute(Variables *vars, FLAG *flags) {
 			delr[0]=ions[i].qx-ions[j].qx;
 			delr[1]=ions[i].qy-ions[j].qy;
 			delr[2]=ions[i].qz-ions[j].qz;
-			adjust_periodic(delr[0], delr[1], delr[2]);
+		//	adjust_periodic(delr[0], delr[1], delr[2]);
 			double rsq = (delr[0]*delr[0] + delr[1]*delr[1] + delr[2]*delr[2]);
 			if(rsq>cut2) continue;
 			double r=sqrt(rsq);
@@ -44,7 +44,7 @@ PotentialTersoff::compute(Variables *vars, FLAG *flags) {
 			delr[0]=ions[i].qx-ions[j].qx;
 			delr[1]=ions[i].qy-ions[j].qy;
 			delr[2]=ions[i].qz-ions[j].qz;
-			adjust_periodic(delr[0], delr[1], delr[2]);
+		//	adjust_periodic(delr[0], delr[1], delr[2]);
 			double rsq = (delr[0]*delr[0] + delr[1]*delr[1] + delr[2]*delr[2]);
 			double r=sqrt(rsq);
 			double zeta_ij=0;
@@ -54,7 +54,7 @@ PotentialTersoff::compute(Variables *vars, FLAG *flags) {
 				double dx2=ions[i].qx-ions[k].qx;
 				double dy2=ions[i].qy-ions[k].qy;
 				double dz2=ions[i].qz-ions[k].qz;
-				adjust_periodic(dx2, dy2, dz2);
+			//	adjust_periodic(dx2, dy2, dz2);
 				double rsq2=(dx2*dx2+dy2*dy2+dz2*dz2);
 				if(rsq2>cut2) continue;
 				double r2=sqrt(rsq2);
@@ -77,7 +77,7 @@ PotentialTersoff::compute(Variables *vars, FLAG *flags) {
 				delr2[0] = ions[i].qx - ions[k].qx;
 				delr2[1] = ions[i].qy - ions[k].qy;
 				delr2[2] = ions[i].qz - ions[k].qz;
-				adjust_periodic(delr2[0], delr2[1], delr2[2]);
+			//	adjust_periodic(delr2[0], delr2[1], delr2[2]);
 				double rsq2 = (delr2[0]*delr2[0] + delr2[1]*delr2[1] + delr2[2]*delr2[2]);
 				if(rsq2>cut2) continue;
 				double r2 = sqrt(rsq2);
@@ -285,7 +285,7 @@ PotentialTersoff::make_pair(Variables *vars){
 			double dx = ions[i].qx - ions[j].qx;
 			double dy = ions[i].qy - ions[j].qy;
 			double dz = ions[i].qz - ions[j].qz;
-			adjust_periodic(dx, dy, dz);
+		//	adjust_periodic(dx, dy, dz);
 			double rsq = (dx * dx + dy * dy + dz * dz);
 			if (rsq < T_ML2) js.push_back(j);
 		}

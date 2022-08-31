@@ -10,7 +10,7 @@ void
 PotentialBorn::compute(Variables *vars, FLAG *flags) {
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
-	vars->tion-=omp_get_wtime();
+	vars->times.tion-=omp_get_wtime();
 	#pragma omp parallel for
 	for(int i=0; i<is-1; i++){
 		int nth=omp_get_thread_num();
@@ -45,13 +45,13 @@ PotentialBorn::compute(Variables *vars, FLAG *flags) {
 			ions[j].fyMP[nth] -= force_pair * dy;
 			ions[j].fzMP[nth] -= force_pair * dz;
 			if(flags->eflag) {
-				vars->UionMP[nth]+=force_coul;
-				vars->UionMP[nth]+=rexp*vars->bornCoeff[type1][type2][0];
-				vars->UionMP[nth]-=vars->bornCoeff[type1][type2][1]/6.0*r6inv;
-				vars->UionMP[nth]-=vars->bornCoeff[type1][type2][2]/8.0*r6inv*r2inv;
+				vars->U_MP[nth].Uion+=force_coul;
+				vars->U_MP[nth].Uion+=rexp*vars->bornCoeff[type1][type2][0];
+				vars->U_MP[nth].Uion-=vars->bornCoeff[type1][type2][1]/6.0*r6inv;
+				vars->U_MP[nth].Uion-=vars->bornCoeff[type1][type2][2]/8.0*r6inv*r2inv;
 			}
 			//vars->totalVirial+=force_lj;
 		}
 	}
-	vars->tion+=omp_get_wtime();
+	vars->times.tion+=omp_get_wtime();
 }
