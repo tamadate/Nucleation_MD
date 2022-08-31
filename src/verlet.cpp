@@ -122,21 +122,27 @@ MD::update_position(void) {
 void
 MD::forceCombine(void){
 	vars->times.tetc-=omp_get_wtime();
-	for(int nth=0;nth<Nth;nth++){
-		for (auto &a : vars->ions) {
+	for (auto &a : vars->ions) {
+		for(int nth=0;nth<Nth;nth++){
 			a.fx += a.fxMP[nth];
 			a.fy += a.fyMP[nth];
 			a.fz += a.fzMP[nth];
 		}
-		for (auto &i : vars->vapor_in) {
-			for (auto &a : vars->vapors[i].inAtoms){
+	}
+
+	for (auto &i : vars->vapor_in) {
+		for (auto &a : vars->vapors[i].inAtoms){
+			for(int nth=0;nth<Nth;nth++){
 				a.fx += a.fxMP[nth];
 				a.fy += a.fyMP[nth];
 				a.fz += a.fzMP[nth];
 			}
 		}
-		for (auto &i : vars->gas_in) {
-			for (auto &a : vars->gases[i].inAtoms){
+	}
+
+	for (auto &i : vars->gas_in) {
+		for (auto &a : vars->gases[i].inAtoms){
+			for(int nth=0;nth<Nth;nth++){
 				a.fx += a.fxMP[nth];
 				a.fy += a.fyMP[nth];
 				a.fz += a.fzMP[nth];
