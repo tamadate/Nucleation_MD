@@ -29,6 +29,7 @@ MD::readCondFile(char* condfile, char* file){
 		if (str=="Vapor") {iflag=8; continue;}
 		if (str=="Cut off length") {iflag=9; continue;}
 		if (str=="Margin size") {iflag=10; continue;}
+		if (str=="Number of steps for repre") {iflag=11; continue;}
 		if (str=="Gyration path") {iflag=16; continue;}
 		if (str=="RDF path") {iflag=17; continue;}
 		if (str=="gas gas interaction") {iflag=18; continue;}
