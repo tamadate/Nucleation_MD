@@ -14,19 +14,34 @@ const double kb=1.38e-23;
 const double T=300.0;
 const double P=1e5;
 const double Nw=6.02e23;
+
 const double mi=1046.2/1000.0/Nw; // mass of ion
 const double mg=28/1000.0/Nw;     // mass of gas
 const double mred=1/(1/mg+1/mi);  // reduced mass (ion-gas)
-const int sample_step=1000;
-const int start=500;
 const int dstep=1;
-const int output=10000;           // output interval of simulation
-const int total_step=0.5e9/output;// total 
-const int skip=0e9/output;
-const int N=(total_step-sample_step)/dstep;
-const double dt=output*1e-15;
-const int pl=1;
 
-double t[sample_step], MSD[sample_step], MSDx[sample_step], MSDy[sample_step], MSDz[sample_step], VAF[sample_step];
-double velocityAve[3][sample_step];
-double data[total_step+1][8], data_gas[total_step+1][8];
+struct data {
+  std::vector<double> MD;
+};
+
+std::vector<data> datas;
+std::vector<double> MSDx;
+std::vector<double> MSDy;
+std::vector<double> MSDz;
+std::vector<double> MSD;
+std::vector<double> VAF;
+
+double integral(std::vector<double> vaf, int blockSize){
+  double sim2=0.0;
+  int imax=blockSize*0.5-1;
+  for(int i=1;i<imax;i++) sim2+=vaf[2*i];
+  double sim3=0.0;
+  imax+=1;
+  for(int i=1;i<imax;i++) sim3+=vaf[2*i-1];
+  return vaf[0]+vaf[blockSize-1]+2*sim2+4*sim3;
+}
+
+double slope(std::vector<double> msd, int start, int end, double dt){
+  double Time=(end-start)*dt;
+  return (msd[end]-msd[start])/Time;
+}

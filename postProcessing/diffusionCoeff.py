@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import os
 from scipy.optimize import minimize
 
                 ##Cunningham
@@ -21,8 +22,8 @@ def axNormal(ax):
     ax.tick_params(axis='y')
 
 pltNormal()
-fig, axs = plt.subplots(2,2,figsize=(15,15))
-for i in np.arange(4):
+fig, axs = plt.subplots(1,2,figsize=(15,5))
+for i in np.arange(2):
 	axNormal(axs.flat[i])
 #-----------------------------------------------------------------------------#
 
@@ -30,29 +31,34 @@ for i in np.arange(4):
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
 teq=0.2e-6     # equilibliumed time [s]
+tcut=1e-13       # cut residence time [s]
+Nmax=30         # Max number of sticking vapors
 dt=1e-15	    # simulation time step, dt [s]
-tsample=1e-9    # time of sample
-tshift=1e-12    # initial time shift
-directory="../../../test/"
-I=1
+dt_post=1e-11   # dt in analysis, dt_post [s]
+directory="../../../nucleation/valine/"
+#directory="./"
+I=10
+checkMode=0
+
+startTime=2e-9
+endTime=5e-9
 #-----------------------------------------------------------------------------#
 
 
 
-				## Reading energy file(s)
-#-----------------------------------------------------------------------------#
+ionData=np.loadtxt(str(directory)+"ion_300_"+str(I)+".dat")
+dtInput=ionData[1][0]-ionData[0][0]
+os.system("./mobility.out "+str(I)+" 1 "+str(teq)+" "+str(startTime)+" "+str(endTime)+" "+str(dtInput*1e-9)+" "+str(directory)+"ion_300_%d.dat")
+#"ion_300_%d.dat"
 
-i=1
-data=np.loadtxt(str(directory)+"ion_300_"+str(i)+".dat")
-dt_data=(data[1][0]-data[0][0])*1e-6    # dt of data array [s]
-shift_step=int(dt_data/tshift)
-t_max=np.max(data.T[0])*1e-9            # maximum time [s]
-data=data[int(np.round(teq/dt_data)):]  # delete before equilibrium
-Nsample=int(t_max/tshift)-int(tshift/tsample)              # number of samples
-print(Nsample)
-N_one_sample=int(tsample/dt_data)      # number of data in a sample
-MSD=np.zeros(N_one_sample)
+MSDVAF=np.loadtxt("TIME_MSD_VAF."+str(I))
+axs.flat[0].set_xlabel("Time [ns]",fontsize=20)
+axs.flat[0].set_ylabel("MSD [ang$^ 2$]",fontsize=20)
+axs.flat[0].scatter(MSDVAF.T[0],MSDVAF.T[1]/np.max(MSDVAF.T[1]))
 
-for n in np.arange(Nsample):
-    print(data[n*shift_step])
-    print(n)
+axs.flat[1].set_xlabel("Time [ns]",fontsize=20)
+axs.flat[1].set_ylabel("VAF [ang$^ 2$]",fontsize=20)
+axs.flat[1].scatter(MSDVAF.T[0],MSDVAF.T[2]/MSDVAF.T[2][0])
+
+
+plt.show()
