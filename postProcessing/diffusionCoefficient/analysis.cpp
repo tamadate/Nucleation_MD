@@ -23,7 +23,7 @@ int main(int argc,char *argv[]){
 
 	char dump[100];
 	for(int i=0;i<pl;i++){
-		sprintf(dump, argv[7], i+calculationNumber); // time x y z vx vy vz
+		sprintf(dump, "%s%s%d%s", argv[7], "ion_300_", i+calculationNumber, ".dat"); // time x y z vx vy vz
 		ifstream stream(dump);
 		string str;
 		int lineIndex=0;
@@ -43,20 +43,12 @@ int main(int argc,char *argv[]){
 		Nblocks+=N;
 
 		for(int k=0;k<N;k++){
-			double X=datas[k*dstep].MD[1];	// initial position in this block
-			double Y=datas[k*dstep].MD[2];
-			double Z=datas[k*dstep].MD[3];
-
-			double vX=datas[k*dstep].MD[4];
-			double vY=datas[k*dstep].MD[5];
-			double vZ=datas[k*dstep].MD[6];
-
+			int baseIndex=k*dstep;
 			for(int j=0;j<blockSize;j++){
-				int jj=k*dstep+j;
-
-				double dx=datas[jj].MD[1]-X;
-				double dy=datas[jj].MD[2]-Y;
-				double dz=datas[jj].MD[3]-Z;
+				int testIndex=baseIndex+j;
+				double dx=datas[testIndex].MD[1]-datas[baseIndex].MD[1];
+				double dy=datas[testIndex].MD[2]-datas[baseIndex].MD[2];
+				double dz=datas[testIndex].MD[3]-datas[baseIndex].MD[3];
 				MSDx[j]+=dx*dx;
 				MSDy[j]+=dy*dy;
 				MSDz[j]+=dz*dz;
@@ -66,7 +58,7 @@ int main(int argc,char *argv[]){
 				velocityAve[1][j]+=dy;
 				velocityAve[2][j]+=dz;*/
 
-				VAF[j]+=vX*(datas[jj].MD[4])+vY*(datas[jj].MD[5])+vZ*(datas[jj].MD[6]);
+				VAF[j]+=datas[testIndex].MD[4]*datas[baseIndex].MD[4]+datas[testIndex].MD[5]*datas[baseIndex].MD[5]+datas[testIndex].MD[6]*datas[baseIndex].MD[6];
 			}
 		}
 	}
@@ -79,7 +71,7 @@ int main(int argc,char *argv[]){
 		MSDz[i]/=Nblocks;
 	}
 
-	sprintf(dump, "TIME_MSD_VAF.%d", calculationNumber);
+	sprintf(dump, "%s%s%d", argv[7], "TIME_MSD_VAF.", calculationNumber);
 	FILE*f=fopen(dump, "w");
 	fclose(f);
 	for(int i=0;i<blockSize;i++){
@@ -101,17 +93,17 @@ int main(int argc,char *argv[]){
 	double Kmsdy=Dmsdy*coeff;
 	double Kmsdz=Dmsdz*coeff;
 
-	sprintf(dump, "DiffusionCoefficients.%d", int(calculationNumber));
+	sprintf(dump, "%s%s%d", argv[7], "DiffusionCoefficients.", calculationNumber);
 	f=fopen(dump, "w");
 	fprintf(f, "Dmsdx\tDmdsy\tDmsdz\tDmsd\tDvaf\te/kb/T\tCCScoeff\n");
 	fprintf(f, "%f\t%f\t%f\t%f\t%f\t%f\t%e\n", Dmsdx,Dmsdy,Dmsdz,Dmsd,Dvaf,coeff,3.0*e/16.0/(P/kb/T)*sqrt(2.0*M_PI/mred/kb/T)*1e4*1e20);
 	fclose(f);
 
-	coeff=3.0*e/16.0/(P/kb/T)*sqrt(2.0*M_PI/mred/kb/T)*1e4*1e20;
+	/*coeff=3.0*e/16.0/(P/kb/T)*sqrt(2.0*M_PI/mred/kb/T)*1e4*1e20;
 	cout << Dvaf << endl;
 	cout << Dmsd << endl;
 	cout << Dmsdx << endl;
 	cout << Dmsdy << endl;
 	cout << Dmsdz << endl;
-	cout <<"K="<<Kmsd<<endl;
+	cout <<"K="<<Kmsd<<endl;*/
 }

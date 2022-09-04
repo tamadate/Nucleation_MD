@@ -1,7 +1,10 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import os
 from scipy.optimize import minimize
+
+os.system("make")
 
                 ##Cunningham
 #-----------------------------------------------------------------------------#
@@ -12,7 +15,7 @@ def pltNormal():
     #plt.rcParams['figure.subplot.bottom'] = 0.2
     #plt.rcParams['figure.subplot.left'] = 0.2
     #plt.rcParams['font.family'] = 'Arial'
-    plt.rcParams["font.size"]=12
+    plt.rcParams["font.size"]=8
 
 def axNormal(ax):
     ax.xaxis.set_ticks_position('both')
@@ -21,23 +24,34 @@ def axNormal(ax):
     ax.tick_params(axis='y')
 
 pltNormal()
-fig, axs = plt.subplots(2,2,figsize=(15,10))
-for i in np.arange(4):
+fig, axs = plt.subplots(3,2,figsize=(8,10))
+for i in np.arange(6):
 	axNormal(axs.flat[i])
+
+labelSize=10
+titleSize=12
+lineWidth=0.8
+
 #-----------------------------------------------------------------------------#
 
 
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=1.0e-6     # equilibliumed time [s]
+teq=0.5e-6     # equilibliumed time [s]
 tcut=1e-13       # cut residence time [s]
-Nmax=30         # Max number of sticking vapors
+Nmax=40         # Max number of sticking vapors
 dt=1e-15	    # simulation time step, dt [s]
 dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/valine/"
+directory="../../../nucleation/arginine/"
 #directory="../../../nucleation/angio2+/100/"
-I=1
+I=2
+
+startTime=2e-9
+endTime=5e-9
+
 checkMode=0
+figOutput=1
+
 #-----------------------------------------------------------------------------#
 
 
@@ -48,19 +62,22 @@ checkMode=0
 U=np.loadtxt(str(directory)+"U_"+str(I)+".dat")
 #K=np.loadtxt("K_1.dat")
 labels=["Uion","Ugas","Uvap","Ugi","Ugg","Uvg","Uvi","Uvv"]
+display=[1,0,0,0,0,0,1,1]
+colors=["blue","blue","blue","blue","blue","blue","aqua","navy"]
 
 t_tot=np.max(U.T[0])*1e-15  # total simulation time [s]
 Xmax=int(t_tot/200e-9)*200
 Xmax*=1.4
 
 #axs.flat[0].set_xlim([0,Xmax])
-axs.flat[0].set_xlabel("Time [ns]",fontsize=20)
-axs.flat[0].set_ylabel("Energy [kcal/mol]",fontsize=20)
+axs.flat[0].set_title("(a) Potential Energies",loc='left',fontsize=titleSize)
+axs.flat[0].set_xlabel("Time [ns]",fontsize=labelSize)
+axs.flat[0].set_ylabel("Energy [kcal/mol]",fontsize=labelSize)
 for i in np.arange(np.size(U[0])-1):
-	axs.flat[0].plot(U.T[0]*1e-6,U.T[i+1],label=labels[i])
-axs.flat[0].plot(U.T[0]*1e-6,np.sum(U.T[1:],axis=0),label="Total")
-axs.flat[0].axvline(x = teq*1e9, ls='--', color = 'black')
-axs.flat[0].axvline(x = t_tot*1e9, ls='--', color = 'black')
+    if(display[i]):
+	       axs.flat[0].plot(U.T[0]*1e-6,U.T[i+1],label=labels[i],linewidth=lineWidth,color=colors[i])
+axs.flat[0].plot(U.T[0]*1e-6,np.sum(U.T[1:],axis=0),label="Total",linewidth=lineWidth,color="black")
+axs.flat[0].axvline(x = teq*1e9, ls='--', color = 'black',linewidth=lineWidth)
 axs.flat[0].legend()
 
 #-----------------------------------------------------------------------------#
@@ -89,9 +106,6 @@ kb=1.38e-23	# boltzmann constant [J/K]
 R=8.314		# gas constant	[Jmol/K]
 T=300.0		# temperature	[K]
 c=(8*R*T/M/np.pi)**0.5	# vapor mean thermal speed [m/s]
-pv=100		# vapor pressure [Pa]
-C=pv/kb/T	# vapor concentraiton [1/m3]
-f_FM=delta*delta*np.pi*c*C	# vapor flux into the interaction sphere in free molecular limit [1/s]
 
 def function(t,v,x0):
 	x=v*t+x0
@@ -124,21 +138,21 @@ for iin in np.arange(np.size(inVapor.T[0])):
 #np.savetxt("ts.dat",ts)
 
 f_sim=np.size(ts)/t_tot	# vapor flux into the interaction sphere [1/s]
-print ("f_FM="+str(f_FM*1e-9)+"[1/ns]\tf_sim="+str(f_sim*1e-9)+"[1/ns]")
 
-
-axs.flat[1].set_xlabel("Time [ns]",fontsize=20)
-axs.flat[1].set_ylabel("$\it {N}$$_ {vap}$ [-]",fontsize=20)
-axs.flat[1].axvline(x = teq*1e9, color = 'black', ls="--")
-axs.flat[1].scatter(times*1e9,Nstick)
+axs.flat[1].set_title("(b) MeOHs in effective domain",loc='left',fontsize=titleSize)
+axs.flat[1].set_xlabel("Time [ns]",fontsize=labelSize)
+axs.flat[1].set_ylabel("$\it {N}$$_ {vap}$ [-]",fontsize=labelSize)
+axs.flat[1].axvline(x = teq*1e9, color = 'black', ls="--",linewidth=lineWidth)
+axs.flat[1].scatter(times*1e9,Nstick,color="black",s=20)
 
 negs=np.where(ts<=0)
-axs.flat[2].set_xlabel("Logarithm of time [-]",fontsize=20)
-axs.flat[2].set_ylabel("Number of event [-]",fontsize=20)
+axs.flat[2].set_title("(c) Vapor sticking time distribution",loc='left',fontsize=titleSize)
+axs.flat[2].set_xlabel("Logarithm of time [-]",fontsize=labelSize)
+axs.flat[2].set_ylabel("Number of event [-]",fontsize=labelSize)
 axs.flat[2].set_yscale("log")
-axs.flat[2].hist(np.log10(np.delete(ts,negs)),alpha=0.3,bins=50,label="$\it {t}$$_{sim}$")
-axs.flat[2].hist(np.log10(np.delete(tth,negs)),alpha=0.3,bins=30,label="$\it {t}$$_ {sim}$-$\it t$$_ {th}$")
-axs.flat[2].axvline(x = np.log10(tcut), color = 'black', ls="--")
+axs.flat[2].hist(np.log10(np.delete(ts,negs)),alpha=0.3,bins=50,label="$\it {t}$$_{sim}$",color="blue")
+axs.flat[2].hist(np.log10(np.delete(tth,negs)),alpha=0.3,bins=30,label="$\it {t}$$_ {sim}$-$\it t$$_ {th}$",color="black")
+#axs.flat[2].axvline(x = np.log10(tcut), color = 'black', ls="--",linewidth=lineWidth)
 axs.flat[2].legend()
 
 if(checkMode==1):
@@ -165,16 +179,49 @@ for i in Nstick[int(teq/dt_post):]:
 psim/=np.size(Nstick[int(teq/dt_post):])
 
 Nbase=np.min(Nstick[int(teq/dt_post):])
-axs.flat[3].set_xlabel("Number of sticking vapor",fontsize=20)
-axs.flat[3].set_ylabel("Frequency [-]",fontsize=20)
+axs.flat[3].set_title("(d) Sticking vapor distribution",loc='left',fontsize=titleSize)
+axs.flat[3].set_title("")
+axs.flat[3].set_xlabel("Number of sticking vapor",fontsize=labelSize)
+axs.flat[3].set_ylabel("Frequency [-]",fontsize=labelSize)
 axs.flat[3].set_yscale("log")
 axs.flat[3].set_ylim([1e-5,1])
-axs.flat[3].scatter(nv,ppoi,label="Poisson")
-axs.flat[3].scatter(nv,psim,label="Simulation")
-axs.flat[3].scatter(nv-Nbase,psim,label="Simulation("+str(int(-Nbase))+")")
+axs.flat[3].scatter(nv,ppoi,label="Poisson",s=20,color="black")
+axs.flat[3].scatter(nv,psim,label="Simulation",s=20,marker="v",color="blue")
+axs.flat[3].scatter(nv-Nbase,psim,label="Simulation("+str(int(-Nbase))+")",s=20,marker="^",color="cyan")
 axs.flat[3].legend()
+
+pv=10*I-Nbase 	# vapor pressure [Pa]
+C=pv/kb/T	# vapor concentraiton [1/m3]
+f_FM=delta*delta*np.pi*c*C	# vapor flux into the interaction sphere in free molecular limit [1/s]
+print ("f_FM="+str(f_FM*1e-9)+"[1/ns]\tf_sim="+str(f_sim*1e-9)+"[1/ns]")
 
 #-----------------------------------------------------------------------------#
 
-plt.savefig(str(directory)+"fig.png", dpi=1000)
+
+ionData=np.loadtxt(str(directory)+"ion_300_"+str(I)+".dat")
+dtInput=ionData[1][0]-ionData[0][0]
+os.system("./mobility.out "+str(I)+" 1 "+str(teq)+" "+str(startTime)+" "+str(endTime)+" "+str(dtInput*1e-9)+" "+str(directory))
+#"ion_300_%d.dat"
+
+MSDVAF=np.loadtxt(str(directory)+"TIME_MSD_VAF."+str(I))
+diffusionData=np.loadtxt(str(directory)+"DiffusionCoefficients."+str(I),skiprows=1)
+axs.flat[4].set_title("(e) Normalized MSD",loc='left',fontsize=titleSize)
+axs.flat[4].set_xlabel("Time [ns]",fontsize=labelSize)
+axs.flat[4].set_ylabel("Normalized MSD [-]",fontsize=labelSize)
+axs.flat[4].scatter(MSDVAF.T[0],MSDVAF.T[1]/np.max(MSDVAF.T[1]),color="black",s=10)
+axs.flat[4].text(1, 0.8, "K = "+'{:.2f}'.format(diffusionData[3]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
+
+axs.flat[5].set_title("(f) Normalized VAF",loc='left',fontsize=titleSize)
+axs.flat[5].set_xlabel("Time [ns]",fontsize=labelSize)
+axs.flat[5].set_ylabel("Normalized VAF [-]",fontsize=labelSize)
+axs.flat[5].scatter(MSDVAF.T[0],MSDVAF.T[2]/MSDVAF.T[2][0],color="black",s=10)
+axs.flat[5].text(2, 0.8, "K = "+'{:.2f}'.format(diffusionData[4]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
+
+#-----------------------------------------------------------------------------#
+
+fig.tight_layout()
+
+if(figOutput):
+    plt.savefig(str(directory)+"fig"+str(I)+".png", dpi=1000)
+
 plt.show()

@@ -41,7 +41,7 @@ MD::MD(char* condfile, int calcNumber) {
 	vars->read_initial(atomFile);
 	vars->ionInitialVelocity(T);
 
-	setPotential(flags);
+	setPotential(flags,1);
 	initialization_gas();	//Set initial positions & velocities for gas
   initialization_vapor();	//Set initial positions & velocities for vapor
 	analysis_ion();
