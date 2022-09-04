@@ -4,7 +4,7 @@
 
 
 void
-MD::setPotential(FLAG *flags){
+MD::setPotential(FLAG *flags,int mode){
 //ion-ion
 	IntraInter.clear();
 	InterInter.clear();
@@ -35,7 +35,7 @@ MD::setPotential(FLAG *flags){
 
 //ion-gas
 	flag=0;
-	if(flags->force_lj) {
+	if(flags->force_lj && mode) {
 		InterInter.push_back(new PotentialGasIon());
 		cout<<"|\tL-J\t";
 		flag=1;
@@ -44,7 +44,7 @@ MD::setPotential(FLAG *flags){
 
 //ion-vapor
 	flag=0;
-	if(flags->inter_vi) {
+	if(flags->inter_vi && mode) {
 		InterInter.push_back(new PotentialVaporIon());
 		cout<<"|\tL-J-C\t|"<<endl;
 		flag=1;
@@ -66,7 +66,7 @@ MD::setPotential(FLAG *flags){
 
 //gas-vapor
 	flag=0;
-	if(flags->inter_vg) {
+	if(flags->inter_vg && mode) {
 		InterInter.push_back(new PotentialVaporGas());
 		cout<<"|\tL-J\t|"<<endl;
 		flag=1;
@@ -80,7 +80,7 @@ MD::setPotential(FLAG *flags){
 
 //vapor-vapor
 	flag=0;
-	if(flags->inter_vv) {
+	if(flags->inter_vv && mode) {
 		InterInter.push_back(new PotentialVaporVapor());
 		cout<<"|\tL-J-C\t|"<<endl;
 		flag=1;

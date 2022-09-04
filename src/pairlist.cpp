@@ -23,6 +23,7 @@ MD::make_pair(void){
 	Molecule *gases = vars->gases.data();
 	double vmax2 = 0.0;
 	int gos=vars->gas_out.size();
+	//#pragma omp parallel for
 	for (auto &a : vars->gas_out) {
 		double px=gases[a].px;
 		double py=gases[a].py;
@@ -64,14 +65,14 @@ MD::update_gas_in(void){
 			VZ+=a.pz*a.mass;
 			Mass+=a.mass;
 		}
-        //  averaged position
-	    vars->gases[i].qx=X/Mass;
-	    vars->gases[i].qy=Y/Mass;
-	    vars->gases[i].qz=Z/Mass;
-        //  averaged velocity
-        vars->gases[i].px=VX/Mass;
-        vars->gases[i].py=VY/Mass;
-        vars->gases[i].pz=VZ/Mass;
+      //  averaged position
+    vars->gases[i].qx=X/Mass;
+    vars->gases[i].qy=Y/Mass;
+    vars->gases[i].qz=Z/Mass;
+    //  averaged velocity
+    vars->gases[i].px=VX/Mass;
+    vars->gases[i].py=VY/Mass;
+    vars->gases[i].pz=VZ/Mass;
 	}
 // clear vars->gas_in, vars->gas_out and pair list of gas-ion
 	vars->gas_in.clear();
@@ -243,20 +244,24 @@ MD::check_pairlist(void){
 		Molecule *gases = vars->gases.data();
 		Molecule *vapors = vars->vapors.data();
 		boundary_scaling_ion_move();
+		//#pragma omp parallel for
 		for (auto &i : vars->gas_out) {
-            gases[i].qx += gases[i].px*dt*loop;
-            gases[i].qy += gases[i].py*dt*loop;
-            gases[i].qz += gases[i].pz*dt*loop;
+        gases[i].qx += gases[i].px*dt*loop;
+        gases[i].qy += gases[i].py*dt*loop;
+        gases[i].qz += gases[i].pz*dt*loop;
 		}
+		//#pragma omp parallel for
 		for (auto &i : vars->vapor_out) {
-            vapors[i].qx += vapors[i].px*dt*loop;
-            vapors[i].qy += vapors[i].py*dt*loop;
-            vapors[i].qz += vapors[i].pz*dt*loop;
+        vapors[i].qx += vapors[i].px*dt*loop;
+        vapors[i].qy += vapors[i].py*dt*loop;
+        vapors[i].qz += vapors[i].pz*dt*loop;
 		}
 		boundary_scaling_gas_move();
 		boundary_scaling_vapor_move();
 		make_pair();
-		for(int i=0;i<3;i++) pre_ion[i]=ion_r[i];
+		pre_ion[0]=ion_r[0];
+		pre_ion[1]=ion_r[1];
+		pre_ion[2]=ion_r[2];
 	}
 //	if(flags->force_sw==1) sw->check_pairlist(vars);
 //	if(flags->force_ters==1) ters->check_pairlist(vars);

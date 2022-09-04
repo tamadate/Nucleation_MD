@@ -44,7 +44,7 @@ class MD {
 	std::vector<long int> collisionFlagVapor;
 	std::vector<Potential*> InterInter;
 	std::vector<Potential*> IntraInter;
-	void setPotential(FLAG *flags);
+	void setPotential(FLAG *flags,int mode);
 
 	Variables *vars;
 	Observer *obs;

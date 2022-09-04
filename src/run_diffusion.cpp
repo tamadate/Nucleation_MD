@@ -17,10 +17,7 @@ void
 MD::run_diff(char** argv) {
 /****Thermal relaxation****/
   const int logger=10000;
-	flags->inter_vi=0;
-  flags->inter_vg=0;
-	flags->force_lj=0;
-	setPotential(flags);
+	setPotential(flags,0);
 	for (auto &a : IntraInter) {a->printName();}
 	for (auto &a : InterInter) {a->printName();}
 	for (itime=0; itime < step_relax; itime++) {
@@ -43,11 +40,7 @@ step of simulation, reset the margine size.
 */
 	vars->time=0;
 	itime=0;
-	flags->inter_vi=1;
-	flags->inter_vg=1;
-	flags->force_lj=1;
-	flags->inter_vv=1;
-	setPotential(flags);
+	setPotential(flags,1);
 	for (auto &a : vars->ions) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
 	for (auto &a : vars->gases) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
 	analysis_ion();

@@ -58,7 +58,9 @@ PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
 	#pragma omp parallel for
 	for (int ib=0;ib<bsize;ib++) {
 		int nth=omp_get_thread_num();
-		int i=vars-> bonds[ib].atom1, j=vars-> bonds[ib].atom2, type=(vars-> bonds[ib].type);
+		int i=vars-> bonds[ib].atom1;
+		int j=vars-> bonds[ib].atom2;
+		int type=(vars-> bonds[ib].type);
 		double dx = ions[i].qx - ions[j].qx;
 		double dy = ions[i].qy - ions[j].qy;
 		double dz = ions[i].qz - ions[j].qz;
@@ -88,8 +90,10 @@ PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
 	for (int ian=0;ian<asize;ian++) {
 		double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
 		int nth=omp_get_thread_num();
-    int i, j, k, type;
-		i=vars-> angles[ian].atom1, j=vars-> angles[ian].atom2, k=vars-> angles[ian].atom3, type=vars-> angles[ian].type;
+		int i=vars-> angles[ian].atom1;
+		int j=vars-> angles[ian].atom2;
+		int k=vars-> angles[ian].atom3;
+		int type=vars-> angles[ian].type;
 		dx1 = ions[i].qx - ions[j].qx;
 		dy1 = ions[i].qy - ions[j].qy;
 		dz1 = ions[i].qz - ions[j].qz;
@@ -136,53 +140,55 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 	int dsize=vars-> dihedrals.size();
 	#pragma omp parallel for
 	for (int idi=0;idi<dsize;idi++) {
-		double vb1x,vb1y,vb1z,vb2x,vb2y,vb2z,vb3x,vb3y,vb3z,vb2xm,vb2ym,vb2zm;
-		double edihedral,ff2[3],ff4[3],ff1[3],ff3[3];
-		double ax,ay,az,bx,by,bz,rasq,rbsq,rgsq,rg,rginv,ra2inv,rb2inv,rabinv;
-		double df,df1,ddf1,fg,hg,fga,hgb,gaa,gbb;
-		double dtfx,dtfy,dtfz,dtgx,dtgy,dtgz,dthx,dthy,dthz;
-		double c,s,p_,sx2,sy2,sz2, m;
-		int nth=omp_get_thread_num();
-		int i=vars-> dihedrals[idi].atom1, j=vars-> dihedrals[idi].atom2, k=vars-> dihedrals[idi].atom3, l=vars-> dihedrals[idi].atom4, type=vars-> dihedrals[idi].type;
-   //     cout<<i<<" "<<j<<" "<<k<<" "<<l<<" "<<endl;
-		// 1st bond
-		vb1x = ions[i].qx - ions[j].qx;
-		vb1y = ions[i].qy - ions[j].qy;
-		vb1z = ions[i].qz - ions[j].qz;
-		// 2nd bond
-		vb2x = ions[k].qx - ions[j].qx;
-		vb2y = ions[k].qy - ions[j].qy;
-		vb2z = ions[k].qz - ions[j].qz;
-		vb2xm = -vb2x;
-		vb2ym = -vb2y;
-		vb2zm = -vb2z;
-		// 3rd bond
-		vb3x = ions[l].qx - ions[k].qx;
-		vb3y = ions[l].qy - ions[k].qy;
-		vb3z = ions[l].qz - ions[k].qz;
+		double ff2[3],ff4[3],ff1[3],ff3[3];
 
-		ax = vb1y*vb2zm - vb1z*vb2ym;
-		ay = vb1z*vb2xm - vb1x*vb2zm;
-		az = vb1x*vb2ym - vb1y*vb2xm;
-		bx = vb3y*vb2zm - vb3z*vb2ym;
-		by = vb3z*vb2xm - vb3x*vb2zm;
-		bz = vb3x*vb2ym - vb3y*vb2xm;
-		rasq = ax*ax + ay*ay + az*az;
-		rbsq = bx*bx + by*by + bz*bz;
-		rgsq = vb2xm*vb2xm + vb2ym*vb2ym + vb2zm*vb2zm;
-		rg = sqrt(rgsq);
-		rginv = ra2inv = rb2inv = 0.0;
+		int nth=omp_get_thread_num();
+		int i=vars-> dihedrals[idi].atom1;
+		int j=vars-> dihedrals[idi].atom2;
+		int k=vars-> dihedrals[idi].atom3;
+		int l=vars-> dihedrals[idi].atom4;
+		int type=vars-> dihedrals[idi].type;
+
+		// 1st bond
+		double vb1x = ions[i].qx - ions[j].qx;
+		double vb1y = ions[i].qy - ions[j].qy;
+		double vb1z = ions[i].qz - ions[j].qz;
+		// 2nd bond
+		double vb2x = ions[k].qx - ions[j].qx;
+		double vb2y = ions[k].qy - ions[j].qy;
+		double vb2z = ions[k].qz - ions[j].qz;
+		double vb2xm = -vb2x;
+		double vb2ym = -vb2y;
+		double vb2zm = -vb2z;
+		// 3rd bond
+		double vb3x = ions[l].qx - ions[k].qx;
+		double vb3y = ions[l].qy - ions[k].qy;
+		double vb3z = ions[l].qz - ions[k].qz;
+
+		double ax = vb1y*vb2zm - vb1z*vb2ym;
+		double ay = vb1z*vb2xm - vb1x*vb2zm;
+		double az = vb1x*vb2ym - vb1y*vb2xm;
+		double bx = vb3y*vb2zm - vb3z*vb2ym;
+		double by = vb3z*vb2xm - vb3x*vb2zm;
+		double bz = vb3x*vb2ym - vb3y*vb2xm;
+		double rasq = ax*ax + ay*ay + az*az;
+		double rbsq = bx*bx + by*by + bz*bz;
+		double rgsq = vb2xm*vb2xm + vb2ym*vb2ym + vb2zm*vb2zm;
+		double rg = sqrt(rgsq);
+		double rginv=0.0;
+		double ra2inv=0.0;
+		double rb2inv=0.0;
 		if (rg > 0) rginv = 1.0/rg;
 		if (rasq > 0) ra2inv = 1.0/rasq;
 		if (rbsq > 0) rb2inv = 1.0/rbsq;
-		rabinv = sqrt(ra2inv*rb2inv);
-		c = (ax*bx + ay*by + az*bz)*rabinv;
-		s = rg*rabinv*(ax*vb3x + ay*vb3y + az*vb3z);
+		double rabinv = sqrt(ra2inv*rb2inv);
+		double c = (ax*bx + ay*by + az*bz)*rabinv;
+		double s = rg*rabinv*(ax*vb3x + ay*vb3y + az*vb3z);
 
-		df = 0.0;
-		int J= dtypes[type].multi;
+		double df = 0.0;
 
-		for(int JJ=0;JJ<J;JJ++){
+		double p_,df1,ddf1;
+		for(int JJ=0;JJ<dtypes[type].multi;JJ++){
 			int JJ5=JJ*5;
 			p_=1.0;
 			ddf1=df1=0.0;
@@ -204,24 +210,24 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 		}
 
        // cout<<df<<endl;
-		fg = vb1x*vb2xm + vb1y*vb2ym + vb1z*vb2zm;
-		hg = vb3x*vb2xm + vb3y*vb2ym + vb3z*vb2zm;
-		fga = fg*ra2inv*rginv;
-		hgb = hg*rb2inv*rginv;
-		gaa = -ra2inv*rg;
-		gbb = rb2inv*rg;
-		dtfx = gaa*ax;
-		dtfy = gaa*ay;
-		dtfz = gaa*az;
-		dtgx = fga*ax - hgb*bx;
-		dtgy = fga*ay - hgb*by;
-		dtgz = fga*az - hgb*bz;
-		dthx = gbb*bx;
-		dthy = gbb*by;
-		dthz = gbb*bz;
-		sx2 = df*dtgx;
-		sy2 = df*dtgy;
-		sz2 = df*dtgz;
+		double fg = vb1x*vb2xm + vb1y*vb2ym + vb1z*vb2zm;
+		double hg = vb3x*vb2xm + vb3y*vb2ym + vb3z*vb2zm;
+		double fga = fg*ra2inv*rginv;
+		double hgb = hg*rb2inv*rginv;
+		double gaa = -ra2inv*rg;
+		double gbb = rb2inv*rg;
+		double dtfx = gaa*ax;
+		double dtfy = gaa*ay;
+		double dtfz = gaa*az;
+		double dtgx = fga*ax - hgb*bx;
+		double dtgy = fga*ay - hgb*by;
+		double dtgz = fga*az - hgb*bz;
+		double dthx = gbb*bx;
+		double dthy = gbb*by;
+		double dthz = gbb*bz;
+		double sx2 = df*dtgx;
+		double sy2 = df*dtgy;
+		double sz2 = df*dtgz;
 		ff1[0] = df*dtfx;
 		ff1[1] = df*dtfy;
 		ff1[2] = df*dtfz;

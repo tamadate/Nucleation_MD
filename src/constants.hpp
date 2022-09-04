@@ -17,6 +17,7 @@
 
 #include "struct.hpp"
 #include "flags.hpp"
+//#pragma GCC target("avx2")
 
 using namespace std;
 //------------------------------------------------------------------------

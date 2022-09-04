@@ -92,4 +92,7 @@ struct Times {
   double tvg;
   double tvi;
   double tpair;
+  double tvel;
+  double tpos;
+  double tetc;
 };

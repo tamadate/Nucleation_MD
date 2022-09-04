@@ -31,9 +31,11 @@ MD::verlet(void) {
 	vars->totalVirial=0;
 	for (auto &a : InterInter) a->compute(vars,flags);
 	for (auto &a : IntraInter) a->compute(vars,flags);
+
 	forceCombine();
 
 	velocity_calculation();	//	v(t+dt/2) -> v(t+dt) using F(x(t+dt))
+
 	if(flags->nose_hoover_ion==1)	nosehoover_ion();
 	//(flags->nose_hoover_gas==1)	nosehoover_gas();
 	flags->eflag=0;
@@ -46,6 +48,7 @@ MD::verlet(void) {
 /////////////////////////////////////////////////////////////////////
 void
 MD::velocity_calculation(void) {
+	vars->times.tvel-=omp_get_wtime();
 	Molecule *gases = vars->gases.data();
 	double const Coeff=0.5*dt*4.184e-4;
 	for (auto &a : vars->ions) {
@@ -70,6 +73,7 @@ MD::velocity_calculation(void) {
 			a.pz += a.fz * Coeff2;
 		}
 	}
+	vars->times.tvel+=omp_get_wtime();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -79,6 +83,7 @@ MD::velocity_calculation(void) {
 /////////////////////////////////////////////////////////////////////
 void
 MD::update_position(void) {
+	vars->times.tpos-=omp_get_wtime();
 	for (auto &a : vars->ions) {
 		a.qx += a.px * dt;
 		a.qy += a.py * dt;
@@ -111,31 +116,40 @@ MD::update_position(void) {
 			}
 		}
   }
+	vars->times.tpos+=omp_get_wtime();
 }
 
 void
 MD::forceCombine(void){
-	for(int nth=0;nth<Nth;nth++){
-		for (auto &a : vars->ions) {
+	vars->times.tetc-=omp_get_wtime();
+	for (auto &a : vars->ions) {
+		for(int nth=0;nth<Nth;nth++){
 			a.fx += a.fxMP[nth];
 			a.fy += a.fyMP[nth];
 			a.fz += a.fzMP[nth];
 		}
-		for (auto &i : vars->vapor_in) {
-			for (auto &a : vars->vapors[i].inAtoms){
-				a.fx += a.fxMP[nth];
-				a.fy += a.fyMP[nth];
-				a.fz += a.fzMP[nth];
-			}
-		}
-		for (auto &i : vars->gas_in) {
-			for (auto &a : vars->gases[i].inAtoms){
+	}
+
+	for (auto &i : vars->vapor_in) {
+		for (auto &a : vars->vapors[i].inAtoms){
+			for(int nth=0;nth<Nth;nth++){
 				a.fx += a.fxMP[nth];
 				a.fy += a.fyMP[nth];
 				a.fz += a.fzMP[nth];
 			}
 		}
 	}
+
+	for (auto &i : vars->gas_in) {
+		for (auto &a : vars->gases[i].inAtoms){
+			for(int nth=0;nth<Nth;nth++){
+				a.fx += a.fxMP[nth];
+				a.fy += a.fyMP[nth];
+				a.fz += a.fzMP[nth];
+			}
+		}
+	}
+	vars->times.tetc+=omp_get_wtime();
 }
 
 

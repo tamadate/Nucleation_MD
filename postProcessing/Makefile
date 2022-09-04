@@ -1,5 +1,5 @@
-NAME        = ../../test/myprogram
-SRCS        = ./src/*cpp
+NAME        = ./mobility.out
+SRCS        = ./diffusionCoefficient/analysis.cpp
 OBJS        = $(SRCS:.cpp=.o)
 CXX         = g++
 CXXFLAGS    = -std=c++11 -fopenmp

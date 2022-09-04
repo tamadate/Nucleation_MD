@@ -18,7 +18,6 @@ MD::readCondFile(char* condfile, char* file){
 	cout<<"************--------------------------************"<<endl;
 	cout<<"**************************************************"<<endl;
 	while(getline(stream,str)) {
-		cout<<iflag<<endl;
 		if(str.length()==0) continue;
 		if (str=="Gas") {iflag=1; continue;}
 		if (str=="Calculation number") {iflag=2; continue;}
@@ -30,6 +29,7 @@ MD::readCondFile(char* condfile, char* file){
 		if (str=="Vapor") {iflag=8; continue;}
 		if (str=="Cut off length") {iflag=9; continue;}
 		if (str=="Margin size") {iflag=10; continue;}
+		if (str=="Number of steps for repre") {iflag=11; continue;}
 		if (str=="Gyration path") {iflag=16; continue;}
 		if (str=="RDF path") {iflag=17; continue;}
 		if (str=="gas gas interaction") {iflag=18; continue;}
