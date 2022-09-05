@@ -64,6 +64,9 @@ public:
 	std::vector<Bond> bondMeOH(void);
 	std::vector<Angle> angleMeOH(void);
 	std::vector<Dihedral> dihedralMeOH(void);
+	std::vector<Bond> bondEtOH(void);
+	std::vector<Angle> angleEtOH(void);
+	std::vector<Dihedral> dihedralEtOH(void);
 	std::vector<Atom> atomGas(int gastype);
 	std::vector<vector<vector<double>>> pair_coeff;
 	double bornCoeff[2][2][5];
@@ -81,6 +84,7 @@ public:
 	}
 
 	std::vector<Atom> makeAtomMeOH(void);
+	std::vector<Atom> makeAtomEtOH(void);
 	std::vector<Atom> makeAtomTIP3P(void);
 
 
