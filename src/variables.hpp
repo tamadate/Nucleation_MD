@@ -61,12 +61,6 @@ public:
 	std::vector<Dihedral_type> dtypes;
 	std::vector<int> molecules;
 	std::vector<Atom> atomVapor;
-	std::vector<Bond> bondMeOH(void);
-	std::vector<Angle> angleMeOH(void);
-	std::vector<Dihedral> dihedralMeOH(void);
-	std::vector<Bond> bondEtOH(void);
-	std::vector<Angle> angleEtOH(void);
-	std::vector<Dihedral> dihedralEtOH(void);
 	std::vector<Atom> atomGas(int gastype);
 	std::vector<vector<vector<double>>> pair_coeff;
 
@@ -107,9 +101,6 @@ public:
 		Z = x*sin(B)-y*sin(A)*cos(B)+z*cos(A)*cos(B);
 	}
 
-	std::vector<Atom> makeAtomMeOH(void);
-	std::vector<Atom> makeAtomEtOH(void);
-	std::vector<Atom> makeAtomTIP3P(void);
 
 
 private:

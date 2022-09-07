@@ -89,14 +89,8 @@ MD::setPotential(FLAG *flags,int mode){
 
 
 	if(flags->vapor_intra==1) {
-		if(vaportype==2){
-			IntraInter.push_back(new PotentialIntraTIP3P());
-			cout<<"vepor intra -->TIP3P\t"<<endl;
-		}
-		else{
-			IntraInter.push_back(new PotentialVaporIntra());
-			cout<<"vepor intra -->\tAMBER"<<endl;
-		}
+		IntraInter.push_back(new PotentialVaporIntra());
+		cout<<"vepor intra -->\tAMBER"<<endl;
 	}
 
 	if(flags->gas_intra==1) {

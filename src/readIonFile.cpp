@@ -18,13 +18,33 @@ Variables::readIonFile(char* infile){
 		if (str=="bonds") {iflag=6; continue;}
 		if (str=="angles") {iflag=7; continue;}
 		if (str=="dihedrals") {iflag=8; continue;}
-		if (str=="molecules") {iflag=9; continue;}
 	    string tmp;
     	istringstream stream(str);
 		if (iflag==1) {
 			Atom_type at;
 			int loop=0;
 			while(getline(stream,tmp,'\t')) {
+        if (loop==1) {
+          if(tmp=="#c"||tmp=="#cs"||tmp=="#c1"||tmp=="#c2"||tmp=="#c3"||tmp=="#ca"
+          ||tmp=="#cp"||tmp=="#cq"||tmp=="#cc"||tmp=="#cd"||tmp=="#ce"||tmp=="#cf"
+          ||tmp=="#cg" ||tmp=="#ch"||tmp=="#cx"||tmp=="#cy"||tmp=="#cu"||tmp=="#cv"||tmp=="#cz") at.name="C";
+          else if(tmp=="#h1"||tmp=="#h2"||tmp=="#h3"||tmp=="#h4"||tmp=="#h5"||tmp=="#ha"
+          ||tmp=="#hc"||tmp=="#hn"||tmp=="#ho"||tmp=="#hp"||tmp=="#hs"||tmp=="#hw"||tmp=="#hx") at.name="H";
+          else if(tmp=="f") at.name="F";
+          else if(tmp=="cl") at.name="Cl";
+          else if(tmp=="br") at.name="Br";
+          else if(tmp=="i") at.name="I";
+          else if(tmp=="#n"||tmp=="#n1"||tmp=="#n2"||tmp=="#n3"||tmp=="#n4"||tmp=="#na"
+          ||tmp=="#nb"||tmp=="#nc"||tmp=="#nd"||tmp=="#ne"||tmp=="#nf"||tmp=="#nh"
+          ||tmp=="#no"||tmp=="#ns"||tmp=="#nt"||tmp=="#nx"||tmp=="#ny"||tmp=="#nz"
+          ||tmp=="#n+"||tmp=="#nu"||tmp=="#nv"||tmp=="#n7"||tmp=="#n8"||tmp=="#n9") at.name="N";
+          else if(tmp=="#o"||tmp=="#oh"||tmp=="#os"||tmp=="#ow") at.name="O";
+          else if(tmp=="#p2"||tmp=="#p3"||tmp=="#p4"||tmp=="#p5"||tmp=="#pb"||tmp=="#pc"
+          ||tmp=="#pd"||tmp=="#pe"||tmp=="#pf"||tmp=="#px"||tmp=="#py") at.name="P";
+          else if(tmp=="#s"||tmp=="#s2"||tmp=="#s4"||tmp=="#s6"||tmp=="#sh"||tmp=="#ss"
+          ||tmp=="#sx"||tmp=="#sy") at.name="S";
+          else at.name=tmp;
+        }
 				if (loop==2) at.mass=stod(tmp);
 				if (loop==3) at.coeff1=stod(tmp);
 				if (loop==4) at.coeff2=stod(tmp);
@@ -147,11 +167,6 @@ Variables::readIonFile(char* infile){
 			}
 			dihedrals.push_back(d);
 		}
-		if (iflag==9) {
-			int atom;
-			atom=stoi(str);
-			molecules.push_back(atom);
-		}
 	}
 	pair_coeff.resize(num_atoms);
 	for (int i=0;i<num_atoms;i++){
@@ -164,9 +179,8 @@ Variables::readIonFile(char* infile){
 		for (int j=0;j<num_atoms;j++){
 			double epu=sqrt(atypes[i].coeff1*atypes[j].coeff1);
 			double sigma=(atypes[i].coeff2+atypes[j].coeff2)*0.5;
-			//sigma=sqrt(atypes[i].coeff2*atypes[j].coeff2);
 			pair_coeff[i][j][0]=48 * epu*pow(sigma,12.0);
-			pair_coeff[j][j][1]=24 * epu*pow(sigma,6.0);
+			pair_coeff[i][j][1]=24 * epu*pow(sigma,6.0);
 		}
 	}
   return num_atoms;

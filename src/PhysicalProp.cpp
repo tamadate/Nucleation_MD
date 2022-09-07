@@ -34,6 +34,7 @@ Physical::setPhysicalProp(int gastype, double T, double p){
 	cvapor=sqrt(8*kb*T/M_PI/mvapor);
 
 	printf("Ion mass\t\t%f g/mol\nIon charges\t\t%f\n", Mion,z);
+	printf("Vapor mass\t\t%f g/mol\n", Mvapor);
 	cout<<"**************************************************"<<endl;
 	cout<<"**************************************************"<<endl;
 	cout<<"**************************************************"<<endl;
@@ -46,7 +47,6 @@ Physical::readAtomsFile(char* infile){
 	string str;
 	int iflag=0;
 	while(getline(stream,str)) {
-		cout<<str<<endl;
 		if(str.length()==0) continue;
 		if (str=="atom type name mass coeff1 coeff2") {iflag=1; continue;}
 		if (str=="atoms") {iflag=2; continue;}
@@ -76,7 +76,6 @@ Physical::readAtomsFile(char* infile){
 			z+=charge;
 		}
 	}
-	cout<<Mion<<endl;
 }
 
 void

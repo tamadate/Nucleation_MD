@@ -21,10 +21,13 @@ Variables::Variables(void) {
 void
 Variables::read_initial(char* ionFile, char* vaporFile) {
   int Ntype_ion=readIonFile(ionFile);
+  cout<<"before readVap"<<endl;
   int Ntype_vapor=readVaporFile(vaporFile);
+  cout<<"before BMH"<<endl;
   setBMHPotential();
   setCrossPotentials(Ntype_ion,Ntype_vapor);
   ionRotation();
+  cout<<"after readinitial"<<endl;
 }
 
 

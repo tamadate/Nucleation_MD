@@ -1,6 +1,7 @@
 
 struct Atom_type {
 	double mass;
+	std::string name;
 	double coeff1, coeff2;
 };
 //------------------------------------------------------------------------
