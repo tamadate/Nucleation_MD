@@ -22,8 +22,8 @@ PotentialBorn::compute(Variables *vars, FLAG *flags) {
 			double r2inv = 1/rsq;
 			double r6inv = r2inv * r2inv * r2inv;
 			double r=sqrt(rsq);
-			int type1=ions[i].type-11;
-			int type2=ions[j].type-11;
+			int type1=ions[i].type;
+			int type2=ions[j].type;
 
 //vars->bornCoeff[type1][type2][0]=A
 //vars->bornCoeff[type1][type2][1]=6C

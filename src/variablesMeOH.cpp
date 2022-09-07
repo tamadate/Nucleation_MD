@@ -155,19 +155,19 @@ Variables::dihedralMeOH(void) {
 	d.atom2 = 1;
 	d.atom3 = 0;
 	d.atom4 = 3;
-	d.type = 1;
+	d.type = 3;
 	dihedralsMeOH.push_back(d);
 	d.atom1 = 2;
 	d.atom2 = 1;
 	d.atom3 = 0;
 	d.atom4 = 4;
-	d.type = 1;
+	d.type = 3;
 	dihedralsMeOH.push_back(d);
 	d.atom1 = 2;
 	d.atom2 = 1;
 	d.atom3 = 0;
 	d.atom4 = 5;
-	d.type = 1;
+	d.type = 3;
 	dihedralsMeOH.push_back(d);
 
 	return dihedralsMeOH;

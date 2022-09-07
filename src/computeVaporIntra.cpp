@@ -11,9 +11,9 @@
 void
 PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 	Molecule *vapors = vars->vapors.data();
-	Bond_type *btypes = vars->btypes.data();
-	Angle_type *ctypes = vars->ctypes.data();
-	Dihedral_type *dtypes = vars->dtypes.data();
+	Bond_type *btypes = vars->btypes_v.data();
+	Angle_type *ctypes = vars->ctypes_v.data();
+	Dihedral_type *dtypes = vars->dtypes_v.data();
 
 	double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
 
@@ -90,7 +90,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			vapors[I].inAtoms[k].fz += f3[2];
 			if (flags->eflag) vars->Utotal.Uvap+= tk*dtheta;
 		}
-		
+
 
 		for (auto &d : vapors[I].dihedrals) {
 			int i=d.atom1, j=d.atom2, k=d.atom3, l=d.atom4, type=d.type;

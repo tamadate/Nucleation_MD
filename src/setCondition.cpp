@@ -1,14 +1,15 @@
 #include "md.hpp"
 
 void
-MD::setCondition(char* condfile, char* file){
-	readCondFile(condfile, file);
-	pp->readAtomsFile(file);
-	pp->setPhysicalProp(gastype,vaportype,T,p);
+MD::setCondition(char* condfile){
+	readCondFile(condfile);
+	pp->readAtomsFile(atomFile);
+	pp->readVaporFile(vaporFile);
+	pp->setPhysicalProp(gastype,T,p);
 }
 
 void
-MD::readCondFile(char* condfile, char* file){
+MD::readCondFile(char* condfile){
 	ifstream stream(condfile);
 	string str;
 	int iflag=0;
@@ -48,18 +49,30 @@ MD::readCondFile(char* condfile, char* file){
 				if (loop==0){
 					if(tmp=="He"){
 						gastype=1;
+						vars->atypes_g.mass=4.027;
+						vars->atypes_g.coeff1=0.0203;
+						vars->atypes_g.coeff2=2.556;
 						cout<<"Gastype\t\t\tHe"<<endl;
 					}
 					if(tmp=="N2"){
 						gastype=2;
+						vars->atypes_g.mass=14.01;
+						vars->atypes_g.coeff1=0.1636;
+						vars->atypes_g.coeff2=3.18086478325;
 						cout<<"Gastype\t\t\tN2(diatomic)"<<endl;
 					}
 					if(tmp=="N2monoatomic"){
 						gastype=3;
+						vars->atypes_g.mass=28.02;
+						vars->atypes_g.coeff1=0.14397;
+						vars->atypes_g.coeff2=3.798;
 						cout<<"Gastype\t\t\tN2(monoatomic)"<<endl;
 					}
 					if(tmp=="Ar"){
 						gastype=4;
+						vars->atypes_g.mass=28.02;
+						vars->atypes_g.coeff1=0.14397;
+						vars->atypes_g.coeff2=3.798;
 						cout<<"Gastype\t\t\tAr"<<endl;
 					}
 				}
@@ -69,6 +82,10 @@ MD::readCondFile(char* condfile, char* file){
 				}
 				loop++;
 			}
+			double epu=sqrt(vars->atypes_g.coeff1*vars->atypes_g.coeff1);
+			double sigma=(vars->atypes_g.coeff2+vars->atypes_g.coeff2)*0.5;
+			vars->pair_coeff_g[0]=48 * epu*pow(sigma,12.0);
+			vars->pair_coeff_g[1]=24 * epu*pow(sigma,6.0);
 		}
 		if (iflag==2) {
 			calculation_number=stoi(str);
@@ -101,18 +118,8 @@ MD::readCondFile(char* condfile, char* file){
 			int loop=0;
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0){
-					if(tmp=="MeOH"){
-						vaportype=1;
-						cout<<"Vapor type\t\tMeOH"<<endl;
-					}
-					if(tmp=="H2O"){
-						vaportype=2;
-						cout<<"Vapor type\t\tH2O"<<endl;
-					}
-					if(tmp=="EtOH"){
-						vaportype=3;
-						cout<<"Vapor type\t\tEtOH"<<endl;
-					}
+					strcpy(vaporFile,tmp.c_str());
+					cout<<"Vapor file -->\t\t"<<tmp<<endl;
 				}
 				if (loop==1) {
 					Nof_around_vapor=stoi(tmp);
@@ -236,9 +243,10 @@ MD::readCondFile(char* condfile, char* file){
 			}
 		}
 		if (iflag==26) {
-			strcpy(file,str.c_str());
+			strcpy(atomFile,str.c_str());
 			cout<<"Atom file -->\t\t"<<str<<endl;
 		}
+
 	}
 	d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;//pow(28.0855*8/6.02e23/(2.218e-24),1/3.0)*5;
 	V=d_size*d_size*d_size;

@@ -9,9 +9,6 @@
 void
 PotentialIntraTIP3P::compute(Variables *vars, FLAG *flags) {
 	Molecule *vapors = vars->vapors.data();
-	Bond_type *btypes = vars->btypes.data();
-	Angle_type *ctypes = vars->ctypes.data();
-
 
 	double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
 	vars->times.tvap-=omp_get_wtime();

@@ -1,22 +1,19 @@
 
 struct Atom_type {
- 	int type;
 	double mass;
 	double coeff1, coeff2;
 };
 //------------------------------------------------------------------------
 struct Bond_type {
- 	int type;
 	double coeff[2];
 };
 //------------------------------------------------------------------------
 struct Angle_type {
- 	int type;
 	double coeff[2];
 };
 //------------------------------------------------------------------------
 struct Dihedral_type {
- 	int type, multi;
+ 	int multi;
 	double coeff[15];
 };
 //------------------------------------------------------------------------

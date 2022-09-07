@@ -41,14 +41,14 @@ teq=1e-6     # equilibliumed time [s]
 tcut=1e-13       # cut residence time [s]
 Nmax=40         # Max number of sticking vapors
 dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/NaCl/Na2Cl/"
+directory="../../../nucleation/arginine/"
 #directory="../../../nucleation/angio2+/100/"
-I=3
+I=1
 
 startTime=2e-9
 endTime=5e-9
 
-checkMode=0
+checkMode=0 # display
 figOutput=1
 
 #-----------------------------------------------------------------------------#

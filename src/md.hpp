@@ -36,8 +36,8 @@ class MD {
 	double CL2;
 	double d_size;
 	double V;
-	void setCondition(char* condfile, char* file);
-	void readCondFile(char* condfile, char* file);
+	void setCondition(char* condfile);
+	void readCondFile(char* condfile);
 
 	long int itime;
 	std::vector<long int> collisionFlagGas;
@@ -117,6 +117,7 @@ class MD {
 		void display(int output_ONOFF);
 		char filepath[100];
 		char atomFile[100];
+		char vaporFile[100];
 		char filepath_gyration[100];
 		void fix_cell_center(void);
 		void gyration_initial(void);
