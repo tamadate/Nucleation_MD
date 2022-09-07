@@ -50,6 +50,7 @@ MD::readCondFile(char* condfile){
 					if(tmp=="He"){
 						gastype=1;
 						vars->atypes_g.mass=4.027;
+						vars->atypes_g.name="He";
 						vars->atypes_g.coeff1=0.0203;
 						vars->atypes_g.coeff2=2.556;
 						cout<<"Gastype\t\t\tHe"<<endl;
@@ -57,6 +58,7 @@ MD::readCondFile(char* condfile){
 					if(tmp=="N2"){
 						gastype=2;
 						vars->atypes_g.mass=14.01;
+						vars->atypes_g.name="N";
 						vars->atypes_g.coeff1=0.1636;
 						vars->atypes_g.coeff2=3.18086478325;
 						cout<<"Gastype\t\t\tN2(diatomic)"<<endl;
@@ -64,6 +66,7 @@ MD::readCondFile(char* condfile){
 					if(tmp=="N2monoatomic"){
 						gastype=3;
 						vars->atypes_g.mass=28.02;
+						vars->atypes_g.name="N2";
 						vars->atypes_g.coeff1=0.14397;
 						vars->atypes_g.coeff2=3.798;
 						cout<<"Gastype\t\t\tN2(monoatomic)"<<endl;
@@ -71,6 +74,7 @@ MD::readCondFile(char* condfile){
 					if(tmp=="Ar"){
 						gastype=4;
 						vars->atypes_g.mass=28.02;
+						vars->atypes_g.name="Ar";
 						vars->atypes_g.coeff1=0.14397;
 						vars->atypes_g.coeff2=3.798;
 						cout<<"Gastype\t\t\tAr"<<endl;
