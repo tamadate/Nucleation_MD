@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------
 
 void
-Physical::setPhysicalProp(int gastype, int vaportype, double T, double p){
+Physical::setPhysicalProp(int gastype, double T, double p){
 	if(gastype==1) {
 		Mgas=MHe;
 		myu=myuHe;
@@ -24,9 +24,6 @@ Physical::setPhysicalProp(int gastype, int vaportype, double T, double p){
 		myu=myuAr*pow(T/TrefAr,1.5)*(TrefAr+SAr)/(T+SAr);
 		alphagas=alphaAr;
 	}
-	if(vaportype==1) Mvapor=MMeOH;
-	if(vaportype==2) Mvapor=MH2O;
-	if(vaportype==3) Mvapor=MEtOH;
 	mvapor=Mvapor/Nw/1000.0;
 	mgas=Mgas/Nw/1000.0;
 	m=Mion/Nw/1000.0;
@@ -37,6 +34,7 @@ Physical::setPhysicalProp(int gastype, int vaportype, double T, double p){
 	cvapor=sqrt(8*kb*T/M_PI/mvapor);
 
 	printf("Ion mass\t\t%f g/mol\nIon charges\t\t%f\n", Mion,z);
+	printf("Vapor mass\t\t%f g/mol\n", Mvapor);
 	cout<<"**************************************************"<<endl;
 	cout<<"**************************************************"<<endl;
 	cout<<"**************************************************"<<endl;
@@ -76,6 +74,40 @@ Physical::readAtomsFile(char* infile){
 			mass=atype[type-1];
 			Mion+=mass;
 			z+=charge;
+		}
+	}
+}
+
+void
+Physical::readVaporFile(char* infile){
+	ifstream stream(infile);
+	string str;
+	int iflag=0;
+	while(getline(stream,str)) {
+		if(str.length()==0) continue;
+		if (str=="atom type name mass coeff1 coeff2") {iflag=1; continue;}
+		if (str=="atoms") {iflag=2; continue;}
+		if (str=="bonds") {break;}
+	    string tmp;
+    	istringstream stream(str);
+		if (iflag==1) {
+			int loop=0;
+			double mass;
+			while(getline(stream,tmp,'\t')) {
+				if (loop==2) mass=stod(tmp);
+				loop++;
+			}
+			atype_v.push_back(mass);
+		}
+		if (iflag==2) {
+			int loop=0;
+			int type, id;
+			while(getline(stream,tmp,'\t')) {
+				if (loop==1) type=stoi(tmp)-1;
+				loop++;
+			}
+			double mass=atype[type];
+			Mvapor+=mass;
 		}
 	}
 }

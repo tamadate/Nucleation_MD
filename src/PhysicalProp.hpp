@@ -14,12 +14,14 @@ public:
 
 
 	/*******************FUNCTION************************/
-	void setPhysicalProp(int gastype, int vaportype, double T, double p);
+	void setPhysicalProp(int gastype, double T, double p);
 	void readAtomsFile(char* infile);
+	void readVaporFile(char* infile);
 
 	Physical(void){};
 	~Physical(void){};
 
 private:
 	std::vector<double> atype;
+	std::vector<double> atype_v;
 };

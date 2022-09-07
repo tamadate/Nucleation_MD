@@ -61,16 +61,37 @@ public:
 	std::vector<Dihedral_type> dtypes;
 	std::vector<int> molecules;
 	std::vector<Atom> atomVapor;
-	std::vector<Bond> bondMeOH(void);
-	std::vector<Angle> angleMeOH(void);
-	std::vector<Dihedral> dihedralMeOH(void);
 	std::vector<Atom> atomGas(int gastype);
 	std::vector<vector<vector<double>>> pair_coeff;
+
+	std::vector<Bond> bonds_v;
+	std::vector<Angle> angles_v;
+	std::vector<Dihedral> dihedrals_v;
+	std::vector<Atom_type> atypes_v;
+	std::vector<Bond_type> btypes_v;
+	std::vector<Angle_type> ctypes_v;
+	std::vector<Dihedral_type> dtypes_v;
+	std::vector<vector<vector<double>>> pair_coeff_v;
+
+	std::vector<vector<vector<double>>> pair_coeff_vi;
+	std::vector<vector<double>> pair_coeff_vg;
+	std::vector<vector<double>> pair_coeff_gi;
+
+	Atom_type atypes_g;
+	double pair_coeff_g[2];
+
 	double bornCoeff[2][2][5];
 
+	void setGasPotentials(void);
+	void setBMHPotential(void);
+	void setCrossPotentials(int Nion,int Nvapor);
+
 	/*initialization and export to dump file*/
-	void read_initial(char* infile);
+	void read_initial(char* ionFile, char* vaporFile);
+	int readIonFile(char* infile);
+	int readVaporFile(char* infile);
 	void ionInitialVelocity(double T);
+	void ionRotation(void);
 	double totalPotential;
 	double totalVirial;
 
@@ -80,8 +101,6 @@ public:
 		Z = x*sin(B)-y*sin(A)*cos(B)+z*cos(A)*cos(B);
 	}
 
-	std::vector<Atom> makeAtomMeOH(void);
-	std::vector<Atom> makeAtomTIP3P(void);
 
 
 private:

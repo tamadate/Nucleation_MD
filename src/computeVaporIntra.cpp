@@ -11,9 +11,9 @@
 void
 PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 	Molecule *vapors = vars->vapors.data();
-	Bond_type *btypes = vars->btypes.data();
-	Angle_type *ctypes = vars->ctypes.data();
-	Dihedral_type *dtypes = vars->dtypes.data();
+	Bond_type *btypes_v = vars->btypes_v.data();
+	Angle_type *ctypes_v = vars->ctypes_v.data();
+	Dihedral_type *dtypes_v = vars->dtypes_v.data();
 
 	double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
 
@@ -38,8 +38,8 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			dz1 = vapors[I].inAtoms[i].qz - vapors[I].inAtoms[j].qz;
 			rsq1 = (dx1 * dx1 + dy1 * dy1 + dz1 * dz1);
 			r1 = sqrt(rsq1);
-			double dr = (r1-btypes[type].coeff[1]);
-			double rk = btypes[type].coeff[0] * dr;
+			double dr = (r1-btypes_v[type].coeff[1]);
+			double rk = btypes_v[type].coeff[0] * dr;
 			double force_bond_harmonic;
 			force_bond_harmonic = -2.0*rk/r1;
 			vapors[I].inAtoms[i].fx += force_bond_harmonic * dx1;
@@ -67,8 +67,8 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			C = dx1*dx2 + dy1*dy2 + dz1*dz2;
 			C /= r1*r2;
 			Cs = 1/(sqrt(1.0-C*C));
-			dtheta = acos(C) - ctypes[type].coeff[1];
-			tk = ctypes[type].coeff[0] * dtheta;
+			dtheta = acos(C) - ctypes_v[type].coeff[1];
+			tk = ctypes_v[type].coeff[0] * dtheta;
 			a = -2.0 * tk * Cs;
 			a11 = a*C / rsq1;
 			a12 = -a / (r1*r2);
@@ -90,7 +90,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			vapors[I].inAtoms[k].fz += f3[2];
 			if (flags->eflag) vars->Utotal.Uvap+= tk*dtheta;
 		}
-		
+
 
 		for (auto &d : vapors[I].dihedrals) {
 			int i=d.atom1, j=d.atom2, k=d.atom3, l=d.atom4, type=d.type;
@@ -129,27 +129,27 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			s = rg*rabinv*(ax*vb3x + ay*vb3y + az*vb3z);
 
 			df = 0.0;
-			int J= dtypes[type].multi;
+			int J= dtypes_v[type].multi;
 
 			for(int JJ=0;JJ<J;JJ++){
 				int JJ5=JJ*5;
 				p_=1.0;
 				ddf1=df1=0.0;
-				for (int loop=0; loop<dtypes[type].coeff[JJ5+1]; loop++){
+				for (int loop=0; loop<dtypes_v[type].coeff[JJ5+1]; loop++){
 					ddf1 = p_*c - df1*s;
 					df1 = p_*s + df1*c;
 					p_ = ddf1;
 				}
-				p_ = p_*dtypes[type].coeff[JJ5+3] + df1*dtypes[type].coeff[JJ5+4];
-				df1 = df1*dtypes[type].coeff[JJ5+3] - ddf1*dtypes[type].coeff[JJ5+4];
-				df1 *= -dtypes[type].coeff[JJ5+1];
+				p_ = p_*dtypes_v[type].coeff[JJ5+3] + df1*dtypes_v[type].coeff[JJ5+4];
+				df1 = df1*dtypes_v[type].coeff[JJ5+3] - ddf1*dtypes_v[type].coeff[JJ5+4];
+				df1 *= -dtypes_v[type].coeff[JJ5+1];
 				p_ += 1.0;
-		        if(dtypes[type].coeff[1]==0){
-		            p_=1.0+dtypes[type].coeff[JJ5+3];
+		        if(dtypes_v[type].coeff[1]==0){
+		            p_=1.0+dtypes_v[type].coeff[JJ5+3];
 		            df1=0.0;
 		        }
-				df += (-dtypes[type].coeff[JJ5] * df1);
-				if (flags->eflag) vars->Utotal.Uvap+= dtypes[type].coeff[JJ5] * p_;
+				df += (-dtypes_v[type].coeff[JJ5] * df1);
+				if (flags->eflag) vars->Utotal.Uvap+= dtypes_v[type].coeff[JJ5] * p_;
 			}
 
 			fg = vb1x*vb2xm + vb1y*vb2ym + vb1z*vb2zm;

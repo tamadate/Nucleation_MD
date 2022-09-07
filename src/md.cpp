@@ -32,13 +32,10 @@ MD::MD(char* condfile, int calcNumber) {
 	T=300;
 	p=1e5;
 
-	setCondition(condfile, atomFile);
+	setCondition(condfile);
 	output_initial();
 
-	if(vaportype==1) vars->atomVapor = vars->makeAtomMeOH();
-	if(vaportype==2) vars->atomVapor = vars->makeAtomTIP3P();
-
-	vars->read_initial(atomFile);
+	vars->read_initial(atomFile,vaporFile);
 	vars->ionInitialVelocity(T);
 
 	setPotential(flags,1);

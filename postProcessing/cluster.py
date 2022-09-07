@@ -37,19 +37,18 @@ lineWidth=0.8
 
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=0.5e-6     # equilibliumed time [s]
+teq=1e-6     # equilibliumed time [s]
 tcut=1e-13       # cut residence time [s]
 Nmax=40         # Max number of sticking vapors
-dt=1e-15	    # simulation time step, dt [s]
 dt_post=1e-11   # dt in analysis, dt_post [s]
 directory="../../../nucleation/arginine/"
 #directory="../../../nucleation/angio2+/100/"
-I=2
+I=1
 
 startTime=2e-9
 endTime=5e-9
 
-checkMode=0
+checkMode=0 # display
 figOutput=1
 
 #-----------------------------------------------------------------------------#
@@ -90,7 +89,6 @@ axs.flat[0].legend()
 inVapor=np.loadtxt(str(directory)+"vapor_in_"+str(I)+".dat")
 outVapor=np.loadtxt(str(directory)+"vapor_out_"+str(I)+".dat")
 
-postStep=int(dt_post/dt)								# dt in analysis, dt_post [s]
 Npost=int(t_tot/dt_post)					# total number of steps in analysis, Npost=/dt_post
 
 times=np.arange(Npost)*dt_post
@@ -116,13 +114,13 @@ def function(t,v,x0):
 	return (delta2-r)**2+fac
 
 for iin in np.arange(np.size(inVapor.T[0])):
-    time1=inVapor[iin][1]*dt
+    time1=inVapor[iin][1]*1e-15
     time2=0
     for loop in np.arange(np.size(usedLines)):
         if(usedLines[loop]==-1):
             continue
         if(outVapor[loop][0]==inVapor[iin][0]):
-            time2=outVapor[loop][1]*dt
+            time2=outVapor[loop][1]*1e-15
             usedLines[loop]=-1
             break
     if(time2!=0):
@@ -132,7 +130,7 @@ for iin in np.arange(np.size(inVapor.T[0])):
     result=minimize(function,x0=100000,args=(inVapor[iin][5:8],inVapor[iin][2:5]))	# args=((vx,vy,vz),(x,y,z))
     if(time1<teq):
         time1=t_tot
-    ts[iin]=time2-time1-result.x[0]*dt	# result.x[0] is theoretical residence time in interaction sphere
+    ts[iin]=time2-time1-result.x[0]*1e-15	# result.x[0] is theoretical residence time in interaction sphere
     tth[iin]=time2-time1	# result.x[0] is theoretical residence time in interaction sphere
 
 #np.savetxt("ts.dat",ts)
@@ -164,10 +162,14 @@ if(checkMode==1):
 
 
 #-----------------------------------------------------------------------------#
-negs=np.where(ts<tcut)	# indexes of ts<1e-9
+negs=np.where((ts<tcut))	# indexes of ts<tcut
 tsave=np.average(np.delete(ts,negs))	# average sticking time [s]
-betaC=np.size(np.delete(ts,negs))/t_tot	# vapor collision flux with ion [1/s]
+betaC=np.size(np.delete(ts,negs))/(t_tot-teq)	# vapor collision flux with ion [1/s]
 ram=betaC*tsave		# ramda for Poisson distribution
+
+Nbase=np.min(Nstick[int(teq/dt_post):])
+Nave=np.average(Nstick[int(teq/dt_post):])
+#ram=Nave-Nbase
 
 nv=np.arange(Nmax)
 ppoi=np.zeros(Nmax)
@@ -178,7 +180,7 @@ for i in Nstick[int(teq/dt_post):]:
     psim[int(i)]+=1
 psim/=np.size(Nstick[int(teq/dt_post):])
 
-Nbase=np.min(Nstick[int(teq/dt_post):])
+
 axs.flat[3].set_title("(d) Sticking vapor distribution",loc='left',fontsize=titleSize)
 axs.flat[3].set_title("")
 axs.flat[3].set_xlabel("Number of sticking vapor",fontsize=labelSize)

@@ -135,16 +135,6 @@ class PotentialVaporIntra : public Potential {
 		~PotentialVaporIntra(){};
 };
 
-class PotentialIntraTIP3P : public Potential {
-	private:
-		string potName="TIP3P vapor";
-	public:
-		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
-		PotentialIntraTIP3P(){};
-		~PotentialIntraTIP3P(){};
-};
-
 
 
 class PotentialSW : public Potential {

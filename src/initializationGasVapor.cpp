@@ -148,9 +148,9 @@ MD::initialization_vapor(void) {
 					b.fzMP.push_back(0);
 				}
 			}
-			a.bonds=vars->bondMeOH();
-			a.angles=vars->angleMeOH();
-			a.dihedrals=vars->dihedralMeOH();
+			a.bonds=vars->bonds_v;
+			a.angles=vars->angles_v;
+			a.dihedrals=vars->dihedrals_v;
 			a.inFlag=0;
 			vars->vapors.push_back(a);
 			i++;

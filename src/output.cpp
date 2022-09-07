@@ -197,18 +197,18 @@ MD::export_dump_close(void) {
 	if(flags->dump_fix==1) {X=ion_r[0];Y=ion_r[1];Z=ion_r[2];}
 	int ID=0;
 	for (auto &a : vars->ions) {
-		fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,a.type,a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
+		fprintf(f,"%d %s %f %f %f %f %f %f\n",ID,vars->atypes[a.type].name.c_str(),a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
 		ID++;
 	}
     for (auto &a : vars->gas_in) {
 		for (auto &b : vars->gases[a].inAtoms) {
-			fprintf(f, "%d %d %f %f %f %f %f %f\n", ID, b.type, b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes_g.name+"(g)").c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
 			ID++;
 		}
 	}
     for (auto &a : vars->vapor_in) {
 		for (auto &b : vars->vapors[a].inAtoms) {
-			fprintf(f, "%d %d %f %f %f %f %f %f\n", ID, b.type, b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes_v[b.type].name+"(v)").c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
 			ID++;
 		}
 	}
