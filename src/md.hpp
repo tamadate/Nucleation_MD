@@ -73,6 +73,7 @@ class MD {
 	void make_pair_gasion(void);
 	void make_pair_gasvapor(void);
 	void make_pair_vaporion(void);
+	void make_pair_vaporvapor();
 	void check_pairlist(void);
   void makeDiatomicProp_in(int i);
   void makeDiatomicProp_out(int i);

@@ -52,6 +52,7 @@ public:
 	std::vector<Pair> pairs_gi;	/*	gas-ion interaction pair list	*/
 	std::vector<Pair> pairs_gv;	/*	gas-vapor interaction pair list	*/
 	std::vector<Pair> pairs_gg;	/*	gas-gas interaction pair list	*/
+	std::vector<Pair> pairs_vv;	/*	gas-gas interaction pair list	*/
 	std::vector<Bond> bonds;
 	std::vector<Angle> angles;
 	std::vector<Dihedral> dihedrals;

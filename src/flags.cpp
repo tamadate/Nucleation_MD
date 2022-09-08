@@ -30,11 +30,11 @@ FLAG::FLAG(void) {
 //	gas-gas interaction
 	inter_gg=0;
 
-	inter_vv=1;
+	inter_vv=0;
 
-	inter_vg=1;
+	inter_vg=0;
 
-	inter_vi=1;
+	inter_vi=0;
 
 	vapor_intra=1;
 

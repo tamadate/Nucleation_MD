@@ -20,129 +20,172 @@ MD::readCondFile(char* condfile){
 	cout<<"**************************************************"<<endl;
 	while(getline(stream,str)) {
 		if(str.length()==0) continue;
-		if (str=="Gas") {iflag=1; continue;}
-		if (str=="Calculation number") {iflag=2; continue;}
-		if (str=="Temperature"||str=="T") {iflag=3; continue;}
-		if (str=="Pressure"||str=="P") {iflag=4; continue;}
-		if (str=="Time step"||str=="dt") {iflag=5; continue;}
-		if (str=="Total number of steps") {iflag=6; continue;}
-		if (str=="Number of steps for relax") {iflag=7; continue;}
-		if (str=="Vapor") {iflag=8; continue;}
-		if (str=="Cut off length") {iflag=9; continue;}
-		if (str=="Margin size") {iflag=10; continue;}
-		if (str=="Number of steps for repre") {iflag=11; continue;}
-		if (str=="Gyration path") {iflag=16; continue;}
-		if (str=="RDF path") {iflag=17; continue;}
-		if (str=="gas gas interaction") {iflag=18; continue;}
-		if (str=="gas ion interaction") {iflag=19; continue;}
-		if (str=="ion ion interaction") {iflag=20; continue;}
-		if (str=="Nose-Hoover ion") {iflag=21; continue;}
-		if (str=="Nose-Hoover gas") {iflag=22; continue;}
-		if (str=="Output") {iflag=23; continue;}
-		if (str=="Electric field") {iflag=25; continue;}
-		if (str=="Input") {iflag=26; continue;}
-		if (iflag==1) {
-			istringstream stream(str);
-			string tmp;
-			int loop=0;
-			while(getline(stream,tmp,'\t')) {
-				if (loop==0){
-					if(tmp=="He"){
-						gastype=1;
-						vars->atypes_g.mass=4.027;
-						vars->atypes_g.name="He";
-						vars->atypes_g.coeff1=0.0203;
-						vars->atypes_g.coeff2=2.556;
-						cout<<"Gastype\t\t\tHe"<<endl;
-					}
-					if(tmp=="N2"){
-						gastype=2;
-						vars->atypes_g.mass=14.01;
-						vars->atypes_g.name="N";
-						vars->atypes_g.coeff1=0.1636;
-						vars->atypes_g.coeff2=3.18086478325;
-						cout<<"Gastype\t\t\tN2(diatomic)"<<endl;
-					}
-					if(tmp=="N2monoatomic"){
-						gastype=3;
-						vars->atypes_g.mass=28.02;
-						vars->atypes_g.name="N2";
-						vars->atypes_g.coeff1=0.14397;
-						vars->atypes_g.coeff2=3.798;
-						cout<<"Gastype\t\t\tN2(monoatomic)"<<endl;
-					}
-					if(tmp=="Ar"){
-						gastype=4;
-						vars->atypes_g.mass=28.02;
-						vars->atypes_g.name="Ar";
-						vars->atypes_g.coeff1=0.14397;
-						vars->atypes_g.coeff2=3.798;
-						cout<<"Gastype\t\t\tAr"<<endl;
-					}
-				}
-				if (loop==1) {
-					Nof_around_gas=stoi(tmp);
-					cout<<"Number of gases\t\t"<<Nof_around_gas<<endl;
-				}
-				loop++;
+		std::vector<string> readings;
+		istringstream stream(str);
+		string reading;
+		while(getline(stream,reading,'\t')) {
+			readings.push_back(reading);
+		}
+		if(readings[0]=="Input"){
+			strcpy(atomFile,readings[1].c_str());
+			cout<<"Atom file -->\t\t"<<readings[1]<<endl;
+		}
+		if(readings[0]=="Vapor"){
+			strcpy(vaporFile,readings[1].c_str());
+			Nof_around_vapor=stoi(readings[2]);
+			cout<<"Vapor file -->\t\t"<<readings[1]<<endl;
+			cout<<"Number of vapors\t"<<Nof_around_vapor<<endl;
+		}
+		if(readings[0]=="Gas"){
+			if(readings[1]=="He"){
+				gastype=1;
+				vars->atypes_g.mass=4.027;
+				vars->atypes_g.name="He";
+				vars->atypes_g.coeff1=0.0203;
+				vars->atypes_g.coeff2=2.556;
 			}
+			if(readings[1]=="N2"){
+				gastype=2;
+				vars->atypes_g.mass=14.01;
+				vars->atypes_g.name="N";
+				vars->atypes_g.coeff1=0.1636;
+				vars->atypes_g.coeff2=3.18086478325;
+			}
+			if(readings[1]=="N2monoatomic"){
+				gastype=3;
+				vars->atypes_g.mass=28.02;
+				vars->atypes_g.name="N2";
+				vars->atypes_g.coeff1=0.14397;
+				vars->atypes_g.coeff2=3.798;
+			}
+			if(readings[1]=="Ar"){
+				gastype=4;
+				vars->atypes_g.mass=28.02;
+				vars->atypes_g.name="Ar";
+				vars->atypes_g.coeff1=0.14397;
+				vars->atypes_g.coeff2=3.798;
+			}
+			Nof_around_gas=stoi(readings[2]);
 			double epu=sqrt(vars->atypes_g.coeff1*vars->atypes_g.coeff1);
 			double sigma=(vars->atypes_g.coeff2+vars->atypes_g.coeff2)*0.5;
 			vars->pair_coeff_g[0]=48 * epu*pow(sigma,12.0);
 			vars->pair_coeff_g[1]=24 * epu*pow(sigma,6.0);
+			cout<<"Gastype\t\t\t"<<readings[1]<<endl;
+			cout<<"Number of gases\t\t"<<Nof_around_gas<<endl;
 		}
-		if (iflag==2) {
-			calculation_number=stoi(str);
-		}
-		if (iflag==3) {
-			T=stod(str);
+		if(readings[0]=="Temperature"){
+			T=stod(readings[1]);
 			cout<<"Temperature\t\t"<<T<<" K"<<endl;
 		}
-		if (iflag==4) {
-			p=stod(str);
+		if(readings[0]=="Pressure"){
+			p=stod(readings[1]);
 			cout<<"Pressure\t\t"<<p<<" Pa"<<endl;
 		}
-		if (iflag==5) {
-			dt=stod(str);
+		if (readings[0]=="dt") {
+			dt=stod(readings[1]);
 			cout<<"Time step\t\t"<<dt<<" fs"<<endl;
 		}
-		if (iflag==6) {
-			double inter=stod(str);
-			Noftimestep=inter;
+		if (readings[0]=="TotalSteps") {
+			Noftimestep=stod(readings[1]);
 			cout<<"Total steps\t\t"<<float(Noftimestep)<<endl;
 		}
-		if (iflag==7) {
-			double inter=stod(str);
-			step_relax=inter;
+		if (readings[0]=="RelaxSteps") {
+			step_relax=stod(readings[1]);
 			cout<<"Relax steps\t\t"<<float(step_relax)<<endl;
 		}
-		if (iflag==8) {
-			istringstream stream(str);
-			string tmp;
-			int loop=0;
-			while(getline(stream,tmp,'\t')) {
-				if (loop==0){
-					strcpy(vaporFile,tmp.c_str());
-					cout<<"Vapor file -->\t\t"<<tmp<<endl;
-				}
-				if (loop==1) {
-					Nof_around_vapor=stoi(tmp);
-					cout<<"Number of vapors\t"<<Nof_around_vapor<<endl;
-				}
-				loop++;
-			}
-		}
-		if (iflag==9) {
-			CUTOFF=stod(str);
+		if (readings[0]=="CutOff") {
+			CUTOFF=stod(readings[1]);
 			cout<<"Cutoff\t\t\t"<<CUTOFF<<" ang."<<endl;
 		}
-		if (iflag==10) {
-			MARGIN=stod(str);
+		if (readings[0]=="Margin") {
+			MARGIN=stod(readings[1]);
 			cout<<"Margin size\t\t"<<MARGIN<<" ang."<<endl;
 		}
-		if (iflag==16) {
+		if (readings[0]=="Output") {
 			ostringstream ss;
-			ss<<str<<"_"<<calculation_number<<".dat";
+			ss<<readings[1]<<"_"<<calculation_number<<".dump";
+			string tmp2=ss.str();
+			pp->dump_path=new char[tmp2.length()+1];
+			strcpy(pp->dump_path,tmp2.c_str());
+			OBSERVE=stoi(readings[2]);
+			FILE*f=fopen(pp->dump_path, "w");
+			fclose(f);
+			cout<<"Dump file -->\t\t"<<tmp2<<endl;
+		}
+		if (readings[0]=="NVTion") {
+			if (readings[1]=="OFF") {
+				flags->nose_hoover_ion=0;
+				cout<<"Nose-Hoover for ion --> OFF"<<endl;
+			}
+			else if(readings[1]=="scale") {
+				flags->nose_hoover_ion=0;
+				flags->velocity_scaling=1;
+				cout<<"Nose-Hoover for ion --> OFF\nVelocity scaling for ion --> ON"<<endl;
+			}
+			else {
+				flags->nose_hoover_ion=1;
+				pp->Tnh_ion=stod(readings[1]);
+				cout<<"Nose-Hoover for ion --> ON --> "<<pp->Tnh_ion<<" K"<<endl;
+			}
+		}
+		if (readings[0]=="NVTgas") {
+			if (readings[1]=="OFF") {
+				flags->nose_hoover_gas=0;
+				cout<<"Nose-Hoover for gas --> OFF"<<endl;
+			}
+			else {
+				flags->nose_hoover_gas=1;
+				pp->Tnh_gas=stod(readings[1]);
+				cout<<"Nose-Hoover for gas --> ON --> "<<pp->Tnh_gas<<" K"<<endl;
+			}
+		}
+
+		if (readings[0]=="Interactions") {continue;}
+		if (readings[1]=="gg") {
+			if (readings[2]=="LJ") flags->inter_gg=1;
+			else if (readings[2]=="OFF") flags->inter_gg=0;
+			else printf("**************Uknown gas gas parameter was found**************\n");
+		}
+		if (readings[1]=="gi"||readings[1]=="ig") {
+			if (readings[2]=="LJ") flags->force_lj=1;
+			else if (readings[2]=="ion dipole") flags->force_ion_dipole=1;
+			else if (readings[2]=="OFF") {
+				flags->force_ion_dipole=0;
+				flags->force_lj=0;
+			}
+			else printf("**************Uknown gas ion parameter was found**************\n");
+		}
+		if (readings[1]=="ion") {
+			if (readings[2]=="AMBER") flags->intra_AMBER=1;
+			else if (readings[2]=="Stilinger-Weber") flags->force_sw=1;
+			else if (readings[2]=="Tersoff") flags->force_ters=1;
+			else if (readings[2]=="Born-Mayer-Huggins-NaCl") flags->force_born=1;
+			else printf("**************Uknown ion parameter was found**************\n");
+		}
+		if (readings[1]=="vi"||readings[1]=="iv") {
+			if (readings[2]=="LJcoul") flags->inter_vi=1;
+			else if (readings[2]=="OFF") flags->inter_vi=0;
+			else printf("**************Uknown vapor ion parameter was found**************\n");
+		}
+		if (readings[1]=="vv"||readings[1]=="vv") {
+			if (readings[2]=="LJcoul") flags->inter_vv=1;
+			else if (readings[2]=="OFF") flags->inter_vv=0;
+			else printf("**************Uknown vapor vapor parameter was found**************\n");
+		}
+		if (readings[1]=="gv"||readings[1]=="vg") {
+			if (readings[2]=="LJ") flags->inter_vg=1;
+			else if (readings[2]=="OFF") flags->inter_vg=0;
+			else printf("**************Uknown vapor vapor parameter was found**************\n");
+		}
+		if (readings[1]=="Efield") {
+			flags->efield=1;
+			Ecoeff[0]=stod(readings[2]);
+			Ecoeff[1]=stod(readings[3]);
+			Ecoeff[2]=stod(readings[4]);
+		}
+		if (readings[0]=="Gyration") {
+			ostringstream ss;
+			ss<<readings[1]<<"_"<<calculation_number<<".dat";
 			string tmp=ss.str();
 			pp->gyration_path=new char[tmp.length()+10];
 			strcpy(pp->gyration_path,tmp.c_str());
@@ -151,106 +194,6 @@ MD::readCondFile(char* condfile){
 			fclose(f);
 			cout<<"Gyration --> ON -->\t"<<tmp<<endl;
 		}
-		if (iflag==17) {
-			pp->RDF_path=new char[str.length()+1];
-			strcpy(pp->RDF_path,str.c_str());
-			flags->RDF=1;
-			cout<<"RDF\tON\tPath="<<str<<endl;
-		}
-		if (iflag==18) {
-			if (str=="LJ") {
-				flags->inter_gg=1;
-				cout<<"gas-gas interaction -->\tON"<<endl;
-			}
-			else if (str=="LJsemiNVT") {
-				flags->inter_gg=1;
-				flags->semi_NVT_gasgas=1;
-				cout<<"gas-gas interaction -->\tON"<<endl;
-				cout<<"Boundary rescaling -->\tON"<<endl;
-			}
-			else if (str=="OFF") {
-				flags->inter_gg=0;
-				flags->semi_NVT_gasgas=0;
-				cout<<"gas-gas interaction -->\tOFF"<<endl;
-				cout<<"Boundary rescaling -->\tOFF"<<endl;
-			}
-			else printf("**************Uknown gas gas parameter was found**************\n");
-		}
-		if (iflag==19) {
-			if (str=="LJ") flags->force_lj=1;
-			else if (str=="ion dipole") flags->force_ion_dipole=1;
-			else if (str=="OFF") {
-				flags->force_ion_dipole=0;
-				flags->force_lj=0;
-			}
-			else printf("**************Uknown gas ion parameter was found**************\n");
-		}
-		if (iflag==20) {
-			if (str=="AMBER") flags->intra_AMBER=1;
-			else if (str=="Stilinger-Weber") flags->force_sw=1;
-			else if (str=="Tersoff") flags->force_ters=1;
-			else if (str=="Born-Mayer-Huggins-NaCl") flags->force_born=1;
-			else printf("**************Uknown ion ion parameter was found**************\n");
-		}
-		if (iflag==21) {
-			if (str=="OFF") {flags->nose_hoover_ion=0; cout<<"Nose-Hoover for ion --> OFF"<<endl;}
-            else{
-                if(str=="scale") {flags->nose_hoover_ion=0;flags->velocity_scaling=1; cout<<"Nose-Hoover for ion --> OFF\nVelocity scaling for ion --> ON"<<endl;}
-                else {
-                    flags->nose_hoover_ion=1;
-                    pp->Tnh_ion=stod(str);
-                    cout<<"Nose-Hoover for ion --> ON --> "<<pp->Tnh_ion<<" K"<<endl;
-                }
-            }
-		}
-		if (iflag==22) {
-			if (str=="OFF") {flags->nose_hoover_gas=0; cout<<"Nose-Hoover for gas --> OFF"<<endl;}
-			else {
-				flags->nose_hoover_gas=1;
-				pp->Tnh_gas=stod(str);
-				cout<<"Nose-Hoover for gas --> ON --> "<<pp->Tnh_gas<<" K"<<endl;
-			}
-		}
-		if (iflag==23) {
-			istringstream stream(str);
-			string tmp;
-			int loop=0;
-			while(getline(stream,tmp,'\t')) {
-				if (loop==0) {
-					ostringstream ss;
-					ss<<tmp<<"_"<<calculation_number<<".dump";
-					string tmp2=ss.str();
-					pp->dump_path=new char[tmp2.length()+1];
-					strcpy(pp->dump_path,tmp2.c_str());
-					cout<<"Dump file -->\t\t"<<tmp2<<endl;
-				}
-				if (loop==1) {
-					OBSERVE=stoi(tmp);
-				}
-				if (tmp=="w") {
-					FILE*f=fopen(pp->dump_path, "w");
-					fclose(f);
-				}
-				loop++;
-			}
-
-		}
-		if (iflag==25) {
-			istringstream stream(str);
-			string tmp;
-			int loop=0;
-			double mass;
-			flags->efield=1;
-			while(getline(stream,tmp,'\t')) {
-				Ecoeff[loop]=stod(tmp);
-				loop++;
-			}
-		}
-		if (iflag==26) {
-			strcpy(atomFile,str.c_str());
-			cout<<"Atom file -->\t\t"<<str<<endl;
-		}
-
 	}
 	d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;//pow(28.0855*8/6.02e23/(2.218e-24),1/3.0)*5;
 	V=d_size*d_size*d_size;
