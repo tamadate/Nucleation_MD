@@ -137,41 +137,36 @@ PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 void
 PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
 	Molecule *vapors = vars->vapors.data();
-	const int vs = vars->vapor_in.size();
+	const int vs = vars->pairs_vv.size();
 	vars->times.tvv-=omp_get_wtime();
-	if(vs>1){
-		#pragma omp parallel for
-		for(int i1=0; i1<vs-1; i1++){
-			int nth=omp_get_thread_num();
-			int I=vars->vapor_in[i1];
-			for (auto &av1 : vapors[I].inAtoms){
-				for(int i2=i1+1; i2<vs; i2++){
-					int J=vars->vapor_in[i2];
-					for (auto &av2 : vapors[J].inAtoms){
-						double dx = av1.qx - av2.qx;
-						double dy = av1.qy - av2.qy;
-						double dz = av1.qz - av2.qz;
-						double rsq = (dx * dx + dy * dy + dz * dz);
-						double r2inv = 1/rsq;
-						int type1=av1.type;
-						int type2=av2.type;
-						double r6inv = r2inv * r2inv * r2inv;
-						double force_lj = r6inv * (vars->pair_coeff_v[type1][type2][0] * r6inv - vars->pair_coeff_v[type1][type2][1]);
-						double force_coul = qqrd2e * av1.charge * av2.charge * sqrt(r2inv);
-						double force_pair = (force_lj + force_coul)*r2inv;
-						av1.fxMP[nth] += force_pair * dx;
-						av1.fyMP[nth] += force_pair * dy;
-						av1.fzMP[nth] += force_pair * dz;
-						av2.fxMP[nth] -= force_pair * dx;
-						av2.fyMP[nth] -= force_pair * dy;
-						av2.fzMP[nth] -= force_pair * dz;
-						if(flags->eflag) {
-							vars->U_MP[nth].Uvv+=r6inv * (vars->pair_coeff_v[type1][type2][0]/12.0 * r6inv - vars->pair_coeff_v[type1][type2][1]/6.0);
-							vars->U_MP[nth].Uvv+=force_coul;
-						}
-						//	vars->totalVirial+=force_lj;
-					}
+	#pragma omp parallel for
+	for(int i=0;i<vs;i++){
+		int nth=omp_get_thread_num();
+		Pair p=vars->pairs_vv[i];
+		for (auto &av1 : vapors[p.i].inAtoms){
+			for (auto &av2 : vapors[p.j].inAtoms){
+				double dx = av1.qx - av2.qx;
+				double dy = av1.qy - av2.qy;
+				double dz = av1.qz - av2.qz;
+				double rsq = (dx * dx + dy * dy + dz * dz);
+				double r2inv = 1/rsq;
+				int type1=av1.type;
+				int type2=av2.type;
+				double r6inv = r2inv * r2inv * r2inv;
+				double force_lj = r6inv * (vars->pair_coeff_v[type1][type2][0] * r6inv - vars->pair_coeff_v[type1][type2][1]);
+				double force_coul = qqrd2e * av1.charge * av2.charge * sqrt(r2inv);
+				double force_pair = (force_lj + force_coul)*r2inv;
+				av1.fxMP[nth] += force_pair * dx;
+				av1.fyMP[nth] += force_pair * dy;
+				av1.fzMP[nth] += force_pair * dz;
+				av2.fxMP[nth] -= force_pair * dx;
+				av2.fyMP[nth] -= force_pair * dy;
+				av2.fzMP[nth] -= force_pair * dz;
+				if(flags->eflag) {
+					vars->U_MP[nth].Uvv+=r6inv * (vars->pair_coeff_v[type1][type2][0]/12.0 * r6inv - vars->pair_coeff_v[type1][type2][1]/6.0);
+					vars->U_MP[nth].Uvv+=force_coul;
 				}
+				//	vars->totalVirial+=force_lj;
 			}
 		}
 	}

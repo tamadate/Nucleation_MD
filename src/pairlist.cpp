@@ -18,6 +18,7 @@ MD::make_pair(void){
 	update_vapor_in();
 	make_pair_gasion();
 	make_pair_gasvapor();
+	make_pair_vaporvapor();
 	if(flags->inter_gg==1) make_pair_gasgas();
 //	set number of steps to update pair list
 	Molecule *gases = vars->gases.data();
@@ -176,6 +177,23 @@ MD::make_pair_gasion(void){
 				p.i=i;
 				p.j=j;
 				vars->pairs_gi.push_back(p);
+			}
+		}
+	}
+}
+
+void
+MD::make_pair_vaporvapor(void){
+	vars->pairs_vv.clear();
+	Molecule *vapors = vars->vapors.data();
+	const int vs = vars->vapor_in.size();
+	if(vs>1){
+		Pair p;
+		for(int i1=0; i1<vs-1; i1++){
+			p.i=vars->vapor_in[i1];
+			for(int i2=i1+1; i2<vs; i2++){
+				p.j=vars->vapor_in[i2];
+				vars->pairs_vv.push_back(p);
 			}
 		}
 	}
