@@ -35,8 +35,8 @@ tcut=1e-13       # cut residence time [s]
 Nmax=30         # Max number of sticking vapors
 dt=1e-15	    # simulation time step, dt [s]
 dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/NaCl/Na2Cl/"
-I=10
+directory="../../../nucleation/NaCl/Na2Cl_toluene/"
+I=0
 checkMode=0
 
 startTime=2e-9

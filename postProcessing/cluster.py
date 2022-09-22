@@ -37,13 +37,15 @@ lineWidth=0.8
 
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=1e-6     # equilibliumed time [s]
+teq=0.5e-6     # equilibliumed time [s]
+tEND=1.5e-6
 tcut=1e-13       # cut residence time [s]
+Mvapor=74       # vapor molar mass [g/mol]
 Nmax=40         # Max number of sticking vapors
 dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/arginine/"
+directory="../../../nucleation/NaCl/Na2Cl_toluene/"
 #directory="../../../nucleation/angio2+/100/"
-I=1
+I=10
 
 startTime=2e-9
 endTime=5e-9
@@ -59,12 +61,15 @@ figOutput=1
 #-----------------------------------------------------------------------------#
 
 U=np.loadtxt(str(directory)+"U_"+str(I)+".dat")
+negs=np.where((U[:,0]>tEND*1e15))
+U=np.delete(U,negs,axis=0)
 #K=np.loadtxt("K_1.dat")
 labels=["Uion","Ugas","Uvap","Ugi","Ugg","Uvg","Uvi","Uvv"]
 display=[1,0,0,0,0,0,1,1]
 colors=["blue","blue","blue","blue","blue","blue","aqua","navy"]
 
-t_tot=np.max(U.T[0])*1e-15  # total simulation time [s]
+#t_tot=np.max(U.T[0])*1e-15  # total simulation time [s]
+t_tot=tEND  # total simulation time [s]
 Xmax=int(t_tot/200e-9)*200
 Xmax*=1.4
 
@@ -87,7 +92,13 @@ axs.flat[0].legend()
 #-----------------------------------------------------------------------------#
 
 inVapor=np.loadtxt(str(directory)+"vapor_in_"+str(I)+".dat")
+negs=np.where((inVapor[:,1]>tEND*1e15))
+inVapor=np.delete(inVapor,negs,axis=0)
+
 outVapor=np.loadtxt(str(directory)+"vapor_out_"+str(I)+".dat")
+negs=np.where((outVapor[:,1]>tEND*1e15))
+outVapor=np.delete(outVapor,negs,axis=0)
+
 
 Npost=int(t_tot/dt_post)					# total number of steps in analysis, Npost=/dt_post
 
@@ -99,7 +110,7 @@ tth=np.zeros(np.size(inVapor.T[0]))	# Number of vapors [N(t0),N(t0+dt_post),N(t1
 
 delta=1e-8	# diameter of interaction sphere [m]
 delta2=(delta*1e10)**2      # square of delta [ang^2]
-M=1/(1/0.032)		# vapor mass [kg/mol]
+M=1/(1/Mvapor)		# vapor mass [kg/mol]
 kb=1.38e-23	# boltzmann constant [J/K]
 R=8.314		# gas constant	[Jmol/K]
 T=300.0		# temperature	[K]
@@ -202,7 +213,7 @@ print ("f_FM="+str(f_FM*1e-9)+"[1/ns]\tf_sim="+str(f_sim*1e-9)+"[1/ns]")
 
 ionData=np.loadtxt(str(directory)+"ion_300_"+str(I)+".dat")
 dtInput=ionData[1][0]-ionData[0][0]
-os.system("./mobility.out "+str(I)+" 1 "+str(teq)+" "+str(startTime)+" "+str(endTime)+" "+str(dtInput*1e-9)+" "+str(directory))
+os.system("./mobility.out "+str(I)+" 1 "+str(teq)+" "+str(startTime)+" "+str(endTime)+" "+str(dtInput*1e-9)+" "+str(directory)+" "+str(tEND))
 #"ion_300_%d.dat"
 
 MSDVAF=np.loadtxt(str(directory)+"TIME_MSD_VAF."+str(I))

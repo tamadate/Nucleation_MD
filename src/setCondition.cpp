@@ -36,6 +36,17 @@ MD::readCondFile(char* condfile){
 			cout<<"Vapor file -->\t\t"<<readings[1]<<endl;
 			cout<<"Number of vapors\t"<<Nof_around_vapor<<endl;
 		}
+		if(readings[0]=="VaporStickPositions"){
+			strcpy(vaporStickFile,readings[1].c_str());
+			positionLogStep=stoi(readings[2]);
+			ifstream stream2(vaporStickFile);
+			string str2;
+			while(getline(stream2,str2)) {
+				if(str2.length()==0) continue;
+				stickPositionList.push_back(stoi(str2));
+			}
+			cout<<"Vapor stick position file -->\t\t"<<readings[1]<<endl;
+		}
 		if(readings[0]=="Gas"){
 			if(readings[1]=="He"){
 				gastype=1;
@@ -48,8 +59,8 @@ MD::readCondFile(char* condfile){
 				gastype=2;
 				vars->atypes_g.mass=14.01;
 				vars->atypes_g.name="N";
-				vars->atypes_g.coeff1=0.1636;
-				vars->atypes_g.coeff2=3.18086478325;
+				vars->atypes_g.coeff1=0.1098;
+				vars->atypes_g.coeff2=3.27351824993;
 			}
 			if(readings[1]=="N2monoatomic"){
 				gastype=3;

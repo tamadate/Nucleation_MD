@@ -40,7 +40,6 @@ MD::make_pair(void){
 	loop=0;
 }
 
-
 /////////////////////////////////////////////////////////////////////
 /*
 	make gas-ion pair list
@@ -49,32 +48,7 @@ MD::make_pair(void){
 void
 MD::update_gas_in(void){
 	Molecule *gases = vars->gases.data();
-	for (auto i : vars->gas_in){
-		double X=0;
-		double Y=0;
-		double Z=0;
-		double VX=0;
-		double VY=0;
-		double VZ=0;
-		double Mass=0;
-		for (auto &a : vars->gases[i].inAtoms){
-			X+=a.qx*a.mass;
-			Y+=a.qy*a.mass;
-			Z+=a.qz*a.mass;
-			VX+=a.px*a.mass;
-			VY+=a.py*a.mass;
-			VZ+=a.pz*a.mass;
-			Mass+=a.mass;
-		}
-      //  averaged position
-    vars->gases[i].qx=X/Mass;
-    vars->gases[i].qy=Y/Mass;
-    vars->gases[i].qz=Z/Mass;
-    //  averaged velocity
-    vars->gases[i].px=VX/Mass;
-    vars->gases[i].py=VY/Mass;
-    vars->gases[i].pz=VZ/Mass;
-	}
+	updateGasinCenters();
 // clear vars->gas_in, vars->gas_out and pair list of gas-ion
 	vars->gas_in.clear();
 	vars->gas_out.clear();
@@ -106,34 +80,9 @@ MD::update_gas_in(void){
 /////////////////////////////////////////////////////////////////////
 void
 MD::update_vapor_in(void){
-// clear vars->gas_in, vars->gas_out and pair list of gas-ion
 	Molecule *vapors = vars->vapors.data();
-	for (auto i : vars->vapor_in){
-		double X=0;
-		double Y=0;
-		double Z=0;
-		double VX=0;
-		double VY=0;
-		double VZ=0;
-		double Mass=0;
-		for (auto &a : vars->vapors[i].inAtoms){
-			X+=a.qx*a.mass;
-			Y+=a.qy*a.mass;
-			Z+=a.qz*a.mass;
-			VX+=a.px*a.mass;
-			VY+=a.py*a.mass;
-			VZ+=a.pz*a.mass;
-			Mass+=a.mass;
-		}
-        //  averaged position
-	    vars->vapors[i].qx=X/Mass;
-	    vars->vapors[i].qy=Y/Mass;
-	    vars->vapors[i].qz=Z/Mass;
-        //  averaged velocity
-        vars->vapors[i].px=VX/Mass;
-        vars->vapors[i].py=VY/Mass;
-        vars->vapors[i].pz=VZ/Mass;
-	}
+// clear vars->gas_in, vars->gas_out and pair list of gas-ion
+	updateVaporinCenters();
 
 	vars->vapor_in.clear();
 	vars->vapor_out.clear();
