@@ -3,8 +3,8 @@
 void
 MD::setCondition(char* condfile){
 	readCondFile(condfile);
-	pp->readAtomsFile(atomFile);
-	pp->readVaporFile(vaporFile);
+	pp->readIonProp(atomFile);
+	pp->readVaporProp(vaporFile);
 	pp->setPhysicalProp(gastype,T,p);
 }
 
@@ -43,7 +43,7 @@ MD::readCondFile(char* condfile){
 			string str2;
 			while(getline(stream2,str2)) {
 				if(str2.length()==0) continue;
-				stickPositionList.push_back(stoi(str2));
+				stickPositionList.push_back(stoi(str2)-1);
 			}
 			cout<<"Vapor stick position file -->\t\t"<<readings[1]<<endl;
 		}

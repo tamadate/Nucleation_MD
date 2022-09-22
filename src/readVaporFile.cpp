@@ -18,8 +18,8 @@ Variables::readVaporFile(char* infile){
 		if (str=="bonds") {iflag=6; continue;}
 		if (str=="angles") {iflag=7; continue;}
 		if (str=="dihedrals") {iflag=8; continue;}
-	    string tmp;
-    	istringstream stream(str);
+    string tmp;
+  	istringstream stream(str);
 		if (iflag==1) {
 			Atom_type at;
 			int loop=0;

@@ -50,7 +50,9 @@ step of simulation, reset the margine size.
 
 /****Main simulaiton****/
 	for (itime=0; itime<Noftimestep; itime++) {
-    if(itime%positionLogStep==0 && positionLogStep>0) positionLog();
+    if (positionLogStep>0){
+      if(itime%positionLogStep==0) positionLog();
+    }
     if(itime%logger==0){
       analysis_gas();
       output();

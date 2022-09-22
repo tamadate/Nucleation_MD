@@ -15,10 +15,10 @@ public:
 
 	/*******************FUNCTION************************/
 	void setPhysicalProp(int gastype, double T, double p);
-	void readAtomsFile(char* infile);
-	void readVaporFile(char* infile);
+	void readIonProp(char* infile);
+	void readVaporProp(char* infile);
 
-	Physical(void){};
+	Physical(void){Mion=Mgas=Mvapor=z=0;};
 	~Physical(void){};
 
 private:
