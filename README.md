@@ -5,7 +5,7 @@ Figure 1 is a schematic diagram of this MD simulation code.  A molecular specie 
 ## Usage
 
 ## Input script commands
-* Ion input file
+### Ion input file
 >**Syntax**:  `Input  fileName`  
 **Example**:  `Input  angiotensinII+1.atom`<br><br>
 >Ion input file is mentioned via the `Input` command, where the file include following components.
@@ -22,19 +22,19 @@ Figure 1 is a schematic diagram of this MD simulation code.  A molecular specie 
 >  
 > This section explain more detail about the ion input file and you can see some expamples from here.
 
-* Vapor input file
+### Vapor input file
 >**Syntax**:  `Vapor	fileName	N`  
 **Example**:  `Vapor	MeOH	100`<br><br>
 >
-* Gas setting
+### Gas setting
 >```
 >Input  fileName
 >```
-* Temperature setting
+### Temperature setting
 >```
 >Temperature T
 >```
-* Pressure setting
+### Pressure setting
 >```
 >Pressure	p
 >```
