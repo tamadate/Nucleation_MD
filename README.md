@@ -6,43 +6,43 @@ Figure 1 is a schematic diagram of this MD simulation code.  A molecular specie 
 
 ## Input script commands
 * Ion input file
-```diff
+```py
 - Input  fileName
 ```
 * Vapor input file
-```ruby
+```py
 Vapor	fileName	N
 ```
 * Gas setting
-```ruby
+```py
 Input  fileName
 ```
 * Temperature setting
-```c
+```py
 Temperature	T
 ```
 * Pressure setting
-```c
+```py
 Pressure	p
 ```
 * Time step
-```c
+```py
 dt	value
 ```
 * Total time steps
-```c
+```py
 TotalSteps	N
 ```
 * Relaxation time steps
-```c
+```py
 RelaxSteps	N
 ```
 * Thermal bath settings (for relaxation)
-```c
+```py
 NVTion	Tion or OFF
 ```
 * Output interval
-```c
+```py
 Output	fileName	N
 ```
 * Atomic interactions
