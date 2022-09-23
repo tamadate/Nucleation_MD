@@ -42,10 +42,11 @@ Physical::setPhysicalProp(int gastype, double T, double p){
 
 
 void
-Physical::readAtomsFile(char* infile){
+Physical::readIonProp(char* infile){
 	ifstream stream(infile);
 	string str;
 	int iflag=0;
+	Mion=0;
 	while(getline(stream,str)) {
 		if(str.length()==0) continue;
 		if (str=="atom type name mass coeff1 coeff2") {iflag=1; continue;}
@@ -79,10 +80,11 @@ Physical::readAtomsFile(char* infile){
 }
 
 void
-Physical::readVaporFile(char* infile){
+Physical::readVaporProp(char* infile){
 	ifstream stream(infile);
 	string str;
 	int iflag=0;
+	Mvapor=0;
 	while(getline(stream,str)) {
 		if(str.length()==0) continue;
 		if (str=="atom type name mass coeff1 coeff2") {iflag=1; continue;}
@@ -106,7 +108,7 @@ Physical::readVaporFile(char* infile){
 				if (loop==1) type=stoi(tmp)-1;
 				loop++;
 			}
-			double mass=atype[type];
+			double mass=atype_v[type];
 			Mvapor+=mass;
 		}
 	}

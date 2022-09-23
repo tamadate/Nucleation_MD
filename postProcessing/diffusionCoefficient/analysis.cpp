@@ -8,7 +8,9 @@ int main(int argc,char *argv[]){
 	double startTime=stod(argv[4]);				// t_inf
 	double endTime=stod(argv[5]);					// time of a block
 	double dt=stod(argv[6]);							// dt in the block file
+	double tEND=stod(argv[8]);							// dt in the block file
 	int skip=int(skipTime/dt);				//
+	int dataSize=int(tEND/dt)-skip;
 	int blockSize=int(endTime/dt);				//
 	int skipInBlock=int(startTime/endTime);		//
 
@@ -38,9 +40,10 @@ int main(int argc,char *argv[]){
 			}
 			lineIndex++;
 		}
-		int dataSize=datas.size();
+		//int dataSize=datas.size();
 		int N=(dataSize-blockSize)/dstep-1;
 		Nblocks+=N;
+		cout<<N<<endl;
 
 		for(int k=0;k<N;k++){
 			int baseIndex=k*dstep;

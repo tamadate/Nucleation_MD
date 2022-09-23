@@ -1,30 +1,12 @@
 atom type name mass coeff1 coeff2
-1	He	4.027	0.0203	2.556
-2	n1	14.01	0.1636	3.18086478325
-3	n2	28.02	0.14397	3.798
-4	Ar	28.02	0.14397	3.798
-5	c3(MeOH)	12.011	0.1094	3.4
-6	oh(MeOH)	15.999	0.21	2.96
-7	h1(MeOH)	1.008	0.0157	2.471
-8	ho(MeOH)	1.008	0	0
-9	o(H2O)	15.999	0.1521	3.15061
-10	h(H2O)	1.008	0.046	0.4
-11	Na	22.99	0.1	2.583
-12	Cl	35.453	0.1	4.4
-
+1	Na	22.99	0.1	2.583
+2	Cl	35.453	0.1	4.4
 
 bond type name coeff1 coeff2
-1	c3-h1(MeOH)	340.0	1.09
-2	c3-oh(MeOH)	320.0	1.41
-3	ho-oh(MeOH)	553.0	0.945
 
 angle type name coeff1 coeff2
-1	h1-c3-h1(MeOH)	33.0	107.8
-2	h1-c3-oh(MeOH)	35.0	109.5
-3	c3-oh-ho(MeOH)	55.0	108.5
 
 dihedral type name coeff1 coeff2 coeff3 coeff4
-1	X-c3-oh-X(MeOH)	1	0.166666666667	3	0.0	-1	-1	-1	-1	-1	-1
 
 atoms
 1	11	1	-2.8205	-2.8205	-2.8205

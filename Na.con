@@ -1,43 +1,19 @@
+Input	Na.atom
+Vapor	MeOH.atom	100
+Gas	N2	100000
+Temperature	300
+Pressure	100000
+Time step	0.5
+TotalSteps	10000000000
+RelaxSteps	200000
+NVTion	300
+NVTgas	OFF
+Output	Na	100000
 
-Input
-Na.atom
-
-Vapor
-H2O	1000
-
-Gas
-N2	100000
-
-Temperature
-300
-
-Pressure
-100000
-
-Time step
-1.0
-
-Total number of steps
-1000000000
-
-Number of steps for relax
-2000
-
-Number of steps for repre
-10000
-
-gas gas interaction
-OFF
-
-gas ion interaction
-LJ
-
-Nose-Hoover ion
-OFF
-
-Nose-Hoover gas
-OFF
-
-Output
-NaCl	100000	w
-
+Interactions
+	ion	OFF
+	gg	OFF
+	gi	LJ
+	gv	LJ
+	vi	LJcoul
+	vv	LJcoul

@@ -31,7 +31,8 @@ MD::MD(char* condfile, int calcNumber) {
 	OBSERVE=10000000;
 	T=300;
 	p=1e5;
-
+	positionLogStep=0;
+	cout<<pp->Mvapor<<endl;
 	setCondition(condfile);
 	output_initial();
 

@@ -50,20 +50,23 @@ step of simulation, reset the margine size.
 
 /****Main simulaiton****/
 	for (itime=0; itime<Noftimestep; itime++) {
-        if(itime%logger==0)   {
-            analysis_gas();
-            output();
-            //output_gas();
-            vars->time+=(logger*dt);
-            if (itime%OBSERVE==0) {
-                display(0);
-                export_dump_close();
-            }
-        }
-			if ((itime+1)%OBSERVE==0) {
-        flags->eflag=1;
-        vars->Uzero();
-      }
-    	verlet();
+    if (positionLogStep>0){
+      if(itime%positionLogStep==0) positionLog();
+    }
+    if(itime%logger==0){
+      analysis_gas();
+      output();
+      //output_gas();
+      vars->time+=(logger*dt);
+    }
+    if (itime%OBSERVE==0) {
+        display(0);
+        export_dump_close();
+    }
+		if ((itime+1)%OBSERVE==0) {
+      flags->eflag=1;
+      vars->Uzero();
+    }
+  	verlet();
 	}
 }
