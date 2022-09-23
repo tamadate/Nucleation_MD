@@ -6,55 +6,69 @@ Figure 1 is a schematic diagram of this MD simulation code.  A molecular specie 
 
 ## Input script commands
 * Ion input file
-```py
-Input  fileName
-```
+>**Syntax**:  `Input  fileName`  
+**Example**:  `Input  angiotensinII+1.atom`<br><br>
+>Ion input file is mentioned via the `Input` command, where the file include following components.
+> - What atoms compose the ion
+> - The atoms charges *i.e., particle charges*
+> - The atoms position *i.e., ion initial structure*
+> - Types of the atoms (potential parametes)
+> - Bond types (potential parametes)
+> - Angle types (potential parametes)
+> - Dihedral types (potential parametes)
+> - Bond list
+> - Angle list
+> - Dihedral list  
+>  
+> This section explain more detail about the ion input file and you can see some expamples from here.
+
 * Vapor input file
-```py
-Vapor	fileName	N
-```
+>**Syntax**:  `Vapor	fileName	N`  
+**Example**:  `Vapor	MeOH	100`<br><br>
+>
 * Gas setting
-```py
-Input  fileName
-```
+>```
+>Input  fileName
+>```
 * Temperature setting
-```py
-Temperature T
-```
+>```
+>Temperature T
+>```
 * Pressure setting
-```py
-Pressure	p
-```
+>```
+>Pressure	p
+>```
 * Time step
-```py
-dt	value
-```
+>```
+>dt  value
+>```
 * Total time steps
-```py
-TotalSteps	N
-```
+>```
+>TotalSteps	N
+>```
 * Relaxation time steps
-```py
-RelaxSteps	N
-```
+>```
+>RelaxSteps	N
+>```
 * Thermal bath settings (for relaxation)
-```py
-NVTion	Tion or OFF
-```
+>```
+>NVTion	Tion or OFF
+>```
 * Output interval
-```py
-Output	fileName	N
-```
+>```
+>Output	fileName	N
+>```
 * Atomic interactions
-```py
-Interactions
-	ion	Born-Mayer-Huggins-NaCl
-	gg	OFF
-	gi	LJ
-	gv	LJ
-	vi	LJcoul
-	vv	LJcoul
-```
+>```
+>Interactions
+>	ion	potential
+>	gg	potential
+>	gi	potential
+>	gv	potential
+>	vi	potential
+>	vv	potential
+>```
+Born-Mayer-Huggins-NaCl
 
 ## Author
 * Dr. Tomoya Tamadate
