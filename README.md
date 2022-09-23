@@ -7,7 +7,7 @@ Figure 1 is a schematic diagram of this MD simulation code.  A molecular specie 
 ## Input script commands
 * Ion input file
 ```py
-- Input  fileName
+Input  fileName
 ```
 * Vapor input file
 ```py
@@ -19,7 +19,7 @@ Input  fileName
 ```
 * Temperature setting
 ```py
-Temperature	T
+Temperature T
 ```
 * Pressure setting
 ```py
