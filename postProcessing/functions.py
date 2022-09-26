@@ -3,6 +3,14 @@ import os
 import plot
 from scipy.optimize import minimize
 
+
+
+pv=pv0-Nbase 	# vapor pressure [Pa]
+C=pv/kb/T	# vapor concentraiton [1/m3]
+f_sim=np.size(ts)/t_tot	# vapor flux into the interaction sphere [1/s]
+f_FM=delta*delta*np.pi*c*C	# vapor flux into the interaction sphere in free molecular limit [1/s]
+print ("f_FM="+str(f_FM*1e-9)+"[1/ns]\tf_sim="+str(f_sim*1e-9)+"[1/ns]")
+
 os.system("make")
 
 plot=plot.plot()
@@ -53,6 +61,7 @@ plot.plotEnergies(U,teq,tEND)
 inVapor=np.loadtxt(str(directory)+"vapor_in_"+str(I)+".dat")
 negs=np.where((inVapor[:,1]>tEND*1e15))
 inVapor=np.delete(inVapor,negs,axis=0)
+
 outVapor=np.loadtxt(str(directory)+"vapor_out_"+str(I)+".dat")
 negs=np.where((outVapor[:,1]>tEND*1e15))
 outVapor=np.delete(outVapor,negs,axis=0)

@@ -24,7 +24,6 @@ MD::make_pair(void){
 	Molecule *gases = vars->gases.data();
 	double vmax2 = 0.0;
 	int gos=vars->gas_out.size();
-	//#pragma omp parallel for
 	for (auto &a : vars->gas_out) {
 		double px=gases[a].px;
 		double py=gases[a].py;

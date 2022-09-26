@@ -63,13 +63,6 @@ MD::initialization_gas(void) {
 			a.pz=distgas(engine)*1e-5;
 			a.mass=pp->Mgas;
 			a.inAtoms=vars->atomGas(gastype);
-			for (auto &b : a.inAtoms){
-				for (int thread=0;thread<Nth;thread++){
-					b.fxMP.push_back(0);
-					b.fyMP.push_back(0);
-					b.fzMP.push_back(0);
-				}
-			}
 
 			a.inFlag=0;
 			vars->gases.push_back(a);
@@ -141,13 +134,7 @@ MD::initialization_vapor(void) {
 			a.pz=distvapor(engine)*1e-5;
 			a.mass=pp->Mvapor;
 			a.inAtoms=vars->atomVapor;
-			for (auto &b : a.inAtoms){
-				for (int thread=0;thread<Nth;thread++){
-					b.fxMP.push_back(0);
-					b.fyMP.push_back(0);
-					b.fzMP.push_back(0);
-				}
-			}
+			
 			a.bonds=vars->bonds_v;
 			a.angles=vars->angles_v;
 			a.dihedrals=vars->dihedrals_v;

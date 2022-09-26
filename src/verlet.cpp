@@ -32,8 +32,6 @@ MD::verlet(void) {
 	for (auto &a : InterInter) a->compute(vars,flags);
 	for (auto &a : IntraInter) a->compute(vars,flags);
 
-	forceCombine();
-
 	velocity_calculation();	//	v(t+dt/2) -> v(t+dt) using F(x(t+dt))
 
 	if(flags->nose_hoover_ion==1)	nosehoover_ion();
@@ -89,9 +87,6 @@ MD::update_position(void) {
 		a.qy += a.py * dt;
 		a.qz += a.pz * dt;
 		a.fx=a.fy=a.fz=0.0;
-		for(int nth=0;nth<Nth;nth++){
-			a.fxMP[nth]=a.fyMP[nth]=a.fzMP[nth]=0;
-		}
 	}
   for (auto &i : vars->vapor_in) {
 		for (auto &a : vars->vapors[i].inAtoms){
@@ -99,9 +94,6 @@ MD::update_position(void) {
 			a.qy += a.py * dt;
 			a.qz += a.pz * dt;
 		  a.fx=a.fy=a.fz=0.0;
-			for(int nth=0;nth<Nth;nth++){
-				a.fxMP[nth]=a.fyMP[nth]=a.fzMP[nth]=0;
-			}
 		}
   }
 
@@ -111,47 +103,10 @@ MD::update_position(void) {
 			a.qy += a.py * dt;
 			a.qz += a.pz * dt;
 		  a.fx=a.fy=a.fz=0.0;
-			for(int nth=0;nth<Nth;nth++){
-				a.fxMP[nth]=a.fyMP[nth]=a.fzMP[nth]=0;
-			}
 		}
   }
 	vars->times.tpos+=omp_get_wtime();
 }
-
-void
-MD::forceCombine(void){
-	vars->times.tetc-=omp_get_wtime();
-	for (auto &a : vars->ions) {
-		for(int nth=0;nth<Nth;nth++){
-			a.fx += a.fxMP[nth];
-			a.fy += a.fyMP[nth];
-			a.fz += a.fzMP[nth];
-		}
-	}
-
-	for (auto &i : vars->vapor_in) {
-		for (auto &a : vars->vapors[i].inAtoms){
-			for(int nth=0;nth<Nth;nth++){
-				a.fx += a.fxMP[nth];
-				a.fy += a.fyMP[nth];
-				a.fz += a.fzMP[nth];
-			}
-		}
-	}
-
-	for (auto &i : vars->gas_in) {
-		for (auto &a : vars->gases[i].inAtoms){
-			for(int nth=0;nth<Nth;nth++){
-				a.fx += a.fxMP[nth];
-				a.fy += a.fyMP[nth];
-				a.fz += a.fzMP[nth];
-			}
-		}
-	}
-	vars->times.tetc+=omp_get_wtime();
-}
-
 
 /////////////////////////////////////////////////////////////////////
 /*

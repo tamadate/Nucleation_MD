@@ -27,9 +27,6 @@ struct Atom {
 	double fx, fy, fz;
 	double mass;
 	int ix, iy, iz;
-  std::vector<double> fxMP;
-  std::vector<double> fyMP;
-  std::vector<double> fzMP;
 };
 
 //------------------------------------------------------------------------

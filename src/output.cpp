@@ -105,11 +105,10 @@ MD::display(int output_ONOFF){
     double U = vars->Usum();
 		double Kin=obs->Kion+obs->Kin_g+obs->Kin_v;
 		double Kout=obs->Kout_g+obs->Kout_v;
-		vars->Ucombine();
     std::cout << "----------------------TIME = " << vars->time/1000.0 << " ps-------------------------" << endl;
 		cout<<"Inside propeties"<<endl;
     printf("  Kion = %1.2e  Kgas = %1.2e  Kvap = %1.2e\n  Tion = %1.2f  Tgas = %1.2f  Tvap = %1.2f\n  Uion = %1.2e  Ugas = %1.2e  Uvap = %1.2e\n  Ugi = %1.2e  Ugg = %1.2e  Uvi = %1.2e	\n  Uvg = %1.2e	Uvv= %1.2e  \n",
-		obs->Kion, obs->Kin_g, obs->Kin_v, obs->Tion, obs->Tin_g, obs->Tin_v, vars->Utotal.Uion, vars->Utotal.Ugas, vars->Utotal.Uvap, vars->Utotal.Ugi, vars->Utotal.Ugg,	vars->Utotal.Uvi, vars->Utotal.Uvg, vars->Utotal.Uvv);
+		obs->Kion, obs->Kin_g, obs->Kin_v, obs->Tion, obs->Tin_g, obs->Tin_v, vars->U.Uion, vars->U.Ugas, vars->U.Uvap, vars->U.Ugi, vars->U.Ugg,	vars->U.Uvi, vars->U.Uvg, vars->U.Uvv);
 		cout<<"Out side propeties"<<endl;
 		printf("  Kgas = %1.2e  Tgas = %1.2f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %1.2f  Uvap = %1.2e	\n  Kout = %1.2e    Uout = %1.2e	\n",
 		obs->Kout_g, obs->Tout_g, 0.0, obs->Kout_v, obs->Tout_v, 0.0, Kout, 0.0);
@@ -131,7 +130,7 @@ MD::display(int output_ONOFF){
 
 		sprintf(filepath, "U_%d.dat", int(calculation_number));
 		f=fopen(filepath, "a");
-		fprintf(f,"%e %e %e %e %e %e %e %e %e\n",vars->time,vars->Utotal.Uion,vars->Utotal.Ugas,vars->Utotal.Uvap,vars->Utotal.Ugi,vars->Utotal.Ugg,vars->Utotal.Uvg,vars->Utotal.Uvi,vars->Utotal.Uvv);
+		fprintf(f,"%e %e %e %e %e %e %e %e %e\n",vars->time,vars->U.Uion,vars->U.Ugas,vars->U.Uvap,vars->U.Ugi,vars->U.Ugg,vars->U.Uvg,vars->U.Uvi,vars->U.Uvv);
 		fclose(f);
 }
 

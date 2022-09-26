@@ -30,14 +30,12 @@ for i in np.arange(4):
 
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=0.2e-6     # equilibliumed time [s]
-tcut=1e-13       # cut residence time [s]
+teq=0.01e-6     # equilibliumed time [s]
+tEND=1e-6
 Nmax=30         # Max number of sticking vapors
-dt=1e-15	    # simulation time step, dt [s]
-dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/NaCl/Na2Cl_toluene/"
+dt=0.5e-15	    # simulation time step, dt [s]
+directory="/home/tama3rdgen/vaporUptake/angioII+1/withoutVap/"
 I=0
-checkMode=0
 
 startTime=2e-9
 endTime=5e-9
@@ -47,17 +45,17 @@ os.system("make")
 
 ionData=np.loadtxt(str(directory)+"ion_300_"+str(I)+".dat")
 dtInput=ionData[1][0]-ionData[0][0]
-os.system("./mobility.out "+str(I)+" 1 "+str(teq)+" "+str(startTime)+" "+str(endTime)+" "+str(dtInput*1e-9)+" "+str(directory))
+os.system("./mobility.out "+str(I)+" 1 "+str(teq)+" "+str(startTime)+" "+str(endTime)+" "+str(dtInput*1e-9)+" "+str(directory)+" "+str(tEND))
 #"ion_300_%d.dat"
 
 MSDVAF=np.loadtxt(str(directory)+"TIME_MSD_VAF."+str(I))
 axs.flat[0].set_xlabel("Time [ns]",fontsize=20)
 axs.flat[0].set_ylabel("MSD [ang$^ 2$]",fontsize=20)
-axs.flat[0].scatter(MSDVAF.T[0],MSDVAF.T[1]/np.max(MSDVAF.T[1]))
+axs.flat[0].scatter(MSDVAF.T[0],MSDVAF.T[1])
 
 axs.flat[1].set_xlabel("Time [ns]",fontsize=20)
 axs.flat[1].set_ylabel("VAF [ang$^ 2$]",fontsize=20)
-axs.flat[1].scatter(MSDVAF.T[0],MSDVAF.T[2]/MSDVAF.T[2][0])
+axs.flat[1].scatter(MSDVAF.T[0],MSDVAF.T[2])
 
 
 plt.show()

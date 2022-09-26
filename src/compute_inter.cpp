@@ -31,7 +31,7 @@ PotentialGasIon::compute(Variables *vars, FLAG *flags) {
 			ions[j].fy -= force_pair * dy;
 			ions[j].fz -= force_pair * dz;
 			if(flags->eflag) {
-				vars->Utotal.Ugi+=r6inv * (vars->pair_coeff_gi[type][0]/12.0 * r6inv - vars->pair_coeff_gi[type][1]/6.0);
+				vars->U.Ugi+=r6inv * (vars->pair_coeff_gi[type][0]/12.0 * r6inv - vars->pair_coeff_gi[type][1]/6.0);
 			}
 				//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 				//	vars->totalVirial+=force_lj;
@@ -72,7 +72,7 @@ PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
 				ag.fy -= force_pair * dy;
 				ag.fz -= force_pair * dz;
 				if(flags->eflag) {
-					vars->Utotal.Uvg+=r6inv * (vars->pair_coeff_vg[type][0]/12.0 * r6inv - vars->pair_coeff_vg[type][1]/6.0);
+					vars->U.Uvg+=r6inv * (vars->pair_coeff_vg[type][0]/12.0 * r6inv - vars->pair_coeff_vg[type][1]/6.0);
 				}
 					//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 					//	vars->totalVirial+=force_lj;
@@ -93,13 +93,9 @@ void
 PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 	Molecule *vapors = vars->vapors.data();
 	Atom *ions = vars->ions.data();
-	const int is = vars->ions.size();
-	const int vin_size = vars->vapor_in.size();
 	vars->times.tvi-=omp_get_wtime();
-	#pragma omp parallel for
-	for(int i=0;i<vin_size;i++){
-		int nth=omp_get_thread_num();
-		for (auto &av : vapors[vars->vapor_in[i]].inAtoms){
+	for(auto &i : vars->vapor_in){
+		for (auto &av : vapors[i].inAtoms){
 			for(auto &ai : vars->ions){
 				double dx = av.qx - ai.qx;
 				double dy = av.qy - ai.qy;
@@ -112,15 +108,15 @@ PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 				double force_lj = r6inv * (vars->pair_coeff_vi[type1][type2][0] * r6inv - vars->pair_coeff_vi[type1][type2][1]);
 				double force_coul = qqrd2e * av.charge * ai.charge * sqrt(r2inv);
 				double force_pair = (force_lj + force_coul)*r2inv;
-				av.fxMP[nth] += force_pair * dx;
-				av.fyMP[nth] += force_pair * dy;
-				av.fzMP[nth] += force_pair * dz;
-				ai.fxMP[nth] -= force_pair * dx;
-				ai.fyMP[nth] -= force_pair * dy;
-				ai.fzMP[nth] -= force_pair * dz;
+				av.fx += force_pair * dx;
+				av.fy += force_pair * dy;
+				av.fz += force_pair * dz;
+				ai.fx -= force_pair * dx;
+				ai.fy -= force_pair * dy;
+				ai.fz -= force_pair * dz;
 				if(flags->eflag) {
-					vars->U_MP[nth].Uvi+=r6inv * (vars->pair_coeff_vi[type1][type2][0]/12.0 * r6inv - vars->pair_coeff_vi[type1][type2][1]/6.0);
-					vars->U_MP[nth].Uvi+=force_coul;
+					vars->U.Uvi+=r6inv * (vars->pair_coeff_vi[type1][type2][0]/12.0 * r6inv - vars->pair_coeff_vi[type1][type2][1]/6.0);
+					vars->U.Uvi+=force_coul;
 				}
 				//	vars->totalVirial+=force_lj;
 			}
@@ -137,12 +133,8 @@ PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 void
 PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
 	Molecule *vapors = vars->vapors.data();
-	const int vs = vars->pairs_vv.size();
 	vars->times.tvv-=omp_get_wtime();
-	#pragma omp parallel for
-	for(int i=0;i<vs;i++){
-		int nth=omp_get_thread_num();
-		Pair p=vars->pairs_vv[i];
+	for(auto &p : vars->pairs_vv){
 		for (auto &av1 : vapors[p.i].inAtoms){
 			for (auto &av2 : vapors[p.j].inAtoms){
 				double dx = av1.qx - av2.qx;
@@ -156,15 +148,15 @@ PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
 				double force_lj = r6inv * (vars->pair_coeff_v[type1][type2][0] * r6inv - vars->pair_coeff_v[type1][type2][1]);
 				double force_coul = qqrd2e * av1.charge * av2.charge * sqrt(r2inv);
 				double force_pair = (force_lj + force_coul)*r2inv;
-				av1.fxMP[nth] += force_pair * dx;
-				av1.fyMP[nth] += force_pair * dy;
-				av1.fzMP[nth] += force_pair * dz;
-				av2.fxMP[nth] -= force_pair * dx;
-				av2.fyMP[nth] -= force_pair * dy;
-				av2.fzMP[nth] -= force_pair * dz;
+				av1.fx += force_pair * dx;
+				av1.fy += force_pair * dy;
+				av1.fz += force_pair * dz;
+				av2.fx -= force_pair * dx;
+				av2.fy -= force_pair * dy;
+				av2.fz -= force_pair * dz;
 				if(flags->eflag) {
-					vars->U_MP[nth].Uvv+=r6inv * (vars->pair_coeff_v[type1][type2][0]/12.0 * r6inv - vars->pair_coeff_v[type1][type2][1]/6.0);
-					vars->U_MP[nth].Uvv+=force_coul;
+					vars->U.Uvv+=r6inv * (vars->pair_coeff_v[type1][type2][0]/12.0 * r6inv - vars->pair_coeff_v[type1][type2][1]/6.0);
+					vars->U.Uvv+=force_coul;
 				}
 				//	vars->totalVirial+=force_lj;
 			}
@@ -245,7 +237,7 @@ PotentialGasGas::compute(Variables *vars, FLAG *flags) {
 				ag2.fy -= force_pair * dy;
 				ag2.fz -= force_pair * dz;
 				if(flags->eflag) {
-					vars->Utotal.Ugg+=r6inv * (vars->pair_coeff_g[0]/12.0 * r6inv - vars->pair_coeff_g[1]/6.0);
+					vars->U.Ugg+=r6inv * (vars->pair_coeff_g[0]/12.0 * r6inv - vars->pair_coeff_g[1]/6.0);
 				}
 				//vars->totalVirial+=force_lj;
 			}
@@ -260,7 +252,7 @@ PotentialGasGas::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialEfield::compute(Variables *vars, FLAG *flags) {
-    for (auto &a : vars->ions) {
+  for (auto &a : vars->ions) {
 		a.fx+=6.2665e-5*a.charge*Ecoeff[0];
 		a.fy+=6.2665e-5*a.charge*Ecoeff[1];
 		a.fz+=6.2665e-5*a.charge*Ecoeff[2];

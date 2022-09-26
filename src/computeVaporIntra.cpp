@@ -48,7 +48,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			vapors[I].inAtoms[j].fx -= force_bond_harmonic * dx1;
 			vapors[I].inAtoms[j].fy -= force_bond_harmonic * dy1;
 			vapors[I].inAtoms[j].fz -= force_bond_harmonic * dz1;
-			if(flags->eflag) vars->Utotal.Uvap+=rk*dr;
+			if(flags->eflag) vars->U.Uvap+=rk*dr;
 		}
 
 		for (auto &c : vapors[I].angles) {
@@ -88,7 +88,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			vapors[I].inAtoms[k].fx += f3[0];
 			vapors[I].inAtoms[k].fy += f3[1];
 			vapors[I].inAtoms[k].fz += f3[2];
-			if (flags->eflag) vars->Utotal.Uvap+= tk*dtheta;
+			if (flags->eflag) vars->U.Uvap+= tk*dtheta;
 		}
 
 
@@ -149,7 +149,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 		            df1=0.0;
 		        }
 				df += (-dtypes_v[type].coeff[JJ5] * df1);
-				if (flags->eflag) vars->Utotal.Uvap+= dtypes_v[type].coeff[JJ5] * p_;
+				if (flags->eflag) vars->U.Uvap+= dtypes_v[type].coeff[JJ5] * p_;
 			}
 
 			fg = vb1x*vb2xm + vb1y*vb2ym + vb1z*vb2zm;
