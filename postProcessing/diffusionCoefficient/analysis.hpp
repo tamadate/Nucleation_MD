@@ -18,13 +18,11 @@ const double Nw=6.02e23;
 const double mi=1046.2/1000.0/Nw; // mass of ion
 const double mg=28/1000.0/Nw;     // mass of gas
 const double mred=1/(1/mg+1/mi);  // reduced mass (ion-gas)
-const int dstep=1;
 
 struct data {
   std::vector<double> MD;
 };
 
-std::vector<data> datas;
 std::vector<double> MSDx;
 std::vector<double> MSDy;
 std::vector<double> MSDz;
