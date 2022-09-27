@@ -1,8 +1,13 @@
 import numpy as np
 import os
 import plot
+import cluster
+import diffusion
 from scipy.optimize import minimize
 
+mode=0
+
+run
 os.system("make")
 
 plot=plot.plot()

@@ -104,7 +104,6 @@ class plot:
             plt.savefig(fileName, dpi=1000)
         plt.show()
 
-
     def plotMobilityShift(self,datas,directory):
         #axs.flat[0].set_xlim([0,Xmax])
         self.axs.flat[0].set_title("(a) Inverse of mobility shift",loc='left',fontsize=self.titleSize)

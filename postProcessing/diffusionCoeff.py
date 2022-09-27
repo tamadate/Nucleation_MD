@@ -31,7 +31,7 @@ for i in np.arange(4):
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
 teq=0.01e-6     # equilibliumed time [s]
-tEND=1e-6
+tEND=0.8e-6
 Nmax=30         # Max number of sticking vapors
 dt=0.5e-15	    # simulation time step, dt [s]
 directory="/home/tama3rdgen/vaporUptake/angioII+1/withoutVap/"
