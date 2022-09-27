@@ -29,7 +29,7 @@ Figure 1 is a schematic diagram of this MD simulation code.  A molecular specie 
 ### Gas setting
 >**Syntax**:  `Gas	type	N`  
 **Example**:  `Gas	N2	100000`<br><br>
->Gas type (`type`) and number of its gas molecules (`N`) are mentioned via `Gas` command.  Currently, following four type of gases are avairable.  
+>Gas type (`type`) and number of its gas molecules (`N`) are mentioned via `Gas` command.  Currently, following four types of gases are available.  
 >`He`: helium  
 >`Ar`: Argon  
 >`N2`:Nitrogen (diatomic)  
@@ -43,37 +43,49 @@ Example arange 100,000 diatomic nitrogen molecules in calculation domain.
 >**Syntax**:  `Pressure	p`  
 **Example**:  `Pressure 100000`<br><br>
 >`Pressure` command set the gas pressure however this calculation does not control the pressure.  Also, virial is not considered in this pressure setting since this simulator is designed for diluted system, i.e., gas phase calculation.  If the molecule concentration is sufficiently low, the molecular interactions and molecular volumes are negligible, which means the perfect gas theory $PV=Nk_bT$ is avairable.  When the pressure, temperature, and number of gas molecule are given, the simulation volume is decided.  The simulation performed with that calculated volume (with constant T & constant N) is supposed to show the setting pressure.
-* Time step
+### Time step
 >**Syntax**:  `dt value`  
 **Example**:  `dt 1`<br><br>
 >`dt` command set the time step `value` in unit of fs.
-* Total time steps
+### Total time steps
 >**Syntax**:  `TotalSteps N`  
 **Example**:  `TotalSteps 1000000000`<br><br>
->`Totalsteps` command set the total number of calculation steps (iteration) (`N`).
-* Relaxation time steps
+>`Totalsteps` command set the total number of calculation steps (iteration), `N`.
+### Relaxation time steps
 >**Syntax**:  `RelaxSteps N`  
 **Example**:  `RelaxSteps 1000000`<br><br>
->`RelaxSteps` command set the total number of relaxation steps which performed in prior of the main calculation to make thermally relaxed ion structure.
-* Thermal bath settings (for relaxation)
->```
->NVTion	Tion or OFF
->```
-* Output interval
->```
->Output	fileName	N
->```
-* Atomic interactions
+>`RelaxSteps` command set the total number of relaxation steps which performed in prior of the main calculation to make ion structure thermally relax.
+### Thermal bath settings (for relaxation)
+>**Syntax**:  `NVTion	value`  
+**Example**:  `NVTion	value`<br><br>
+>`NVTion` command set the ion temperature, `T` at the thermal relaxation step.  If the relaxation process is performed without thermal bath, `OFF` is sbstituted in `value` in stead of temperature value.
+### Output file setting
+>**Syntax**:  `Output fileName  N`  
+**Example**:  `output NaCl  100000`<br><br>
+>`Output` command set a output file name, `fileName` and output interval, `N`.  Output file is generated with readable format via visualization tool [OVITO](https://www.ovito.org/) and the atomic positions/velocities of atoms in the effective domain are recorded.  The extension `.dump` is automatically given to `fileName`. In this example, the simulation generate `NaCl.dump` and write the atomic informaiton in each `N` steps.
+### Atomic interactions
+>**Syntax**:
 >```
 >Interactions
->	ion	potential
->	gg	potential
->	gi	potential
->	gv	potential
->	vi	potential
->	vv	potential
+>   ion	potential
+>   gg	potential
+>   gi	potential
+>   gv	potential
+>   vi	potential
+>   vv	potential
 >```
-Born-Mayer-Huggins-NaCl
+>**Example**:
+>```
+>Interactions
+>   ion	Born-Mayer-Huggins-NaCl
+>   gg	OFF
+>   gi	LJ
+>   gv	LJ
+>   vi	LJcoul
+>   vv	LJcoul
+>```
+>`Interactions` command set the atomic interactions.
+
 
 ## Author
 * Dr. Tomoya Tamadate
