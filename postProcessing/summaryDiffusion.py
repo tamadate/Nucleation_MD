@@ -28,8 +28,9 @@ teq=0.2e-6     # equilibliumed time [s]
 tcut=1e-13       # cut residence time [s]
 Nmax=40         # Max number of sticking vapors
 dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/NaCl/Na2Cl_toluene/"
+#directory="../../../nucleation/NaCl/Na2Cl_toluene/"
 #directory="../../../nucleation/angio2+/100/"
+directory="/home/tama3rdgen/vaporUptake/angioII+1/"
 I=10
 
 startTime=2e-9
