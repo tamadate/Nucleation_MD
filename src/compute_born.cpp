@@ -8,8 +8,8 @@
 /**********************************Force calculation******************************************/
 void
 PotentialBorn::compute(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->ions.data();
-	const int is = vars->ions.size();
+	Atom *ions = vars->effectiveIn[0][0].inAtoms.data();
+	const int is = vars->effectiveIn[0][0].inAtoms.size();
 	vars->times.tion-=omp_get_wtime();
 	#pragma omp parallel for
 	for(int i=0; i<is-1; i++){

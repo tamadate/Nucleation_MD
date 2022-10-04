@@ -67,7 +67,13 @@ struct Molecule {
 	std::vector<Bond> bonds;
 	std::vector<Angle> angles;
 	std::vector<Dihedral> dihedrals;
-	int inFlag;
+};
+
+struct Molecule_out {
+ 	double qx, qy, qz;
+	double px, py, pz;
+	double mass;
+	int ix, iy, iz;
 };
 
 struct Potentials {

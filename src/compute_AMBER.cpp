@@ -19,7 +19,7 @@ PotentialAMBER::compute(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->ions.data();
+	Atom *ions = vars->effectiveIn[0][0].inAtoms.data();
 	int lpsize=longPair.size();
 	#pragma omp parallel for
 	for (int ip=0;ip<lpsize;ip++) {
@@ -52,15 +52,16 @@ PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->ions.data();
+	Atom *ions = vars->effectiveIn[0][0].inAtoms.data();
 	Bond_type *btypes = vars->btypes.data();
-	int bsize=vars-> bonds.size();
+	Bond *bonds=vars->effectiveIn[0][0].bonds.data();
+	int bsize=vars->effectiveIn[0][0].bonds.size();
 	#pragma omp parallel for
 	for (int ib=0;ib<bsize;ib++) {
 		int nth=omp_get_thread_num();
-		int i=vars-> bonds[ib].atom1;
-		int j=vars-> bonds[ib].atom2;
-		int type=(vars-> bonds[ib].type);
+		int i=bonds[ib].atom1;
+		int j=bonds[ib].atom2;
+		int type=bonds[ib].type;
 		double dx = ions[i].qx - ions[j].qx;
 		double dy = ions[i].qy - ions[j].qy;
 		double dz = ions[i].qz - ions[j].qz;
@@ -82,18 +83,18 @@ PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->ions.data();
-/*intra-molecular interaction (angle)*/
+	Atom *ions = vars->effectiveIn[0][0].inAtoms.data();
 	Angle_type *ctypes = vars->ctypes.data();
-	int asize=vars-> angles.size();
+	Angle *angles=vars->effectiveIn[0][0].angles.data();
+	int asize=vars->effectiveIn[0][0].angles.size();
 	#pragma omp parallel for
 	for (int ian=0;ian<asize;ian++) {
 		double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
 		int nth=omp_get_thread_num();
-		int i=vars-> angles[ian].atom1;
-		int j=vars-> angles[ian].atom2;
-		int k=vars-> angles[ian].atom3;
-		int type=vars-> angles[ian].type;
+		int i=angles[ian].atom1;
+		int j=angles[ian].atom2;
+		int k=angles[ian].atom3;
+		int type=angles[ian].type;
 		dx1 = ions[i].qx - ions[j].qx;
 		dy1 = ions[i].qy - ions[j].qy;
 		dz1 = ions[i].qz - ions[j].qz;
@@ -134,20 +135,20 @@ PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->ions.data();
-/*intra-molecular interaction (dihedral)*/
+	Atom *ions = vars->effectiveIn[0][0].inAtoms.data();
 	Dihedral_type *dtypes = vars->dtypes.data();
-	int dsize=vars-> dihedrals.size();
+	Dihedral *dihedrals=vars->effectiveIn[0][0].dihedrals.data();
+	int dsize=vars->effectiveIn[0][0].dihedrals.size();
 	#pragma omp parallel for
 	for (int idi=0;idi<dsize;idi++) {
 		double ff2[3],ff4[3],ff1[3],ff3[3];
 
 		int nth=omp_get_thread_num();
-		int i=vars-> dihedrals[idi].atom1;
-		int j=vars-> dihedrals[idi].atom2;
-		int k=vars-> dihedrals[idi].atom3;
-		int l=vars-> dihedrals[idi].atom4;
-		int type=vars-> dihedrals[idi].type;
+		int i=dihedrals[idi].atom1;
+		int j=dihedrals[idi].atom2;
+		int k=dihedrals[idi].atom3;
+		int l=dihedrals[idi].atom4;
+		int type=dihedrals[idi].type;
 
 		// 1st bond
 		double vb1x = ions[i].qx - ions[j].qx;
@@ -261,7 +262,7 @@ void
 PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 	std::vector<Pair> noLong;
 	Pair p;
-	for (auto &b : vars-> bonds) {
+	for (auto &b : vars-> effectiveIn[0][0].bonds) {
 		p.i=b.atom1;
 		p.j=b.atom2;
 		if(p.j<p.i) {
@@ -270,7 +271,7 @@ PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 		}
 		noLong.push_back(p);
 	}
-	for (auto &b : vars-> angles) {
+	for (auto &b : vars-> effectiveIn[0][0].angles) {
 		p.i=b.atom1;
 		p.j=b.atom3;
 		if(p.j<p.i) {
@@ -279,7 +280,7 @@ PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 		}
 		noLong.push_back(p);
 	}
-	for (auto &b : vars-> dihedrals) {
+	for (auto &b : vars-> effectiveIn[0][0].dihedrals) {
 		p.i=b.atom1;
 		p.j=b.atom4;
 		if(p.j<p.i) {
@@ -289,8 +290,8 @@ PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 		noLong.push_back(p);
 	}
 
-	Atom *ions=vars->ions.data();
-	const int is=vars->ions.size();
+	Atom *ions=vars->effectiveIn[0][0].inAtoms.data();
+	const int is=vars->effectiveIn[0][0].inAtoms.size();
 	for(int i=0;i<is-1;i++){
 		for(int j=i+1;j<is;j++){
 			int flag=1;

@@ -128,7 +128,7 @@ Variables::readIonFile(char* infile){
 				if (loop==8) a.pz=stod(tmp);
 				loop++;
 			}
-			ions.push_back(a);
+			effectiveIn[0][0].inAtoms.push_back(a);
 		}
 		if (iflag==6) {
 		 	Bond b;
@@ -140,7 +140,7 @@ Variables::readIonFile(char* infile){
 				if (loop==2) b.type=stoi(tmp)-1;
 				loop++;
 			}
-			bonds.push_back(b);
+      effectiveIn[0][0].bonds.push_back(b);
 		}
 		if (iflag==7) {
 			Angle c;
@@ -152,7 +152,7 @@ Variables::readIonFile(char* infile){
 				if (loop==3) c.type=stoi(tmp)-1;
 				loop++;
 			}
-			angles.push_back(c);
+			effectiveIn[0][0].angles.push_back(c);
 		}
 		if (iflag==8) {
 			Dihedral d;
@@ -165,7 +165,7 @@ Variables::readIonFile(char* infile){
 				if (loop==4) d.type=stoi(tmp)-1;
 				loop++;
 			}
-			dihedrals.push_back(d);
+			effectiveIn[0][0].dihedrals.push_back(d);
 		}
 	}
 	pair_coeff.resize(num_atoms);

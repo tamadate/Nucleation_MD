@@ -3,12 +3,12 @@
 //------------------------------------------------------------------------
 void
 MD::velocity_scaling(void) {
-	obs->computeIonProps(vars);
+	obs->computeProps(vars,0);
 	double Tp;
 	Tp=300;
 //	Tp=2500-2.2e-4*vars->time;
-	for (auto &a : vars->ions){
-		double ratio=sqrt(Tp/obs->Tion);
+	for (auto &a : vars->effectiveIn[0][0].inAtoms){
+		double ratio=sqrt(Tp/obs->Tin[0]);
 		a.px*=ratio;
 		a.py*=ratio;
 		a.pz*=ratio;
@@ -17,17 +17,17 @@ MD::velocity_scaling(void) {
 
 void
 MD::nosehoover_zeta(void){
-	obs->computeIonProps(vars);
-	int g=vars->ions.size()*3;
+	obs->computeProps(vars,0);
+	int g=vars->effectiveIn[0][0].inAtoms.size()*3;
 	double Q_inv = 0.0001;
-	vars->zeta_ion += (obs->Tion - pp->Tnh_ion)*g*kb_real*Q_inv*dt;
+	vars->zeta_ion += (obs->Tin[0] - pp->Tnh_ion)*g*kb_real*Q_inv*dt;
 }
 
 
 void
 MD::nosehoover_ion(void){
 	double Coeff=exp(-vars->zeta_ion*0.5*dt);
-	for (auto &a : vars->ions) {
+	for (auto &a : vars->effectiveIn[0][0].inAtoms) {
 		a.px *= Coeff;
 	    a.py *= Coeff;
 	    a.pz *= Coeff;
@@ -36,19 +36,19 @@ MD::nosehoover_ion(void){
 
 void
 MD::nosehoover_zeta_gas(void){
-	obs->computeGasProps(vars);
+	obs->computeProps(vars,1);
 	int g=Nof_around_gas*3;
 	double Q_inv = 0.001;
-	vars->zeta_gas += (obs->T_g - pp->Tnh_gas)*g*kb_real*Q_inv*dt;
+	vars->zeta_gas += (obs->Tout[1] - pp->Tnh_gas)*g*kb_real*Q_inv*dt;
 }
 
 void
 MD::nosehoover_gas(void){
 	double Coeff=exp(-vars->zeta_gas*0.5*dt);
-	for (auto &a : vars->gases) {
+	for (auto &a : vars->effectiveOut[1]) {
 		a.px *= Coeff;
-	    a.py *= Coeff;
-	    a.pz *= Coeff;
+    a.py *= Coeff;
+    a.pz *= Coeff;
 	}
 }
 

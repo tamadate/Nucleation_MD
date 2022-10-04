@@ -74,30 +74,26 @@ MD::~MD(void) {
 
 void
 MD::analysis_ion(void) {
-	for ( int i = 0; i < 3; i++ ) ion_r[ i ] = 0, ion_v[ i ] = 0;
-	for ( auto &a : vars -> ions)	{
-		ion_r[ 0 ] += a.qx * a.mass;
-		ion_r[ 1 ] += a.qy * a.mass;
-		ion_r[ 2 ] += a.qz * a.mass;
-		ion_v[ 0 ] += a.px * a.mass;
-		ion_v[ 1 ] += a.py * a.mass;
-		ion_v[ 2 ] += a.pz * a.mass;
-	}
-	for ( int i = 0; i < 3; i++ ) ion_r[ i ] /= pp -> Mion;
-	for ( int i = 0; i < 3; i++ ) ion_v[ i ] /= pp -> Mion;
-}
+	Molecule *ion = vars -> effectiveIn[0].data();
+	ion[0].qx=0;
+	ion[0].qy=0;
+	ion[0].qz=0;
+	ion[0].px=0;
+	ion[0].py=0;
+	ion[0].pz=0;
 
-void
-MD::analysis_gas(void) {
-	for ( int i = 0; i < 3; i++) gas_r[ i ] = 0, gas_v[ i ] = 0;
-	for (auto &a : vars -> gases)	{
-		gas_r[ 0 ] += a.qx * a.mass;
-		gas_r[ 1 ] += a.qy * a.mass;
-		gas_r[ 2 ] += a.qz * a.mass;
-		gas_v[ 0 ] += a.px *a.mass;
-		gas_v[ 1 ] += a.py *a.mass;
-		gas_v[ 2 ] += a.pz *a.mass;
+	for ( auto &a : ion[0].inAtoms)	{
+		ion[0].qx += a.qx * a.mass;
+		ion[0].qy += a.qy * a.mass;
+		ion[0].qz += a.qz * a.mass;
+		ion[0].px += a.px * a.mass;
+		ion[0].py += a.py * a.mass;
+		ion[0].pz += a.pz * a.mass;
 	}
-	for ( int i = 0; i < 3; i++ ) gas_r[ i ] /= pp -> Mgas;
-	for ( int i = 0; i < 3; i++) gas_v[ i ] /= pp -> Mgas;
+	ion[0].qx /= pp -> Mion;
+	ion[0].qy /= pp -> Mion;
+	ion[0].qz /= pp -> Mion;
+	ion[0].px /= pp -> Mion;
+	ion[0].py /= pp -> Mion;
+	ion[0].pz /= pp -> Mion;
 }

@@ -57,8 +57,7 @@ class MD {
 	double margin_length;
 
 //	General functions
-	void updateGasinCenters(void);
-	void updateVaporinCenters(void);
+	void updateInCenters(void);
 
 //	velocity verlet
 	void run_diff(char** argv);
@@ -70,6 +69,7 @@ class MD {
 	void forceCombine(void);
 
 //	pair list
+	void updateInOut(int molFlag);
 	void update_vapor_in(void);
 	void update_gas_in(void);
 	void make_pair(void);
@@ -79,10 +79,8 @@ class MD {
 	void make_pair_vaporion(void);
 	void make_pair_vaporvapor();
 	void check_pairlist(void);
-  void makeDiatomicProp_in(int i);
-  void makeDiatomicProp_out(int i);
-	void makePolyatomicProp_in(int i);
-	void makePolyatomicProp_out(int i);
+  void makeDiatomicProp_in(Molecule_out gasOut);
+	void makePolyatomicProp_in(Molecule_out vapOut);
 
 //	initialization
 	void initialization_gas(void);
@@ -97,13 +95,7 @@ class MD {
 	double pre_ion[3];
 
 //	analysis (calculating position and velocity of center of mass)
-	void analysis_gas(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
 	void analysis_ion(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
-	double ion_r[3];
-	double ion_v[3];	/*	center of ion1 and ion2	*/
-	double ion_f[3];
-	double gas_r[3];
-	double gas_v[3];	/*	center of ion1 and ion2	*/
 	double gyration;
 
 //	export
@@ -153,7 +145,6 @@ class MD {
 	MD(char* condfile,int calcNumber);
 	~MD(void);
 	void run(char** argv);
-	int yesno;	/*	flag for collision or not collision	*/
 };
 
 

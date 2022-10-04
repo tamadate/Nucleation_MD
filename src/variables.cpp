@@ -15,6 +15,10 @@ Variables::Variables(void) {
     Us.Uion=Us.Ugas=Us.Uvap=Us.Ugi=Us.Ugg=Us.Uvg=Us.Uvi=Us.Uvv=0;
     U_MP.push_back(Us);
   }
+	effectiveIn.resize(3);		// ion, gas, vapor
+	effectiveIn[0].resize(1);	// ion, gas, vapor
+	effectiveOut.resize(3);		// ion, gas, vapor
+	effectiveOut[0].resize(1);// ion, gas, vapor
 }
 
 
@@ -104,8 +108,8 @@ Variables::ionRotation(void){
   random_device seed;
 	double A,B,C,x,y,z;
 	A=seed(),B=seed(),C=seed();
-	for(auto &a : ions) {x=a.qx,y=a.qy,z=a.qz; ROTATION(a.qx,a.qy,a.qz,A,B,C,x,y,z);}
-    int is=ions.size();
+	for(auto &a : effectiveIn[0][0].inAtoms) {x=a.qx,y=a.qy,z=a.qz; ROTATION(a.qx,a.qy,a.qz,A,B,C,x,y,z);}
+    int is=effectiveIn[0][0].inAtoms.size();
     for(int i=0;i<is-1;i++) {
         for(int j=i+1;j<is;j++){
             int flag=0;
@@ -132,7 +136,7 @@ void
 Variables::ionInitialVelocity(double T) {
 	random_device seed;
 	default_random_engine engine(seed());
-  for(auto &a : ions) {
+  for(auto &a : effectiveIn[0][0].inAtoms) {
     double matom=a.mass*1e-3/Nw;
     normal_distribution<> dist(0.0, sqrt(kb*T/matom));
 		a.px=dist(engine)*1e-5;

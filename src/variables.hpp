@@ -10,9 +10,11 @@ public:
 
 	/*variables*/
   int Nth;
-	std::vector<Atom> ions;
-	std::vector<Molecule> gases;
-  std::vector<Molecule> vapors;
+	// ion: effectiveIn[0], gas: effectiveIn[1], vapor: effectiveIn[2]
+	std::vector<vector<Molecule>> effectiveIn;
+	// dammy: effectiveOut[0], gas: effectiveOut[1], vapor: effectiveOut[0]
+	std::vector<vector<Molecule_out>> effectiveOut;
+
 	double time;
 	double zeta_ion;
 	double zeta_gas;
@@ -42,11 +44,6 @@ public:
   void tzero(void)	{times.tion=times.tgas=times.tvap=times.tgi=times.tvv=times.tvg=times.tvi=times.tpair=0;}
 	double Usum(void)	{return Utotal.Uion+Utotal.Ugas+Utotal.Uvap+Utotal.Ugi+Utotal.Ugg+Utotal.Uvg+Utotal.Uvi+Utotal.Uvv;}
 
-	std::vector<int> gas_in;	/*	gas list around ion1	*/
-	std::vector<int> gas_out;	/*	gas list far from ion1	*/
-	std::vector<int> vapor_in;	/*	gas list around ion1	*/
-	std::vector<int> vapor_out;	/*	gas list far from ion1	*/
-
 	/*vectors for potential calculation*/
   std::vector<Pair> ion_pairs;
 	std::vector<Pair> pairs_gi;	/*	gas-ion interaction pair list	*/
@@ -60,7 +57,6 @@ public:
 	std::vector<Bond_type> btypes;
 	std::vector<Angle_type> ctypes;
 	std::vector<Dihedral_type> dtypes;
-	std::vector<int> molecules;
 	std::vector<Atom> atomVapor;
 	std::vector<Atom> atomGas(int gastype);
 	std::vector<vector<vector<double>>> pair_coeff;

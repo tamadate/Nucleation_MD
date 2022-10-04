@@ -9,8 +9,8 @@
 /////////////////////////////////////////////////////////////////////
 void
 PotentialGasIon::compute(Variables *vars, FLAG *flags) {
-	Molecule *gases = vars->gases.data();
-	Atom *ions = vars->ions.data();
+	Molecule *gases = vars->effectiveIn[1].data();
+	Atom *ions = vars->effectiveIn[0][0].inAtoms.data();
 	vars->times.tgi-=omp_get_wtime();
 	for(auto &p : vars->pairs_gi){
 		int i=p.i;
@@ -48,8 +48,8 @@ PotentialGasIon::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
-	Molecule *gases = vars->gases.data();
-	Molecule *vapors = vars->vapors.data();
+	Molecule *gases = vars->effectiveIn[1].data();
+	Molecule *vapors = vars->effectiveIn[2].data();
 	vars->times.tvg-=omp_get_wtime();
 	for(auto &p : vars->pairs_gv){
 		int i=p.i;
@@ -91,16 +91,15 @@ PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
-	Molecule *vapors = vars->vapors.data();
-	Atom *ions = vars->ions.data();
-	const int is = vars->ions.size();
-	const int vin_size = vars->vapor_in.size();
+	Molecule *vapors = vars->effectiveIn[2].data();
+	const int is = vars->effectiveIn[0][0].inAtoms.size();
+	const int vin_size = vars->effectiveIn[2].size();
 	vars->times.tvi-=omp_get_wtime();
 	#pragma omp parallel for
 	for(int i=0;i<vin_size;i++){
 		int nth=omp_get_thread_num();
-		for (auto &av : vapors[vars->vapor_in[i]].inAtoms){
-			for(auto &ai : vars->ions){
+		for (auto &av : vapors[i].inAtoms){
+			for(auto &ai : vars->effectiveIn[0][0].inAtoms){
 				double dx = av.qx - ai.qx;
 				double dy = av.qy - ai.qy;
 				double dz = av.qz - ai.qz;
@@ -136,7 +135,7 @@ PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
-	Molecule *vapors = vars->vapors.data();
+	Molecule *vapors = vars->effectiveIn[2].data();
 	const int vs = vars->pairs_vv.size();
 	vars->times.tvv-=omp_get_wtime();
 	#pragma omp parallel for
@@ -186,9 +185,7 @@ PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
 // charge devided by number of atoms in ions
 void
 PotentialIonDipole::compute(Variables *vars, FLAG *flags) {
-	Molecule *gases = vars->gases.data();
-	const int gs = vars->gas_in.size();
-	const int is = vars->ions.size();
+	//Molecule *gases = vars->effectiveIn[1].data();
 
     /*for (int k = 0; k < gs; k++) {
         for (auto &a : vars->ions) {
@@ -221,7 +218,7 @@ PotentialIonDipole::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialGasGas::compute(Variables *vars, FLAG *flags) {
-	Molecule *gases = vars->gases.data();
+	Molecule *gases = vars->effectiveIn[1].data();
 	for(auto &p : vars->pairs_gg){
 		int i=p.i;
 		int j=p.j;
@@ -260,7 +257,7 @@ PotentialGasGas::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialEfield::compute(Variables *vars, FLAG *flags) {
-    for (auto &a : vars->ions) {
+    for (auto &a : vars->effectiveIn[0][0].inAtoms) {
 		a.fx+=6.2665e-5*a.charge*Ecoeff[0];
 		a.fy+=6.2665e-5*a.charge*Ecoeff[1];
 		a.fz+=6.2665e-5*a.charge*Ecoeff[2];

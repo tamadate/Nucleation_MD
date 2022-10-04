@@ -22,7 +22,8 @@ This makes connection between thermal relaxation and main diffusion coeficient c
 
 void
 MD::initialization_gas(void) {
-	double nion=vars->ions.size();
+	vars->effectiveOut[1].resize(Nof_around_gas);
+	double nion=vars->effectiveIn[0][0].inAtoms.size();
 	double dx,dy,dz, d;
 	double dis=5;	/*	minimum gas-gas, gas-ion distance */
 
@@ -36,11 +37,11 @@ MD::initialization_gas(void) {
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
 	do {
-		Molecule a;
+		Molecule_out a;
 		double min_dis=10000.0;
 		a.qx=r(mt), a.qy=r(mt), a.qz=r(mt);
 		if(i>0){
-			for(auto &b : vars->gases){
+			for(auto &b : vars->effectiveOut[1]){
 				dx=a.qx-b.qx;
 				dy=a.qy-b.qx;
 				dz=a.qx-b.qx;
@@ -49,7 +50,7 @@ MD::initialization_gas(void) {
 				if(d<min_dis) min_dis=d; // minimum gas-gas distance
 			}
 		}
-		for(auto &b : vars->ions) {
+		for(auto &b : vars->effectiveIn[0][0].inAtoms) {
 			dx=a.qx-b.qx;
 			dy=a.qy-b.qy;
 			dz=a.qz-b.qz;
@@ -62,17 +63,8 @@ MD::initialization_gas(void) {
 			a.py=distgas(engine)*1e-5;
 			a.pz=distgas(engine)*1e-5;
 			a.mass=pp->Mgas;
-			a.inAtoms=vars->atomGas(gastype);
-			for (auto &b : a.inAtoms){
-				for (int thread=0;thread<Nth;thread++){
-					b.fxMP.push_back(0);
-					b.fyMP.push_back(0);
-					b.fzMP.push_back(0);
-				}
-			}
 
-			a.inFlag=0;
-			vars->gases.push_back(a);
+			vars->effectiveOut[1][i]=a;
 			i++;
 		}
 		collisionFlagGas.push_back(0);
@@ -92,7 +84,8 @@ MD::initialization_gas(void) {
 
 void
 MD::initialization_vapor(void) {
-	double nion=vars->ions.size();
+	vars->effectiveOut[2].resize(Nof_around_vapor);
+	double nion=vars->effectiveIn[0][0].inAtoms.size();
 	double dx,dy,dz, d,min_gv, min_iv, min_vv, gv, iv, vv;
 	gv=10, iv=10, vv=10;	/*	minimum vapor-vapor, vapor-ion, vapor-gas distance */
 
@@ -106,11 +99,11 @@ MD::initialization_vapor(void) {
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
 	do {
- 		Molecule a;
+ 		Molecule_out a;
 		min_gv=min_iv=min_vv=10000.0;
 		a.qx=r(mt), a.qy=r(mt), a.qz=r(mt);
 		if(i>0){
-			for(auto &b : vars->vapors) {
+			for(auto &b : vars->effectiveOut[2]) {
 				dx = a.qx - b.qx;
 				dy = a.qy - b.qy;
 				dz = a.qz - b.qz;
@@ -119,7 +112,7 @@ MD::initialization_vapor(void) {
 				if(d<min_vv) min_vv=d; // minimum vapor-vapor distance
 			}
 		}
-		for(auto &b : vars->ions) {
+		for(auto &b : vars->effectiveIn[0][0].inAtoms) {
 			dx=a.qx-b.qx;
 			dy=a.qy-b.qy;
 			dz=a.qz-b.qz;
@@ -127,7 +120,7 @@ MD::initialization_vapor(void) {
 			d=sqrt(dx*dx+dy*dy+dz*dz);
 			if(d<min_iv) min_iv=d; // minimum vapor-ion distance
 		}
-        for(auto &b : vars->gases) {
+    for(auto &b : vars->effectiveOut[1]) {
 			dx=a.qx-b.qx;
 			dy=a.qy-b.qy;
 			dz=a.qz-b.qz;
@@ -140,19 +133,8 @@ MD::initialization_vapor(void) {
 			a.py=distvapor(engine)*1e-5;
 			a.pz=distvapor(engine)*1e-5;
 			a.mass=pp->Mvapor;
-			a.inAtoms=vars->atomVapor;
-			for (auto &b : a.inAtoms){
-				for (int thread=0;thread<Nth;thread++){
-					b.fxMP.push_back(0);
-					b.fyMP.push_back(0);
-					b.fzMP.push_back(0);
-				}
-			}
-			a.bonds=vars->bonds_v;
-			a.angles=vars->angles_v;
-			a.dihedrals=vars->dihedrals_v;
-			a.inFlag=0;
-			vars->vapors.push_back(a);
+
+			vars->effectiveOut[2][i]=a;
 			i++;
 		}
 		collisionFlagVapor.push_back(0);

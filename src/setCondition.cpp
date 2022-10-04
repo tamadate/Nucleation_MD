@@ -77,6 +77,7 @@ MD::readCondFile(char* condfile){
 				vars->atypes_g.coeff2=3.798;
 			}
 			Nof_around_gas=stoi(readings[2]);
+			vars->effectiveOut[1].resize(Nof_around_gas);
 			double epu=sqrt(vars->atypes_g.coeff1*vars->atypes_g.coeff1);
 			double sigma=(vars->atypes_g.coeff2+vars->atypes_g.coeff2)*0.5;
 			vars->pair_coeff_g[0]=48 * epu*pow(sigma,12.0);

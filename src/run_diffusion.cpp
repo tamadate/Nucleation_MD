@@ -41,8 +41,8 @@ step of simulation, reset the margine size.
 	vars->time=0;
 	itime=0;
 	setPotential(flags,1);
-	for (auto &a : vars->ions) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
-	for (auto &a : vars->gases) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
+	// /for (auto &a : vars->ions) a.qx-=vars->effectiveIn[0][0].qx, a.qy-=vars->effectiveIn[0][0].qy, a.qz-=vars->effectiveIn[0][0].qz;
+	//for (auto &a : vars->gases) a.qx-=vars->effectiveIn[0][0].qx, a.qy-=vars->effectiveIn[0][0].qy, a.qz-=vars->effectiveIn[0][0].qz;
 	analysis_ion();
 	make_pair();
 	margin_length = MARGIN;
@@ -54,7 +54,6 @@ step of simulation, reset the margine size.
       if(itime%positionLogStep==0) positionLog();
     }
     if(itime%logger==0){
-      analysis_gas();
       output();
       //output_gas();
       vars->time+=(logger*dt);

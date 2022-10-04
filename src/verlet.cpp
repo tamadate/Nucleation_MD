@@ -20,7 +20,6 @@ void
 MD::verlet(void) {
 	velocity_calculation(); //	v(t) -> v(t+dt/2) using F(x(t))
 	analysis_ion();
-	if(flags->fix_cell_center==1) fix_cell_center();
 	if(flags->velocity_scaling==1)	velocity_scaling();
 
 	update_position();
@@ -49,28 +48,15 @@ MD::verlet(void) {
 void
 MD::velocity_calculation(void) {
 	vars->times.tvel-=omp_get_wtime();
-	Molecule *gases = vars->gases.data();
 	double const Coeff=0.5*dt*4.184e-4;
-	for (auto &a : vars->ions) {
-		double Coeff2=Coeff/a.mass;
-		a.px += a.fx *Coeff2;
-	    a.py += a.fy *Coeff2;
-	    a.pz += a.fz *Coeff2;
-	}
-  for (auto &i : vars->vapor_in) {
-		for (auto &a : vars->vapors[i].inAtoms){
-			double Coeff2=Coeff/a.mass;
-			a.px += a.fx * Coeff2;
-			a.py += a.fy * Coeff2;
-			a.pz += a.fz * Coeff2;
-		}
-  }
-  for (auto &i : vars->gas_in){
-		for (auto &a : vars->gases[i].inAtoms){
-			double Coeff2=Coeff/a.mass;
-			a.px += a.fx * Coeff2;
-			a.py += a.fy * Coeff2;
-			a.pz += a.fz * Coeff2;
+	for (auto &mols : vars->effectiveIn){
+		for (auto &mol : mols){
+			for (auto &a : mol.inAtoms){
+				double Coeff2=Coeff/a.mass;
+				a.px += a.fx *Coeff2;
+				a.py += a.fy *Coeff2;
+				a.pz += a.fz *Coeff2;
+			}
 		}
 	}
 	vars->times.tvel+=omp_get_wtime();
@@ -84,85 +70,35 @@ MD::velocity_calculation(void) {
 void
 MD::update_position(void) {
 	vars->times.tpos-=omp_get_wtime();
-	for (auto &a : vars->ions) {
-		a.qx += a.px * dt;
-		a.qy += a.py * dt;
-		a.qz += a.pz * dt;
-		a.fx=a.fy=a.fz=0.0;
-		for(int nth=0;nth<Nth;nth++){
-			a.fxMP[nth]=a.fyMP[nth]=a.fzMP[nth]=0;
+	for (auto &mols : vars->effectiveIn){
+		for (auto &mol : mols){
+			for (auto &a : mol.inAtoms){
+				a.qx += a.px * dt;
+				a.qy += a.py * dt;
+				a.qz += a.pz * dt;
+				a.fx=a.fy=a.fz=0.0;
+				for(int nth=0;nth<Nth;nth++){
+					a.fxMP[nth]=a.fyMP[nth]=a.fzMP[nth]=0;
+				}
+			}
 		}
 	}
-  for (auto &i : vars->vapor_in) {
-		for (auto &a : vars->vapors[i].inAtoms){
-			a.qx += a.px * dt;
-			a.qy += a.py * dt;
-			a.qz += a.pz * dt;
-		  a.fx=a.fy=a.fz=0.0;
-			for(int nth=0;nth<Nth;nth++){
-				a.fxMP[nth]=a.fyMP[nth]=a.fzMP[nth]=0;
-			}
-		}
-  }
-
-  for (auto &i : vars->gas_in) {
-		for (auto &a : vars->gases[i].inAtoms){
-			a.qx += a.px * dt;
-			a.qy += a.py * dt;
-			a.qz += a.pz * dt;
-		  a.fx=a.fy=a.fz=0.0;
-			for(int nth=0;nth<Nth;nth++){
-				a.fxMP[nth]=a.fyMP[nth]=a.fzMP[nth]=0;
-			}
-		}
-  }
 	vars->times.tpos+=omp_get_wtime();
 }
 
 void
 MD::forceCombine(void){
 	vars->times.tetc-=omp_get_wtime();
-	for (auto &a : vars->ions) {
-		for(int nth=0;nth<Nth;nth++){
-			a.fx += a.fxMP[nth];
-			a.fy += a.fyMP[nth];
-			a.fz += a.fzMP[nth];
-		}
-	}
-
-	for (auto &i : vars->vapor_in) {
-		for (auto &a : vars->vapors[i].inAtoms){
-			for(int nth=0;nth<Nth;nth++){
-				a.fx += a.fxMP[nth];
-				a.fy += a.fyMP[nth];
-				a.fz += a.fzMP[nth];
-			}
-		}
-	}
-
-	for (auto &i : vars->gas_in) {
-		for (auto &a : vars->gases[i].inAtoms){
-			for(int nth=0;nth<Nth;nth++){
-				a.fx += a.fxMP[nth];
-				a.fy += a.fyMP[nth];
-				a.fz += a.fzMP[nth];
+	for (auto &mols : vars->effectiveIn){
+		for (auto &mol : mols){
+			for (auto &a : mol.inAtoms){
+				for(int nth=0;nth<Nth;nth++){
+					a.fx += a.fxMP[nth];
+					a.fy += a.fyMP[nth];
+					a.fz += a.fzMP[nth];
+				}
 			}
 		}
 	}
 	vars->times.tetc+=omp_get_wtime();
-}
-
-
-/////////////////////////////////////////////////////////////////////
-/*
-	- Fix center of domain (v-v_center)
-*/
-/////////////////////////////////////////////////////////////////////
-void
-MD::fix_cell_center(void) {
-	for (auto &a : vars->ions) {
-		a.px -= ion_v[0];
-		a.py -= ion_v[1];
-		a.pz -= ion_v[2];
-	}
 }
