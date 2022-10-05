@@ -3,7 +3,14 @@ This is a molecular dynamics (MD) simulation code for the modeling of the hetero
 ## Overview
 Figure 1 is a schematic diagram of this MD simulation code.  A molecular specie is arranged at the center of cubic calculation domain as a seed of the heterogeneous vapor nucleation, while the gas molecules and the vapor moecules are arranged entire of the cubic domain. These moeluces are treated as a all-atoms model in a spherical "effective domain" which is centered on a seed molecule.  The effective domain diameter should be large enough and 10 nm is currently employed.  The effective domain moves with centered seed molecule during whole simulation time, hence the seed molecule is always calclated as all-atom model. On the other hand, the gas and the vapor molecules are hadlied as a point of mass at the outside of the effective domain.  In addition, every interactions at the outside of effective domain are ignored.  
 ## Usage
-
+### Build the code
+There is simple makefile in the top directory `Nucleation_MD`.  You can type type `make` from the top directory at the teminal then the binary (executable) file `nucleationMD` is generated in the `src` directory.
+### Run the code
+After building and prepearing the simulation conditions (the detail how to set conditions is explained in the later section), you can start the simulation with following command.
+```
+./binaryFileName inputFileName calculationNumber
+```
+`binaryFileName` is the built code in previous section (default name is `nucleationMD`).  `inputFileName` is file to set the input conditions which details are explained in next section.  `calculationNumber` is arbitrary integer and it may be used to distingish the calculation result when you change the calculation conditions.
 ## Input script commands
 ### Ion input file
 >**Syntax**:  `Input  fileName`  
