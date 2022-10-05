@@ -1,4 +1,4 @@
-NAME        = ../../test2/myprogram
+NAME        = ./src/nucleationMD
 SRCS        = ./src/*cpp
 OBJS        = $(SRCS:.cpp=.o)
 CXX         = g++
