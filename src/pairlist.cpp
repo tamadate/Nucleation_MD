@@ -50,10 +50,12 @@ MD::updateInOut(int molFlag){
 		double dy = a.qy - vars->effectiveIn[0][0].qy;
 		double dz = a.qz - vars->effectiveIn[0][0].qz;
 		double r2 = (dx * dx + dy * dy + dz * dz);
-		if (r2 < RI2) {
+		if (r2 < RI2 && a.inFlag==0) {
 			if (molFlag==1) makeDiatomicProp_in(a);
 			if (molFlag==2) makePolyatomicProp_in(a);
+			a.inFlag=1;
 		}
+		if (r2 > RI2 && a.inFlag==1) a.inFlag=0;
 	}
 
 	Molecule *mol=vars->effectiveIn[molFlag].data();
@@ -64,14 +66,18 @@ MD::updateInOut(int molFlag){
 		double dz = mol[i].qz - vars->effectiveIn[0][0].qz;
 		double r2 = (dx * dx + dy * dy + dz * dz);
 		if (r2 > RI2) {
+			if(molFlag==2){
+				sprintf(filepath, "vapor_out_%d.dat", int(calculation_number));
+				FILE*f=fopen(filepath, "a");
+				Molecule *ion=vars->effectiveIn[0].data();
+				fprintf(f, "%d %e %e %e %e %e %e %e\n", mol[i].id,itime*dt,mol[i].qx-ion[0].qx,mol[i].qy-ion[0].qy,mol[i].qz-ion[0].qz,\
+				mol[i].px-ion[0].px,mol[i].py-ion[0].py,mol[i].pz-ion[0].pz);
+				fclose(f);
+			}
 			vars->effectiveIn[molFlag].erase(vars->effectiveIn[molFlag].begin()+i);
-			/*if(collisionFlagVapor[i]!=0){
-				output_vapor_collision(collisionFlagVapor[i]);
-				Ovout(i);
-				collisionFlagVapor[i]=0;
-			}*/
+			size--;
 		}
-		else ++i;
+		else {i++;}
 	}
 }
 

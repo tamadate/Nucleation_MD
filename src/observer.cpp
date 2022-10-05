@@ -8,25 +8,16 @@ Observer::computeProps(Variables *vars,int molID){
 	Kout[molID]=0;
 	double Nout=0;
 
-	for(auto &mg : vars->effectiveIn[molID]){
-		for (auto &ag : mg.inAtoms){
-			Kin[molID] += ag.px * ag.px * ag.mass;
-			Kin[molID] += ag.py * ag.py * ag.mass;
-			Kin[molID] += ag.pz * ag.pz * ag.mass;
+	for(auto &mol : vars->effectiveIn[molID]){
+		for (auto &at : mol.inAtoms){
+			Kin[molID] += at.px * at.px * at.mass;
+			Kin[molID] += at.py * at.py * at.mass;
+			Kin[molID] += at.pz * at.pz * at.mass;
 			Nin++;
 		}
 	}
 	Kin[molID]*= (0.5 * real_to_kcalmol);
-	Tin[molID]=Kin[1]/double(Nin)*coeff;
-
-	for(auto &mg : vars->effectiveOut[1]){
-		Kout[molID] += mg.px * mg.px * mg.mass;
-		Kout[molID] += mg.py * mg.py * mg.mass;
-		Kout[molID] += mg.pz * mg.pz * mg.mass;
-		Nout++;
-	}
-	Kout[molID]*= (0.5 * real_to_kcalmol);
-	Tout[molID]=Kout[molID]/double(Nout)*coeff;
+	Tin[molID]=Kin[molID]/double(Nin)*coeff;
 
 };
 

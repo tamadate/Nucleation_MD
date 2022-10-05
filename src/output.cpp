@@ -132,19 +132,18 @@ MD::display(int output_ONOFF){
 }
 
 void
-MD::export_dump(void) {
+MD::exportDumpIn(void) {
 	int count = vars->time;
 	FILE*f=fopen(pp->dump_path, "a");
 	int Natom=0;
 	for (auto &a : vars->effectiveIn){
 		for (auto &b : a){
-			Natom=+b.inAtoms.size();
+			Natom+=b.inAtoms.size();
 		}
 	}
-	for (auto &a : vars->effectiveOut) Natom=+a.size();
 
 	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n",
-	count, N, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
+	count, Natom, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
 
 	double X,Y,Z;
 	X=Y=Z=0;
@@ -155,37 +154,35 @@ MD::export_dump(void) {
 	}
 
 	int ID=0;
-	for (auto &a : vars->effectiveIn){
-		for (auto &b : a){
-			for (auto &c : b.inAtoms){
-				fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,c.type,c.qx-X,c.qy-Y,c.qz-Z,c.px,c.py,c.pz);
-				ID++;
-			}
+	for (auto &a : vars->effectiveIn[0][0].inAtoms) {
+		fprintf(f,"%d %s %f %f %f %f %f %f\n",ID,vars->atypes[a.type].name.c_str(),a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
+		ID++;
+	}
+	for (auto &a : vars->effectiveIn[1]) {
+		for (auto &b : a.inAtoms) {
+			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes_g.name+"(g)").c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+			ID++;
 		}
 	}
-	for(int i=1;i<3;i++){
-		for (auto &b : vars->effectiveOut[i]){
-			fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,i*111,b.qx-X,b.qy-Y,b.qz-Z,b.px,b.py,b.pz);
+	for (auto &a : vars->effectiveIn[2]) {
+		for (auto &b : a.inAtoms) {
+			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes_v[b.type].name+"(v)").c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
 			ID++;
 		}
 	}
 	fclose(f);
 }
 
-
+// secret command
 void
-MD::export_dump_close(void) {
+MD::exportDumpOut(void) {
 	int count = vars->time;
-	FILE*f=fopen(pp->dump_path, "a");
+	FILE*f=fopen("out.dump", "a");
 	int Natom=0;
-	for (auto &a : vars->effectiveIn){
-		for (auto &b : a){
-			Natom=+b.inAtoms.size();
-		}
-	}
+	for (auto &a : vars->effectiveOut) Natom+=a.size();
 
 	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n",
-	count, N, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
+	count, Natom, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
 
 	double X,Y,Z;
 	X=Y=Z=0;
@@ -196,12 +193,10 @@ MD::export_dump_close(void) {
 	}
 
 	int ID=0;
-	for (auto &a : vars->effectiveIn){
-		for (auto &b : a){
-			for (auto &c : b.inAtoms){
-				fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,c.type,c.qx-X,c.qy-Y,c.qz-Z,c.px,c.py,c.pz);
-				ID++;
-			}
+	for(int i=0;i<3;i++){
+		for (auto &a : vars->effectiveOut[i]) {
+			fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,a.inFlag,a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
+			ID++;
 		}
 	}
 	fclose(f);

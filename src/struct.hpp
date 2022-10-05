@@ -54,15 +54,12 @@ struct Pair_many{
 };
 
 //------------------------------------------------------------------------
-struct N2_relative{
-	double x,y,z,vx1,vy1,vz1,vx2,vy2,vz2;
-};
-//------------------------------------------------------------------------
 struct Molecule {
  	double qx, qy, qz;
 	double px, py, pz;
 	double mass;
 	int ix, iy, iz;
+	int id;
 	std::vector<Atom> inAtoms;
 	std::vector<Bond> bonds;
 	std::vector<Angle> angles;
@@ -73,7 +70,7 @@ struct Molecule_out {
  	double qx, qy, qz;
 	double px, py, pz;
 	double mass;
-	int ix, iy, iz;
+	int inFlag;
 };
 
 struct Potentials {

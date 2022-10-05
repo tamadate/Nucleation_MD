@@ -23,7 +23,8 @@ MD::run_diff(char** argv) {
 	for (itime=0; itime < step_relax; itime++) {
 		if (itime%OBSERVE==0) {
 			display(1);
-			export_dump_close();
+			exportDumpIn();
+      exportDumpOut(); // secret command
 			vars->time=(itime*dt);
 		}
     verlet();
@@ -55,12 +56,12 @@ step of simulation, reset the margine size.
     }
     if(itime%logger==0){
       output();
-      //output_gas();
       vars->time+=(logger*dt);
     }
     if (itime%OBSERVE==0) {
         display(0);
-        export_dump_close();
+        exportDumpIn();
+        exportDumpOut();
     }
 		if ((itime+1)%OBSERVE==0) {
       flags->eflag=1;

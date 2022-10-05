@@ -29,8 +29,8 @@ MD::nosehoover_ion(void){
 	double Coeff=exp(-vars->zeta_ion*0.5*dt);
 	for (auto &a : vars->effectiveIn[0][0].inAtoms) {
 		a.px *= Coeff;
-	    a.py *= Coeff;
-	    a.pz *= Coeff;
+    a.py *= Coeff;
+    a.pz *= Coeff;
 	}
 }
 

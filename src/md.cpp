@@ -32,6 +32,7 @@ MD::MD(char* condfile, int calcNumber) {
 	T=300;
 	p=1e5;
 	positionLogStep=0;
+	totalVaporIn=0;
 	cout<<pp->Mvapor<<endl;
 	setCondition(condfile);
 	output_initial();

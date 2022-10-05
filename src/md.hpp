@@ -64,14 +64,10 @@ class MD {
 	void verlet(void);
 	void update_position(void);
 	void velocity_calculation(void);
-  void update_position_constrained(void);
-  void update_velocity_constrained(void);
 	void forceCombine(void);
 
 //	pair list
 	void updateInOut(int molFlag);
-	void update_vapor_in(void);
-	void update_gas_in(void);
 	void make_pair(void);
 	void make_pair_gasgas(void);
 	void make_pair_gasion(void);
@@ -79,15 +75,14 @@ class MD {
 	void make_pair_vaporion(void);
 	void make_pair_vaporvapor();
 	void check_pairlist(void);
-  void makeDiatomicProp_in(Molecule_out gasOut);
-	void makePolyatomicProp_in(Molecule_out vapOut);
+  void makeDiatomicProp_in(Molecule_out &gasOut);
+	void makePolyatomicProp_in(Molecule_out &vapOut);
 
 //	initialization
 	void initialization_gas(void);
   void initialization_vapor(void);
 
 //	periodic
-	void periodic(void);	/*	periodic condition for gas_in	*/
 	void boundary_scaling_gas_move(void);
 	void boundary_scaling_ion_move(void);
 	void boundary_scaling_vapor_move(void);
@@ -99,17 +94,17 @@ class MD {
 	double gyration;
 
 //	export
-	void export_dump(void);
-	void export_dump_close(void);
+	void exportDumpOut(void);
+	void exportDumpIn(void);
 
 // related vapor sticking position
 	void positionLog(void);
 	int positionLogStep;
 	std::vector<int> stickPositionList;
+	int totalVaporIn;
 
 /*other*/
 	void output(void);
-	void output_gas(void);
 	void output_temp(double gastemp, double iontemp);
 	void output_initial(void);
 	void output_gas_collision(long int initime);
@@ -122,7 +117,6 @@ class MD {
 	char vaporFile[100];
 	char vaporStickFile[100];
 	char filepath_gyration[100];
-	void fix_cell_center(void);
 	void gyration_initial(void);
 	void gyration_out(MD *md2);
 	string gyration_path;
