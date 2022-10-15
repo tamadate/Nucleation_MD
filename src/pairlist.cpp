@@ -19,6 +19,7 @@ MD::make_pair(void){
 	updateInOut(2);
 	make_pair_gasion();
 	make_pair_gasvapor();
+	make_pair_vaporvapor();
 	if(flags->inter_gg==1) make_pair_gasgas();
 //	set number of steps to update pair list
 	double vmax2 = 0.0;
