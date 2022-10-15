@@ -33,7 +33,6 @@ MD::MD(char* condfile, int calcNumber) {
 	p=1e5;
 	positionLogStep=0;
 	totalVaporIn=0;
-	cout<<pp->Mvapor<<endl;
 	setCondition(condfile);
 	output_initial();
 
@@ -41,6 +40,10 @@ MD::MD(char* condfile, int calcNumber) {
 	vars->ionInitialVelocity(T);
 
 	setPotential(flags,1);
+	if(flags->takeOver==1){
+		takeOver();
+		//cout<<takeOverFile<<endl;
+	}
 	initialization_gas();	//Set initial positions & velocities for gas
   initialization_vapor();	//Set initial positions & velocities for vapor
 	analysis_ion();

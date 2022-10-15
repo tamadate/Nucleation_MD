@@ -5,8 +5,6 @@ void
 Observer::computeProps(Variables *vars,int molID){
 	Kin[molID]=0;
 	double Nin=0;
-	Kout[molID]=0;
-	double Nout=0;
 
 	for(auto &mol : vars->effectiveIn[molID]){
 		for (auto &at : mol.inAtoms){
@@ -18,6 +16,18 @@ Observer::computeProps(Variables *vars,int molID){
 	}
 	Kin[molID]*= (0.5 * real_to_kcalmol);
 	Tin[molID]=Kin[molID]/double(Nin)*coeff;
+
+	Kout[molID]=0;
+	double Nout=0;
+
+	for(auto &mol : vars->effectiveOut[molID]){
+		Kout[molID] += mol.px * mol.px * mol.mass;
+		Kout[molID] += mol.py * mol.py * mol.mass;
+		Kout[molID] += mol.pz * mol.pz * mol.mass;
+		Nout++;
+	}
+	Kout[molID]*= (0.5 * real_to_kcalmol);
+	Tout[molID]=Kout[molID]/double(Nout)*coeff;
 
 };
 

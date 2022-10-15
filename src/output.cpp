@@ -100,18 +100,25 @@ MD::display(int output_ONOFF){
 		for(auto &kout : obs->Kout) Kout+=kout;
 
 		vars->Ucombine();
-    std::cout << "----------------------TIME = " << vars->time/1000.0 << " ps-------------------------" << endl;
-		cout<<"Inside propeties"<<endl;
-    printf("  Kion = %1.2e  Kgas = %1.2e  Kvap = %1.2e\n  Tion = %1.2f  Tgas = %1.2f  Tvap = %1.2f\n\
-		  Uion = %1.2e  Ugas = %1.2e  Uvap = %1.2e\n  Ugi = %1.2e  Ugg = %1.2e  Uvi = %1.2e	\n  Uvg = %1.2e	Uvv= %1.2e  \n",\
-		obs->Kin[0], obs->Kin[1], obs->Kin[2], obs->Tin[0], obs->Tin[1], obs->Tin[2], vars->Utotal.Uion, vars->Utotal.Ugas,
-		vars->Utotal.Uvap, vars->Utotal.Ugi, vars->Utotal.Ugg,	vars->Utotal.Uvi, vars->Utotal.Uvg, vars->Utotal.Uvv);
-		cout<<"Out side propeties"<<endl;
-		printf("  Kgas = %1.2e  Tgas = %1.2f  Ugas = %1.2e	\n  Kvap = %1.2e  Tvap = %1.2f  Uvap = %1.2e	\n  Kout = %1.2e    Uout = %1.2e	\n",
-		obs->Kout[1], obs->Tout[1], 0.0, obs->Kout[2], obs->Tout[2], 0.0, Kout, 0.0);
-		cout<<"System propeties"<<endl;
+    std::cout << "-------------------TIME = " << vars->time/1000.0 << " ps----------------------" << endl;
+		cout<<"*Inside propeties"<<endl;
+		printf("  %-15s%-12s%-12s%-12s\n", "Prop", "Ion", "Gas", "Vapor");
+		printf("  %-15s%-12.2e%-12.2e%-12.2e\n", "K-Energy", obs->Kin[0], obs->Kin[1], obs->Kin[2]);
+		printf("  %-15s%-12.2f%-12.2f%-12.2f\n", "Temperature", obs->Tin[0], obs->Tin[1], obs->Tin[2]);
+		printf("  %-15s%-12.2e%-12.2e%-12.2e\n", "Uintra", vars->Utotal.Uion, vars->Utotal.Ugas, vars->Utotal.Uvap);
+		printf("  %-15s%-12.2e%-12.2e%-12.2e\n", "Uinter(Ion)", 0.0, vars->Utotal.Ugi, vars->Utotal.Uvi);
+		printf("  %-15s%-12s%-12.2e%-12.2e\n", "Uinter(Gas)", "-", vars->Utotal.Ugg, vars->Utotal.Uvg);
+		printf("  %-15s%-12s%-12s%-12.2e\n", "Uinter(Vapor)", "-", "-", vars->Utotal.Uvv);
+
+		cout<<"*Out side propeties"<<endl;
+		printf("  %-15s%-12s%-12s%-12s\n", "Prop", "Ion", "Gas", "Vapor");
+		printf("  %-15s%-12s%-12.2e%-12.2e\n", "K-Energy", "-", obs->Kout[1], obs->Kout[2]);
+		printf("  %-15s%-12s%-12.2f%-12.2f\n", "Temperature", "-", obs->Tout[1], obs->Tout[2]);
+
+		cout<<"*System total propeties"<<endl;
 		printf("  K = %1.2e	U = %1.2e	Press = %f\n",Kin+Kout, U, gaspress/101300.0);
-		cout<<"Times"<<endl;
+
+		cout<<"*Times"<<endl;
 		printf("  tion  = %1.1f s	tgas = %1.1f s 	tvap = %1.1f s\n",vars->times.tion,vars->times.tgas,vars->times.tvap);
 		printf("  tvi   = %1.1f s	tgi  = %1.1f s	tvg  = %1.1f s	tvv  = %1.1f s\n",vars->times.tvi,vars->times.tgi,vars->times.tvg,vars->times.tvv);
 		printf("  tpair = %1.1f s	tpos = %1.1f s	tvel = %1.1f s	tetc = %1.1f s\n",vars->times.tpair,vars->times.tpos,vars->times.tvel,vars->times.tetc);
@@ -195,7 +202,7 @@ MD::exportDumpOut(void) {
 	int ID=0;
 	for(int i=0;i<3;i++){
 		for (auto &a : vars->effectiveOut[i]) {
-			fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,a.inFlag,a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
+			fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,i,a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
 			ID++;
 		}
 	}

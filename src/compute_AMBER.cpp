@@ -210,7 +210,7 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 			if (flags->eflag) vars->U_MP[nth].Uion+= dtypes[type].coeff[JJ5] * p_;
 		}
 
-       // cout<<df<<endl;
+
 		double fg = vb1x*vb2xm + vb1y*vb2ym + vb1z*vb2zm;
 		double hg = vb3x*vb2xm + vb3y*vb2ym + vb3z*vb2zm;
 		double fga = fg*ra2inv*rginv;

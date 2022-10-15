@@ -53,9 +53,6 @@ class MD {
 	MBdist *mbdist;
 	MBdist *mbdistV;
 
-//	vectors for pairlist
-	double margin_length;
-
 //	General functions
 	void updateInCenters(void);
 
@@ -69,6 +66,7 @@ class MD {
 //	pair list
 	void updateInOut(int molFlag);
 	void make_pair(void);
+	void makePairXX(int type1, int type2, int cut);
 	void make_pair_gasgas(void);
 	void make_pair_gasion(void);
 	void make_pair_gasvapor(void);
@@ -77,10 +75,12 @@ class MD {
 	void check_pairlist(void);
   void makeDiatomicProp_in(Molecule_out &gasOut);
 	void makePolyatomicProp_in(Molecule_out &vapOut);
+	double margin_length;
 
 //	initialization
 	void initialization_gas(void);
   void initialization_vapor(void);
+	void takeOver(void);
 
 //	periodic
 	void boundary_scaling_gas_move(void);
@@ -115,6 +115,7 @@ class MD {
 	char filepath[100];
 	char atomFile[100];
 	char vaporFile[100];
+	char takeOverFile[100];
 	char vaporStickFile[100];
 	char filepath_gyration[100];
 	void gyration_initial(void);

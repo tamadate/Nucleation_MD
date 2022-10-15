@@ -13,6 +13,7 @@ FLAG::FLAG(void) {
 	dump_2nd=1;
 	gyration=0;
 	RDF=0;
+	takeOver=0;
 
 //	ion intratomic interaction
 	force_ters=0;

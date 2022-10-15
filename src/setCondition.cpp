@@ -36,6 +36,11 @@ MD::readCondFile(char* condfile){
 			cout<<"Vapor file -->\t\t"<<readings[1]<<endl;
 			cout<<"Number of vapors\t"<<Nof_around_vapor<<endl;
 		}
+		if(readings[0]=="TakeOver"){
+			strcpy(takeOverFile,readings[1].c_str());
+			flags->takeOver=1;
+			cout<<"Take over from -->\t"<<readings[1]<<endl;
+		}
 		if(readings[0]=="VaporStickPositions"){
 			strcpy(vaporStickFile,readings[1].c_str());
 			positionLogStep=stoi(readings[2]);

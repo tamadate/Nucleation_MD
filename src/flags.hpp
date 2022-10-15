@@ -53,6 +53,7 @@ public:
 	int cg;
 
 	int eflag;
+	int takeOver;
 
 
 	FLAG(void);
