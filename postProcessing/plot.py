@@ -29,7 +29,7 @@ class plot:
     				## Reading energy file(s)
     #-----------------------------------------------------------------------------#
 
-    def plotEnergies(self,U,teq,tEND):
+    def plotEnergies(self,U,teq,tEND,figIndex):
         #K=np.loadtxt("K_1.dat")
         labels=["Uion","Ugas","Uvap","Ugi","Ugg","Uvg","Uvi","Uvv"]
         display=[1,0,0,0,0,0,1,1]
@@ -40,15 +40,15 @@ class plot:
         Xmax*=1.4
 
         #axs.flat[0].set_xlim([0,Xmax])
-        self.axs.flat[0].set_title("(a) Potential Energies",loc='left',fontsize=self.titleSize)
-        self.axs.flat[0].set_xlabel("Time [ns]",fontsize=self.labelSize)
-        self.axs.flat[0].set_ylabel("Energy [kcal/mol]",fontsize=self.labelSize)
+        self.axs.flat[figIndex].set_title("(a) Potential Energies",loc='left',fontsize=self.titleSize)
+        self.axs.flat[figIndex].set_xlabel("Time [ns]",fontsize=self.labelSize)
+        self.axs.flat[figIndex].set_ylabel("Energy [kcal/mol]",fontsize=self.labelSize)
         for i in np.arange(np.size(U[0])-1):
             if(display[i]):
-        	       self.axs.flat[0].plot(U.T[0]*1e-6,U.T[i+1],label=labels[i],linewidth=self.lineWidth,color=colors[i])
-        self.axs.flat[0].plot(U.T[0]*1e-6,np.sum(U.T[1:],axis=0),label="Total",linewidth=self.lineWidth,color="black")
-        self.axs.flat[0].axvline(x = teq*1e9, ls='--', color = 'black',linewidth=self.lineWidth)
-        self.axs.flat[0].legend()
+        	       self.axs.flat[figIndex].plot(U.T[0]*1e-6,U.T[i+1],label=labels[i],linewidth=self.lineWidth,color=colors[i])
+        self.axs.flat[figIndex].plot(U.T[0]*1e-6,np.sum(U.T[1:],axis=0),label="Total",linewidth=self.lineWidth,color="black")
+        self.axs.flat[figIndex].axvline(x = teq*1e9, ls='--', color = 'black',linewidth=self.lineWidth)
+        self.axs.flat[figIndex].legend()
 
     				## Reading vapor in out time files
     #-----------------------------------------------------------------------------#
@@ -86,16 +86,16 @@ class plot:
 
     #-----------------------------------------------------------------------------#
     def plotMSDVAF(self,MSDVAF,diffusionData):
-        self.axs.flat[4].set_title("(e) Normalized MSD",loc='left',fontsize=self.titleSize)
-        self.axs.flat[4].set_xlabel("Time [ns]",fontsize=self.labelSize)
-        self.axs.flat[4].set_ylabel("Normalized MSD [-]",fontsize=self.labelSize)
-        self.axs.flat[4].scatter(MSDVAF.T[0],MSDVAF.T[1]/np.max(MSDVAF.T[1]),color="black",s=10)
-        self.axs.flat[4].text(1, 0.8, "K = "+'{:.2f}'.format(diffusionData[3]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
-        self.axs.flat[5].set_title("(f) Normalized VAF",loc='left',fontsize=self.titleSize)
-        self.axs.flat[5].set_xlabel("Time [ns]",fontsize=self.labelSize)
-        self.axs.flat[5].set_ylabel("Normalized VAF [-]",fontsize=self.labelSize)
-        self.axs.flat[5].scatter(MSDVAF.T[0],MSDVAF.T[2]/MSDVAF.T[2][0],color="black",s=10)
-        self.axs.flat[5].text(2, 0.8, "K = "+'{:.2f}'.format(diffusionData[4]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
+        self.axs.flat[0].set_title("(e) Normalized MSD",loc='left',fontsize=self.titleSize)
+        self.axs.flat[0].set_xlabel("Time [ns]",fontsize=self.labelSize)
+        self.axs.flat[0].set_ylabel("Normalized MSD [-]",fontsize=self.labelSize)
+        self.axs.flat[0].scatter(MSDVAF.T[0],MSDVAF.T[1]/np.max(MSDVAF.T[1]),color="black",s=10)
+        self.axs.flat[0].text(1, 0.8, "K = "+'{:.2f}'.format(diffusionData[3]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
+        self.axs.flat[1].set_title("(f) Normalized VAF",loc='left',fontsize=self.titleSize)
+        self.axs.flat[1].set_xlabel("Time [ns]",fontsize=self.labelSize)
+        self.axs.flat[1].set_ylabel("Normalized VAF [-]",fontsize=self.labelSize)
+        self.axs.flat[1].scatter(MSDVAF.T[0],MSDVAF.T[2]/MSDVAF.T[2][0],color="black",s=10)
+        self.axs.flat[1].text(2, 0.8, "K = "+'{:.2f}'.format(diffusionData[4]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
 
     #-----------------------------------------------------------------------------#
     def plotShow(self,figOutput,fileName):
@@ -119,4 +119,14 @@ class plot:
             self.axs.flat[1].scatter(data[0]*10,(data[4]/datas[0][4]),color = "black")
 
         plt.savefig(str(directory)+"diffusionSummary.png", dpi=1000)
+        plt.show()
+
+    def plotStickLocation(self,label,dist,aminoNames,distAmino,directory):
+        self.axs.flat[0].set_xlabel("Hidrogen location ID",fontsize=12)
+        self.axs.flat[0].set_ylabel("Probability [%]",fontsize=12)
+        self.axs.flat[0].bar(label,dist)
+        self.axs.flat[1].set_xlabel("Amino acides",fontsize=12)
+        self.axs.flat[1].set_ylabel("Probability [%]",fontsize=12)
+        self.axs.flat[1].bar(aminoNames,distAmino)
+        plt.savefig(str(directory)+"stickLocationDist.png", dpi=1000)
         plt.show()
