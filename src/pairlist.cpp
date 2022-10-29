@@ -93,7 +93,7 @@ MD::update_vapor_in(void){
 		double dz = vapors[i].qz - ion_r[2];
 		double r2 = (dx * dx + dy * dy + dz * dz);
 		if (r2 < RI2) {
-			if(r2<25 && collisionFlagVapor[i]==0){
+			if(r2<100 && collisionFlagVapor[i]==0){
 				Ovin(i);
 				collisionFlagVapor[i]=itime;
 			}

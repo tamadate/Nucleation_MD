@@ -55,7 +55,7 @@ class plot:
         axs.legend()
         fig.tight_layout()
         if(figOutput):
-            plt.savefig(fileName, dpi=1000)
+            plt.savefig(str(self.directory)+"Energy.png", dpi=1000)
         plt.show()
 
     				## Reading vapor in out time files
@@ -70,7 +70,7 @@ class plot:
         axs.scatter(times*1e9,Nstick,color="black",s=20)
         fig.tight_layout()
         if(figOutput):
-            plt.savefig(fileName, dpi=1000)
+            plt.savefig(str(self.directory)+"Nvap.png", dpi=1000)
         plt.show()
 
     #-----------------------------------------------------------------------------#
@@ -88,7 +88,7 @@ class plot:
         axs.legend()
         fig.tight_layout()
         if(figOutput):
-            plt.savefig(fileName, dpi=1000)
+            plt.savefig(str(self.directory)+"stickTimeDist.png", dpi=1000)
         plt.show()
 
     #-----------------------------------------------------------------------------#
@@ -106,27 +106,26 @@ class plot:
         axs.legend()
         fig.tight_layout()
         if(figOutput):
-            plt.savefig(fileName, dpi=1000)
+            plt.savefig(str(self.directory)+"vaporDist.png", dpi=1000)
         plt.show()
 
     #-----------------------------------------------------------------------------#
     def plotMSDVAF(self,MSDVAF,diffusionData,figOutput):
         self.pltNormal()
-        fig, axs = plt.subplots(1,1,figsize=(5,5))
-        self.axNormal(axs)
-        axs.set_title("(e) Normalized MSD",loc='left',fontsize=self.titleSize)
-        axs.set_xlabel("Time [ns]",fontsize=self.labelSize)
-        axs.set_ylabel("Normalized MSD [-]",fontsize=self.labelSize)
-        axs.scatter(MSDVAF.T[0],MSDVAF.T[1]/np.max(MSDVAF.T[1]),color="black",s=10)
-        axs.text(1, 0.8, "K = "+'{:.2f}'.format(diffusionData[3]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
-        axs.set_title("(f) Normalized VAF",loc='left',fontsize=self.titleSize)
-        axs.set_xlabel("Time [ns]",fontsize=self.labelSize)
-        axs.set_ylabel("Normalized VAF [-]",fontsize=self.labelSize)
-        axs.scatter(MSDVAF.T[0],MSDVAF.T[2]/MSDVAF.T[2][0],color="black",s=10)
-        axs.text(2, 0.8, "K = "+'{:.2f}'.format(diffusionData[4]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
+        fig, axs = plt.subplots(1,2,figsize=(10,5))
+        for ax in axs.flat:
+            self.axNormal(ax)
+        axs.flat[0].set_xlabel("Time [ns]",fontsize=self.labelSize)
+        axs.flat[0].set_ylabel("Normalized MSD [-]",fontsize=self.labelSize)
+        axs.flat[0].scatter(MSDVAF.T[0],MSDVAF.T[1]/np.max(MSDVAF.T[1]),color="black",s=10)
+        axs.flat[0].text(1, 0.8, "K = "+'{:.2f}'.format(diffusionData[3]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
+        axs.flat[1].set_xlabel("Time [ns]",fontsize=self.labelSize)
+        axs.flat[1].set_ylabel("Normalized VAF [-]",fontsize=self.labelSize)
+        axs.flat[1].scatter(MSDVAF.T[0],MSDVAF.T[2]/MSDVAF.T[2][0],color="black",s=10)
+        axs.flat[1].text(2, 0.8, "K = "+'{:.2f}'.format(diffusionData[4]*diffusionData[5])+" cm$^ 2$/Vs", fontsize = 10)
         fig.tight_layout()
         if(figOutput):
-            plt.savefig(fileName, dpi=1000)
+            plt.savefig(str(self.directory)+"MSD_VAF.png", dpi=1000)
         plt.show()
 
     #-----------------------------------------------------------------------------#

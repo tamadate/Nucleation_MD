@@ -10,9 +10,7 @@ class diffusionCoeff:
     def __init__(self,con):
         self.plot=plot.plot()
         self.plot.pltNormal()
-        self.plot.fig, self.plot.axs = plt.subplots(1,2,figsize=(10,5))
-        for i in np.arange(2):
-        	self.plot.axNormal(self.plot.axs.flat[i])
+        self.plot.directory=con.directory
         self.con=con
 
     def compute(self):
@@ -24,5 +22,5 @@ class diffusionCoeff:
         MSDVAF=np.loadtxt(self.con.directory+"TIME_MSD_VAF."+str(self.con.I))
         diffusionData=np.loadtxt(self.con.directory+"DiffusionCoefficients."+str(self.con.I),skiprows=1)
 
-        self.plot.plotMSDVAF(MSDVAF,diffusionData)
-        self.plot.plotShow(self.con.figOutput,self.con.directory+"fig"+str(self.con.I)+".png")
+        self.plot.plotMSDVAF(MSDVAF,diffusionData,self.con.figOutput)
+        #self.plot.plotShow(self.con.figOutput,self.con.directory+"fig"+str(self.con.I)+".png")
