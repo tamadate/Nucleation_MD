@@ -31,6 +31,7 @@ dt_post=1e-11   # dt in analysis, dt_post [s]
 #directory="../../../nucleation/NaCl/Na2Cl_toluene/"
 #directory="../../../nucleation/angio2+/100/"
 directory="/home/tama3rdgen/vaporUptake/angioII+1/"
+directory="/home/tama3rdgen/vaporUptake/bradykinin+2/1/"
 I=10
 
 startTime=2e-9
