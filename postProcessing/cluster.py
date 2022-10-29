@@ -10,101 +10,102 @@ from scipy.optimize import minimize
 class cluster:
 	def __init__(self,con):
 		os.system("make")
+
 		self.plot=plot.plot()
+		self.plot.pltNormal()
+		self.plot.fig, self.plot.axs = plt.subplots(2,2,figsize=(8,8))
+		for i in np.arange(4):
+			self.plot.axNormal(self.plot.axs.flat[i])
 		self.con=con
 
-	# function for the optimization
-	def computeTth(self,t,v,x0):
-		x=v*t+x0
-		r=np.sum(x*x)
-		fac=0
-		if(t<0):
-			fac=1e200
-		return (self.con.delta2-r)**2+fac
-
-	# get total calculation time
-	def getTtot(self):
-		self.U=np.loadtxt(self.con.directory+"U_"+str(self.con.I)+".dat") # Reading energy file(s)
-		self.t_tot=np.max(self.U.T[0])*1e-15  # total simulation time [s]
 
 	def Upot(self):
-		self.getTtot()
-		negs=np.where((self.U[:,0]>self.con.tEND*1e15))
-		self.U=np.delete(self.U,negs,axis=0)
-		self.plot.plotEnergies(self.U,self.con.teq,self.con.tEND,self.con.figOutput)
+		## Reading energy file(s)
+		U=np.loadtxt(self.con.directory+"U_"+str(self.con.I)+".dat")
+		self.t_tot=np.max(U.T[0])*1e-15  # total simulation time [s]
+		negs=np.where((U[:,0]>self.con.tEND*1e15))
+		U=np.delete(U,negs,axis=0)
+		self.plot.plotEnergies(U,self.con.teq,self.con.tEND,0)
+
 
 	def vapor(self):
-		# Reading vapor in out time files
+		## Reading vapor in out time files
 		inVapor=np.loadtxt(self.con.directory+"vapor_in_"+str(self.con.I)+".dat")
 		negs=np.where((inVapor[:,1]>self.con.tEND*1e15))
 		inVapor=np.delete(inVapor,negs,axis=0)
-		Nin=np.size(inVapor.T[0])
 		outVapor=np.loadtxt(self.con.directory+"vapor_out_"+str(self.con.I)+".dat")
 		negs=np.where((outVapor[:,1]>self.con.tEND*1e15))
 		outVapor=np.delete(outVapor,negs,axis=0)
-		Nout=np.size(outVapor.T[0])
-
-		# get total number of steps in analysis
-		self.getTtot()
-		Npost=int(self.t_tot/self.con.dt_post)
+		Npost=int(self.t_tot/self.con.dt_post)					# total number of steps in analysis, Npost=/self.con.dt_post
 
 		times=np.arange(Npost)*self.con.dt_post
-		Nstick=np.zeros(Npost)						# Number of vapors at the time
-		usedLines=np.arange(Nout)					# Flag for outVapor (-1: used, 0: not used)
-		ts=np.zeros(Nin)							# Residence time in MD
-		tth=np.zeros(Nin)							# Residence time in theory
+		Nstick=np.zeros(Npost)	# Number of vapors [N(t0),N(t0+self.con.dt_post),N(t1+2*self.con.dt_post),...,N(t_tot)]
+		usedLines=np.arange(np.size(outVapor.T[0]))		# Flag for outVapor (equal to -1 if it is used)
+		ts=np.zeros(np.size(inVapor.T[0]))	# Number of vapors [N(t0),N(t0+self.con.dt_post),N(t1+2*self.con.dt_post),...,N(t_tot)]
+		tth=np.zeros(np.size(inVapor.T[0]))	# Number of vapors [N(t0),N(t0+self.con.dt_post),N(t1+2*self.con.dt_post),...,N(t_tot)]
 
-		for iin in np.arange(Nin):
-			IDin=inVapor[iin][0]
-			xin=inVapor[iin][5:8]
-			vin=inVapor[iin][2:5]
-			timeIn=inVapor[iin][1]*1e-15
+		def function(t,v,x0):
+			x=v*t+x0
+			r=np.sum(x*x)
+			fac=0
+			if(t<0):
+				fac=1e200
+			return (self.con.delta2-r)**2+fac
 
-			timeOut=self.t_tot
-			# find same vapor ID
-			for iout in np.arange(Nout):
-				if(usedLines[iout]==-1):
-					continue
-				if(outVapor[iout][0]==IDin):
-					timeOut=outVapor[iout][1]*1e-15
-					usedLines[iout]=-1
-					break
-			Nstick[int(timeIn/self.con.dt_post):int(timeOut/self.con.dt_post)]+=1
-			if(timeIn<self.con.teq):
-				continue
-			time3=minimize(self.computeTth,x0=100000,args=(xin,vin)).x[0]	# args=((vx,vy,vz),(x,y,z))
-			ts[iin]=timeOut-timeIn-time3*1e-15	# time3 is theoretical residence time in interaction sphere
-			tth[iin]=timeOut-timeIn	# time3 is theoretical residence time in interaction sphere
+		for iin in np.arange(np.size(inVapor.T[0])):
+		    time1=inVapor[iin][1]*1e-15
+		    time2=0
+		    for loop in np.arange(np.size(usedLines)):
+		        if(usedLines[loop]==-1):
+		            continue
+		        if(outVapor[loop][0]==inVapor[iin][0]):
+		            time2=outVapor[loop][1]*1e-15
+		            usedLines[loop]=-1
+		            break
+		    if(time2!=0):
+		        Nstick[int(time1/self.con.dt_post):int(time2/self.con.dt_post)]+=1
+		    else:
+		        Nstick[int(time1/self.con.dt_post):int(self.t_tot/self.con.dt_post)]+=1
+		    result=minimize(function,x0=100000,args=(inVapor[iin][5:8],inVapor[iin][2:5]))	# args=((vx,vy,vz),(x,y,z))
+		    if(time1<self.con.teq):
+		        time1=self.t_tot
+		    ts[iin]=time2-time1-result.x[0]*1e-15	# result.x[0] is theoretical residence time in interaction sphere
+		    tth[iin]=time2-time1	# result.x[0] is theoretical residence time in interaction sphere
 
-		self.plot.plotNvap(times,self.con.teq,Nstick,self.con.figOutput)
-		self.plot.plotStickTimeDist(ts,tth,self.con.figOutput)
+		#np.savetxt("ts.dat",ts)
+
+		self.plot.plotNvap(times,self.con.teq,Nstick)
+		self.plot.plotStickTimeDist(ts,tth)
+
+
 
 		#-----------------------------------------------------------------------------#
-		# ignore if the regidence time is smaller than tcut
-		negs=np.where((ts<self.con.tcut))
-		tsCut=np.delete(ts,negs)
-		tsave=np.average(tsCut)	# average sticking time [s]
-		betaC=np.size(tsCut)/(self.t_tot-self.con.teq)	# vapor collision flux with ion [1/s]
+		negs=np.where((ts<self.con.tcut))	# indexes of ts<self.con.tcut
+		tsave=np.average(np.delete(ts,negs))	# average sticking time [s]
+		betaC=np.size(np.delete(ts,negs))/(self.t_tot-self.con.teq)	# vapor collision flux with ion [1/s]
 		ram=betaC*tsave		# ramda for Poisson distribution
 
-		NstickEq=Nstick[int(self.con.teq/self.con.dt_post):]
-		Nbase=np.min(NstickEq)
-		Nave=np.average(NstickEq)
+		Nbase=np.min(Nstick[int(self.con.teq/self.con.dt_post):])
+		Nave=np.average(Nstick[int(self.con.teq/self.con.dt_post):])
 		#ram=Nave-Nbase
 
-		#ram-=Nbase-0.5
-		nvap=np.arange(self.con.Nmax)
+		nv=np.arange(self.con.Nmax)
 		ppoi=np.zeros(self.con.Nmax)
 		psim=np.zeros(self.con.Nmax)
-		for i in nvap:
+		for i in nv:
 			ppoi[i]=ram**i*np.exp(-ram)/math.factorial(i)
-		for i in NstickEq:
+		for i in Nstick[int(self.con.teq/self.con.dt_post):]:
 		    psim[int(i)]+=1
-		psim/=np.size(NstickEq)
+		psim/=np.size(Nstick[int(self.con.teq/self.con.dt_post):])
 
-		self.plot.plotStickVaporDist(nvap,ppoi,psim,Nbase,self.con.figOutput)
-		f_sim=np.size(ts)/self.t_tot	# vapor flux into the interaction sphere [1/s]	# vapor flux into the interaction sphere in free molecular limit [1/s]
-		print ("f_FM="+str(self.con.f_FM*1e-9)+"[1/ns]\tf_sim="+str(f_sim*1e-9)+"[1/ns]")
+		self.plot.plotStickVaporDist(nv,ppoi,psim,Nbase)
+
+
+		pv=self.con.pv0-Nbase 	# vapor pressure [Pa]
+		C=pv/self.con.kb/self.con.T	# vapor concentraiton [1/m3]
+		f_sim=np.size(ts)/self.t_tot	# vapor flux into the interaction sphere [1/s]
+		f_FM=self.con.delta2*np.pi*self.con.c*C	# vapor flux into the interaction sphere in free molecular limit [1/s]
+		print ("f_FM="+str(f_FM*1e-9)+"[1/ns]\tf_sim="+str(f_sim*1e-9)+"[1/ns]")
 
 
 	def compute(self):
