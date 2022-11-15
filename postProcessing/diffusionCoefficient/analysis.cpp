@@ -26,7 +26,22 @@ int main(int argc,char *argv[]){
 
 	int Nblocks=0;
 	char dump[100];
+	char errorFile[100];
+	sprintf(dump, "%s%s", argv[7], "error.dat");
+	ifstream stream(dump);
+	string str;
+	while(getline(stream,str)) {
+		error.push_back(stod(str));
+	}
 	for(int i=0;i<pl;i++){
+		int skipFlag=0;
+		for(auto &err : error){
+			if(err==i){
+				cout<<"skip:"<<i+calculationNumber<<endl;
+				skipFlag=1;
+			}
+		}
+		if(skipFlag) continue;
 		sprintf(dump, "%s%s%d%s", argv[7], "ion_300_", i+calculationNumber, ".dat"); // time x y z vx vy vz
 		ifstream stream(dump);
 		string str;

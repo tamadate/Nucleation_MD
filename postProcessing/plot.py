@@ -16,8 +16,8 @@ class plot:
     def pltNormal(self):
         plt.rcParams['ytick.direction'] = 'in'
         plt.rcParams['xtick.direction'] = 'in'
-        #plt.rcParams['figure.subplot.bottom'] = 0.2
-        #plt.rcParams['figure.subplot.left'] = 0.2
+        plt.rcParams['figure.subplot.bottom'] = 0.2
+        plt.rcParams['figure.subplot.left'] = 0.2
         #plt.rcParams['font.family'] = 'Arial'
         plt.rcParams["font.size"]=8
 
@@ -74,18 +74,20 @@ class plot:
         plt.show()
 
     #-----------------------------------------------------------------------------#
-    def plotStickTimeDist(self,ts,tth,figOutput):
+    def plotStickTimeDist(self,tss,tth,figOutput):
         self.pltNormal()
         fig, axs = plt.subplots(1,1,figsize=(5,5))
         self.axNormal(axs)
-        negs=np.where(ts<=0)
+        negs=np.where(tss<=0)
         axs.set_xlabel("Logarithm of time [-]",fontsize=self.labelSize)
         axs.set_ylabel("Number of event [-]",fontsize=self.labelSize)
-        axs.set_yscale("log")
-        axs.hist(np.log10(np.delete(ts,negs)),alpha=0.3,bins=50,label="$\it {t}$$_{sim}$",color="blue")
-        axs.hist(np.log10(np.delete(tth,negs)),alpha=0.3,bins=30,label="$\it {t}$$_ {sim}$-$\it t$$_ {th}$",color="black")
+        #axs.set_yscale("log")
+        axs.hist(np.log10(np.delete(tss,negs)),alpha=0.3,bins=50,label="$\it {t}$$_{sim}$",color="blue")
+        ymin,ymax=axs.get_ylim()
+        axs.text(-10.5, ymax*0.8, r"$t_s$ = "+'{:.3f}'.format(np.average(np.delete(tss,negs))*1e9)+" ns", fontsize = 10)
+        #axs.hist(np.log10(np.delete(tth,negs)),alpha=0.3,bins=30,label="$\it {t}$$_ {sim}$-$\it t$$_ {th}$",color="black")
         #axs.axvline(x = np.log10(tcut), color = 'black', ls="--",linewidth=lineWidth)
-        axs.legend()
+        #axs.legend()
         fig.tight_layout()
         if(figOutput):
             plt.savefig(str(self.directory)+"stickTimeDist.png", dpi=1000)
@@ -102,6 +104,10 @@ class plot:
         axs.set_ylim([1e-5,1])
         axs.scatter(nv,ppoi,label="Poisson",color="black")
         axs.scatter(nv,psim,label="Simulation",color="blue")
+        print("Poisson")
+        print(ppoi)
+        print("Simulation")
+        print(psim)
         #axs.scatter(nv-Nbase,psim,label="Simulation("+str(int(-Nbase))+")",marker="^",color="cyan")
         axs.legend()
         fig.tight_layout()
@@ -135,22 +141,14 @@ class plot:
             plt.savefig(fileName, dpi=1000)
         plt.show()
 
-    def plotMobilityShift(self,datas,directory):
-        self.pltNormal()
-        fig, axs = plt.subplots(1,1,figsize=(5,5))
-        self.axNormal(axs)
-        #axs.set_xlim([0,Xmax])
-        axs.set_title("(a) Inverse of mobility shift",loc='left',fontsize=self.titleSize)
-        axs.set_xlabel("Vapor pressure [Pa]",fontsize=self.labelSize)
-        axs.set_ylabel(r"Mobility [cm$^2$/Vs]",fontsize=self.labelSize)
-        for data in datas:
-            self.scatter(data[0]*10,(data[4]*data[6])**-1,color = "black")
-
-        axs.set_title("(b) Mobility shift",loc='left',fontsize=self.titleSize)
-        axs.set_xlabel("Vapor pressure [Pa]",fontsize=self.labelSize)
-        axs.set_ylabel(r"Normalized mobility, $Z_p/Z_{p,0}$ [-]",fontsize=self.labelSize)
-        for data in datas:
-            axs.scatter(data[0]*10,(data[4]/datas[0][4]),color = "black")
+    def plotMobilityShift(self,press,datas,directory):
+        self.axs.set_xlabel("Vapor pressure [Pa]",fontsize=self.labelSize)
+        #self.axs.set_ylabel(r"Normalized mobility, $Z_p/Z_{p,0}$ [-]",fontsize=self.labelSize)
+        self.axs.set_ylabel(r"Mobility, $Z_p$ [-]",fontsize=self.labelSize)
+        #self.axs.scatter(press,datas.T[3]*datas.T[5],color = "black")
+        #self.axs.scatter(press,datas.T[4]*datas.T[5],color = "red")
+        self.axs.scatter(press,datas.T[3]/datas[0][3],color = "black")
+        self.axs.scatter(press,datas.T[4]/datas[0][4],color = "red")
 
         plt.savefig(str(directory)+"diffusionSummary.png", dpi=1000)
         plt.show()

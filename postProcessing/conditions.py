@@ -22,6 +22,7 @@ class conditions:
 	endTime=5e-9
 	figOutput=1
 	pv=50
+	pal=1
 	Mvapor=32e-3       # vapor molar mass [g/mol]
 	M=1/(1/Mvapor)		# vapor mass [kg/mol]
 	c=(8*R*T/M/np.pi)**0.5	# vapor mean thermal speed [m/s]

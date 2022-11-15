@@ -28,6 +28,7 @@ std::vector<double> MSDy;
 std::vector<double> MSDz;
 std::vector<double> MSD;
 std::vector<double> VAF;
+std::vector<int> error;
 
 double integral(std::vector<double> vaf, int blockSize){
   double sim2=0.0;
