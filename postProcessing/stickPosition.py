@@ -19,19 +19,26 @@ class stickPosition:
 		self.con=con
 
 	def compute(self):
-		data=np.loadtxt(self.con.directory+"stickPositionLog_"+str(self.con.I)+".dat")
 		amino=np.loadtxt(self.con.directory+"input/amino.loc",dtype=np.str)
-		negs=np.where(data.T[3]>20)
-		data=np.delete(data,negs,axis=0)
-		vaporID=np.unique(data.T[2])
+		vaporIDstr=np.loadtxt(self.con.directory+"input/vaporID.loc",dtype=np.str)
+		vaporID=np.loadtxt(self.con.directory+"input/vaporID.loc")
 		aminoNames=np.unique(amino)
 		dist=np.zeros(np.size(vaporID))
 		distAmino=np.zeros(np.size(aminoNames))
-		label=[]
-		for i in np.arange(np.size(vaporID)):
-			gets=np.where(data.T[2]==vaporID[i])
-			N=np.size(data[gets].T[0])
-			dist[i]+=N
-			distAmino[np.where(aminoNames==amino[i])]+=N
-			label.append(str(int(vaporID[i])))
-		self.plot.plotStickLocation(label,dist/np.size(data.T[0])*100,aminoNames,distAmino/np.size(data.T[0])*100,self.con.directory)
+		for j in np.arange(self.con.pal):
+			if(np.isin(j,self.con.error)):
+				continue
+			I=self.con.I+j
+			file=self.con.directory+"stickPositionLog_"+str(I)+".dat"
+			if(os.path.exists(file)==False):
+				continue
+			data=np.loadtxt(file)
+			#negs=np.where(data.T[3]>20)
+			#data=np.delete(data,negs,axis=0)
+			for i in np.arange(np.size(vaporID)):
+				gets=np.where(data.T[2]+1==vaporID[i])
+				N=np.size(data[gets].T[0])
+				dist[i]+=N
+				distAmino[np.where(aminoNames==amino[i])]+=N
+
+		self.plot.plotStickLocation(vaporIDstr,dist,aminoNames,distAmino,self.con.directory)

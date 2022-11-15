@@ -152,3 +152,15 @@ class plot:
 
         plt.savefig(str(directory)+"diffusionSummary.png", dpi=1000)
         plt.show()
+
+    def plotStickLocation(self,vaporIDstr,dist,aminoNames,distAmino,directory):
+        self.axs.flat[0].bar(vaporIDstr,dist/np.sum(dist))
+        self.axs.flat[0].set_xticklabels(vaporIDstr, rotation = 45)
+        self.axs.flat[0].set_xlabel("Atom index",fontsize=self.labelSize)
+        self.axs.flat[0].set_ylabel("Probability",fontsize=self.labelSize)
+        self.axs.flat[1].bar(aminoNames,distAmino/np.sum(distAmino))
+        self.axs.flat[1].set_xlabel("Amino acids name",fontsize=self.labelSize)
+        self.axs.flat[1].set_ylabel("Probability",fontsize=self.labelSize)
+
+        plt.savefig(str(directory)+"stickLocation.png", dpi=1000)
+        plt.show()

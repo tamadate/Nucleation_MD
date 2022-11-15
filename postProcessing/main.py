@@ -21,21 +21,21 @@ con.endTime=10e-9
 #con.directory="/home/tama3rdgen/vaporUptake/angioII+2/"
 con.directory="/home/tama3rdgen/test2/valine/500Pa_MeOH/"
 con.directory="/home/tama3rdgen/vaporUptake/bradykinin+2/100Pa/"
-con.directory="/home/tama3rdgen/vaporUptake/bradykinin+2/v18/180Pa/"
-con.directory="/home/tama3rdgen/vaporUptake/angioII+2_new/v2/20Pa/"
+con.directory="/home/tama3rdgen/vaporUptake/bradykinin+2/v20/200Pa/"
+con.directory="/media/tama3rdgen/6TB/vaporUptake/angio2+_new/v12/120Pa/"
 
 con.I=1
 con.figOutput=1
 con.pv0=100
-con.pal=200
+con.pal=100
 con.setMasses(con,32e-3,117.15e-3)
 con.calcParams(con)
 
 error.errorCheck(con)
 
 clu=cluster.cluster(con)
-clu.compute()
-#clu.Upot()
+#clu.compute()
+clu.Upot()
 #print(clu.con.error)
 
 #diff=diffusionCoeff.diffusionCoeff(con)
