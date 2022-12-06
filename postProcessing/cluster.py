@@ -33,6 +33,7 @@ class cluster:
 			Ss=np.append(Ss,statistics.stdev(np.sum(U.T[1:],axis=0)))
 			Ubars=np.append(Ubars,np.average(np.sum(U.T[1:],axis=0)))
 			indexes=np.append(indexes,i)
+
 		Umax=np.average(Ubars)+np.average(Ss)*2
 		Umin=np.average(Ubars)-np.average(Ss)*2
 		neg=np.where(((Ubars<Umin) | (Ubars>Umax)))
@@ -65,12 +66,21 @@ class cluster:
 				continue
 			inVapor=np.loadtxt(filePath)
 			if(np.size(inVapor)<9):
-				continue
-			negs=np.where((inVapor[:,1]>self.con.tEND*1e15))
-			inVapor=np.delete(inVapor,negs,axis=0)
+				if(inVapor[1]>self.con.tEND*1e15):
+					continue
+				inVapor=np.array([inVapor])
+			else:
+				negs=np.where((inVapor[:,1]>self.con.tEND*1e15))
+				inVapor=np.delete(inVapor,negs,axis=0)
+
 			outVapor=np.loadtxt(self.con.directory+"vapor_out_"+str(I)+".dat")
-			negs=np.where((outVapor[:,1]>self.con.tEND*1e15))
-			outVapor=np.delete(outVapor,negs,axis=0)
+			if(np.size(outVapor)<9):
+				if(outVapor[1]>self.con.tEND*1e15):
+					continue
+				outVapor=np.array([outVapor])
+			else:
+				negs=np.where((outVapor.T[1]>self.con.tEND*1e15))
+				outVapor=np.delete(outVapor,negs,axis=0)
 			Npost=int(self.con.tEND/self.con.dt_post)					# total number of steps in analysis, Npost=/self.con.dt_post
 
 			times=np.arange(Npost)*self.con.dt_post

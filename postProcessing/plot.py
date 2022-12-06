@@ -141,14 +141,16 @@ class plot:
             plt.savefig(fileName, dpi=1000)
         plt.show()
 
-    def plotMobilityShift(self,press,datas,directory):
+    def plotMobilityShift(self,press,datas,directory,exp):
         self.axs.set_xlabel("Vapor pressure [Pa]",fontsize=self.labelSize)
         #self.axs.set_ylabel(r"Normalized mobility, $Z_p/Z_{p,0}$ [-]",fontsize=self.labelSize)
-        self.axs.set_ylabel(r"Mobility, $Z_p$ [-]",fontsize=self.labelSize)
+        self.axs.set_ylabel(r"Mobility shift, $Z_p/Z_{p,0}$ [-]",fontsize=self.labelSize)
         #self.axs.scatter(press,datas.T[3]*datas.T[5],color = "black")
         #self.axs.scatter(press,datas.T[4]*datas.T[5],color = "red")
-        self.axs.scatter(press,datas.T[3]/datas[0][3],color = "black")
-        self.axs.scatter(press,datas.T[4]/datas[0][4],color = "red")
+        self.axs.scatter(press,datas.T[3]*2/(datas[0][3]+datas[0][4]),color = "black")
+        self.axs.scatter(press,datas.T[4]*2/(datas[0][3]+datas[0][4]),color = "red")
+        self.axs.scatter(exp[0],exp[1],facecolor="none",edgecolor="blue",marker="^")
+        self.axs.set_xlim(-10,300)
 
         plt.savefig(str(directory)+"diffusionSummary.png", dpi=1000)
         plt.show()

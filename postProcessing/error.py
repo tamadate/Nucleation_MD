@@ -16,6 +16,10 @@ def errorCheck(con):
 			con.error=np.append(con.error,int(i))
 			con.pal-=1
 			f.write(str(int(i))+"\n")
+		if(np.max(U.T[0])<con.tEND*1e15):
+			con.error=np.append(con.error,int(i))
+			con.pal-=1
+			f.write(str(int(i))+"\n")
 
 
 def errorAdd(con,neg,indexes):
