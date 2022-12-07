@@ -19,9 +19,9 @@ con.startTime=5e-9
 con.endTime=10e-9
 
 #con.directory="/home/tama3rdgen/vaporUptake/angioII+2/"
-con.directory="/media/tama3rdgen/6TB/vaporUptake/bradykinin/v14/140Pa/"
-con.directory="/media/tama3rdgen/6TB/vaporUptake/angio2+_new/v14/140Pa/"
-con.directory="/media/tama3rdgen/6TB/vaporUptake/angio1+_new/v1/10Pa/"
+con.directory="/media/tama3rdgen/6TB/vaporUptake/bradykinin/v0/0Pa/"
+con.directory="/media/tama3rdgen/6TB/vaporUptake/angio2+_new/v0/0Pa/"
+#con.directory="/media/tama3rdgen/6TB/vaporUptake/angio1+_new/v24/240Pa/"
 print(con.directory)
 con.I=1
 con.figOutput=1
