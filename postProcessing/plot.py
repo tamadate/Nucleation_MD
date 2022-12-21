@@ -3,6 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import os
 from scipy.optimize import minimize
+from scipy.optimize import curve_fit
 
 
 class plot:
@@ -147,9 +148,10 @@ class plot:
         self.axs.set_ylabel(r"Mobility shift, $Z_p/Z_{p,0}$ [-]",fontsize=self.labelSize)
         #self.axs.scatter(press,datas.T[3]*datas.T[5],color = "black")
         #self.axs.scatter(press,datas.T[4]*datas.T[5],color = "red")
-        self.axs.scatter(press,(datas.T[3]+datas.T[4])*0.5*38.6,color = "black")
-        #self.axs.scatter(press,datas.T[4]*38.6,color = "red")
-        #self.axs.scatter(exp[0],exp[1],facecolor="none",edgecolor="blue",marker="^")
+        K0=(datas.T[3][0]+datas.T[4][0])*0.5
+        self.axs.scatter(press,datas.T[3]/K0,color = "black")
+        self.axs.scatter(press,datas.T[4]/K0,color = "red")
+        self.axs.scatter(exp[0],exp[1],facecolor="none",edgecolor="blue",marker="^")
         self.axs.set_xlim(-10,300)
 
         plt.savefig(str(directory)+"diffusionSummary.png", dpi=1000)
@@ -165,4 +167,23 @@ class plot:
         self.axs.flat[1].set_ylabel("Probability",fontsize=self.labelSize)
 
         plt.savefig(str(directory)+"stickLocation.png", dpi=1000)
+        plt.show()
+
+    def plotAveStickTime(self,directories):
+        self.axs.set_xlabel("Vapor pressure [Pa]",fontsize=self.labelSize)
+        self.axs.set_ylabel(r"Mean sticking time, $t_s$ [ns]",fontsize=self.labelSize)
+        colors=["r","black","blue"]
+        i=0
+        def objective(x,a,b,c):
+                return a*x+b*x**2+c
+        for dir in directories:
+            data=np.loadtxt(dir+"stickingTime")
+            popt,_=curve_fit(objective,data.T[0],data.T[1])
+            a,b,c=popt
+            x_line=np.arange(min(data.T[0]),max(data.T[0]),0.1)
+            y_line=objective(x_line,a,b,c)
+            self.axs.scatter(data.T[0],data.T[1],color = colors[i])
+            self.axs.plot(x_line,y_line,color = colors[i],linestyle = "--",linewidth=1)
+            i+=1
+        plt.savefig("aveStickTime.png", dpi=1000)
         plt.show()

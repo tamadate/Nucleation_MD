@@ -55,34 +55,38 @@ class cluster:
 
 	def vapor(self):
 		tss=np.zeros(0)
+		psim=np.zeros(self.con.Nmax)
 		for i in np.arange(self.con.pal):
 			if(np.isin(i,self.con.error)):
 				continue
 			I=self.con.I+i
-			## Reading vapor in out time files
 
+			## Reading vapor_in file
+		    ## column[0]="vapor id" column[1]="entering time, tin"
 			filePath=self.con.directory+"vapor_in_"+str(I)+".dat"
-			if(os.stat(filePath).st_size == 0):
+			if(os.stat(filePath).st_size == 0):	# if the file is empty
 				continue
 			inVapor=np.loadtxt(filePath)
 			if(np.size(inVapor)<9):
-				if(inVapor[1]>self.con.tEND*1e15):
+				if(inVapor[1]>self.con.tEND*1e15): # ignore tin>tend
 					continue
 				inVapor=np.array([inVapor])
 			else:
 				negs=np.where((inVapor[:,1]>self.con.tEND*1e15))
 				inVapor=np.delete(inVapor,negs,axis=0)
 
+			## Reading vapor_out file
+		    ## column[0]="vapor id" column[1]="leaving time, tin"
 			outVapor=np.loadtxt(self.con.directory+"vapor_out_"+str(I)+".dat")
 			if(np.size(outVapor)<9):
-				if(outVapor[1]>self.con.tEND*1e15):
+				if(outVapor[1]>self.con.tEND*1e15): # ignore tout>tend
 					continue
 				outVapor=np.array([outVapor])
 			else:
 				negs=np.where((outVapor.T[1]>self.con.tEND*1e15))
 				outVapor=np.delete(outVapor,negs,axis=0)
-			Npost=int(self.con.tEND/self.con.dt_post)					# total number of steps in analysis, Npost=/self.con.dt_post
 
+			Npost=int(self.con.tEND/self.con.dt_post) # total number of steps in analysis
 			times=np.arange(Npost)*self.con.dt_post
 			Nstick=np.zeros(Npost)	# Number of vapors [N(t0),N(t0+self.con.dt_post),N(t1+2*self.con.dt_post),...,N(t_tot)]
 			usedLines=np.arange(np.size(outVapor.T[0]))		# Flag for outVapor (equal to -1 if it is used)
@@ -117,16 +121,23 @@ class cluster:
 			    ts[iin]=time2-time1-result.x[0]*1e-15	# result.x[0] is theoretical residence time in interaction sphere
 			    tth[iin]=time2-time1	# result.x[0] is theoretical residence time in interaction sphere
 			tss=np.append(tss,tth)
+			for i in Nstick[int(self.con.teq/self.con.dt_post):]:
+			    psim[int(i)]+=1
 		#np.savetxt("ts.dat",ts)
+		negs=np.where((tss<self.con.tcut))	# indexes of ts<self.con.tcut
+		tss=np.delete(tss,negs)
+		np.savetxt(self.con.directory+"probability.dat",psim)
+		np.savetxt(self.con.directory+"stickTime.dat",tss)
+		np.savetxt(self.con.directory+"totalCalculation.dat",np.array([self.con.pal-np.size(self.con.error)]))
 		self.plot.plotNvap(times,self.con.teq,Nstick,self.con.figOutput)
 		self.plot.plotStickTimeDist(tss,tth,self.con.figOutput)
 
 
 
 		#-----------------------------------------------------------------------------#
-		negs=np.where((tss<self.con.tcut))	# indexes of ts<self.con.tcut
-		tsave=np.average(np.delete(tss,negs))	# average sticking time [s]
-		betaC=np.size(np.delete(tss,negs))/(self.con.tEND-self.con.teq)/float(self.con.pal)	# vapor collision flux with ion [1/s]
+		tsave=np.average(tss)	# average sticking time [s]
+		betaC=np.size(np.delete(tss,negs))/(self.con.tEND-self.con.teq)/float(self.con.pal-np.size(self.con.error))	# vapor collision flux with ion [1/s]
+
 		ram=betaC*tsave		# ramda for Poisson distribution
 
 		Nbase=np.min(Nstick[int(self.con.teq/self.con.dt_post):])
@@ -135,12 +146,11 @@ class cluster:
 
 		nv=np.arange(self.con.Nmax)
 		ppoi=np.zeros(self.con.Nmax)
-		psim=np.zeros(self.con.Nmax)
+
 		for i in nv:
 			ppoi[i]=ram**i*np.exp(-ram)/math.factorial(i)
-		for i in Nstick[int(self.con.teq/self.con.dt_post):]:
-		    psim[int(i)]+=1
-		psim/=np.size(Nstick[int(self.con.teq/self.con.dt_post):])
+
+		psim/=np.sum(psim)
 
 		self.plot.plotStickVaporDist(nv,ppoi,psim,Nbase,self.con.figOutput)
 
