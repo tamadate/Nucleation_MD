@@ -49,7 +49,7 @@ void
 MD::velocity_calculation(void) {
 	vars->times.tvel-=omp_get_wtime();
 	double const Coeff=0.5*dt*4.184e-4;
-	for (auto &mols : vars->effectiveIn){
+	for (auto &mols : vars->AA){
 		for (auto &mol : mols){
 			for (auto &a : mol.inAtoms){
 				double Coeff2=Coeff/a.mass;
@@ -70,7 +70,7 @@ MD::velocity_calculation(void) {
 void
 MD::update_position(void) {
 	vars->times.tpos-=omp_get_wtime();
-	for (auto &mols : vars->effectiveIn){
+	for (auto &mols : vars->AA){
 		for (auto &mol : mols){
 			for (auto &a : mol.inAtoms){
 				a.qx += a.px * dt;
@@ -89,7 +89,7 @@ MD::update_position(void) {
 void
 MD::forceCombine(void){
 	vars->times.tetc-=omp_get_wtime();
-	for (auto &mols : vars->effectiveIn){
+	for (auto &mols : vars->AA){
 		for (auto &mol : mols){
 			for (auto &a : mol.inAtoms){
 				for(int nth=0;nth<Nth;nth++){

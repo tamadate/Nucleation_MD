@@ -1,10 +1,10 @@
 #pragma once
 #include "variables.hpp"
-#include "observer.hpp"
-#include "potential.hpp"
+#include "output/observer.hpp"
+#include "potential/potential.hpp"
 #include "PhysicalProp.hpp"
 #include "flags.hpp"
-#include "MBdist.hpp"
+#include "boundary/MBdist.hpp"
 //------------------------------------------------------------------------
 
 class MD {
@@ -138,7 +138,14 @@ class MD {
 
 
 	MD(char* condfile,int calcNumber);
-	~MD(void);
+	~MD(void) {
+		delete vars;
+		delete obs;
+		delete pp;
+		delete flags;
+		delete mbdist;
+		delete mbdistV;
+	}
 	void run(char** argv);
 };
 

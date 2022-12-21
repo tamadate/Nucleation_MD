@@ -10,10 +10,10 @@ public:
 
 	/*variables*/
   int Nth;
-	// ion: effectiveIn[0], gas: effectiveIn[1], vapor: effectiveIn[2]
-	std::vector<vector<Molecule>> effectiveIn;
-	// dammy: effectiveOut[0], gas: effectiveOut[1], vapor: effectiveOut[0]
-	std::vector<vector<Molecule_out>> effectiveOut;
+	// ion: AA[0], gas: AA[1], vapor: AA[2]
+	std::vector<vector<Molecule>> AA;
+	// dammy: CG[0], gas: CG[1], vapor: CG[0]
+	std::vector<vector<Molecule_out>> CG;
 
 	double time;
 	double zeta_ion;
@@ -92,11 +92,6 @@ public:
 	double totalPotential;
 	double totalVirial;
 
-	void ROTATION(double &X, double &Y, double &Z, double A, double B, double C, double x, double y, double z){
-		X = cos(C)*(x*cos(B)+y*sin(A)*sin(B)-z*cos(A)*sin(B))+sin(C)*(y*cos(A)+z*sin(A));
-		Y = -sin(C)*(x*cos(B)+y*sin(A)*sin(B)-z*cos(A)*sin(B))+cos(C)*(y*cos(A)+z*sin(A));
-		Z = x*sin(B)-y*sin(A)*cos(B)+z*cos(A)*cos(B);
-	}
 
 
 
