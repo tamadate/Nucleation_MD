@@ -6,7 +6,7 @@ Observer::computeProps(Variables *vars,int molID){
 	Kin[molID]=0;
 	double Nin=0;
 
-	for(auto &mol : vars->AA[molID]){
+	for(auto &mol : vars->CG[molID]){
 		for (auto &at : mol.inAtoms){
 			Kin[molID] += at.px * at.px * at.mass;
 			Kin[molID] += at.py * at.py * at.mass;

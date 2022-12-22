@@ -2,21 +2,7 @@
 
 Variables::Variables(void) {
   time = 0.0;
-  #pragma omp parallel
-  {
-    #pragma omp single
-    {
-      Nth=omp_get_num_threads();
-    }
-  }
   Utotal.Uion=Utotal.Ugas=Utotal.Uvap=Utotal.Ugi=Utotal.Ugg=Utotal.Uvg=Utotal.Uvi=Utotal.Uvv=0;
-  for (int nth=0;nth<Nth;nth++){
-    Potentials Us;
-    Us.Uion=Us.Ugas=Us.Uvap=Us.Ugi=Us.Ugg=Us.Uvg=Us.Uvi=Us.Uvv=0;
-    U_MP.push_back(Us);
-  }
-	AA.resize(3);		// ion, gas, vapor
-	AA[0].resize(1);	// ion, gas, vapor
 	CG.resize(3);		// ion, gas, vapor
 	CG[0].resize(1);// ion, gas, vapor
 }
@@ -34,42 +20,23 @@ Variables::read_initial(char* ionFile, char* vaporFile) {
 
 void
 Variables::setCrossPotentials(int Nion,int Nvapor){
-// vapor - ion potential
-  pair_coeff_vi.resize(Nvapor);
-  for (int i=0;i<Nvapor;i++){
-    pair_coeff_vi[i].resize(Nion);
-    for (int j=0;j<Nion;j++){
-      pair_coeff_vi[i][j].resize(2);
+  int Natypes=atypes.size();
+  pair_coeff.resize(Natypes);
+  for (int i=0;i<Natypes;i++){
+    pair_coeff[i].resize(Natypes);
+    for (int j=0;j<Natypes;j++){
+      pair_coeff[i][j].resize(2);
     }
   }
-  for (int i=0;i<Nvapor;i++){
-		for (int j=0;j<Nion;j++){
-			double epu=sqrt(atypes_v[i].coeff1*atypes[j].coeff1);
-			double sigma=(atypes_v[i].coeff2+atypes[j].coeff2)*0.5;
-			pair_coeff_vi[i][j][0]=48 * epu*pow(sigma,12.0);
-			pair_coeff_vi[i][j][1]=24 * epu*pow(sigma,6.0);
-		}
-	}
-
-// gas - ion potential
-  pair_coeff_gi.resize(Nion);
-  for (int i=0;i<Nion;i++){
-    pair_coeff_gi[i].resize(2);
-		double epu=sqrt(atypes_g.coeff1*atypes[i].coeff1);
-		double sigma=(atypes_g.coeff2+atypes[i].coeff2)*0.5;
-		pair_coeff_gi[i][0]=48 * epu*pow(sigma,12.0);
-		pair_coeff_gi[i][1]=24 * epu*pow(sigma,6.0);
-	}
-
-// vapor - gas potential
-  pair_coeff_vg.resize(Nvapor);
-  for (int i=0;i<Nvapor;i++){
-    pair_coeff_vg[i].resize(2);
-		double epu=sqrt(atypes_g.coeff1*atypes_v[i].coeff1);
-		double sigma=(atypes_g.coeff2+atypes_v[i].coeff2)*0.5;
-		pair_coeff_vg[i][0]=48 * epu*pow(sigma,12.0);
-		pair_coeff_vg[i][1]=24 * epu*pow(sigma,6.0);
-	}
+  for (int i=0;i<Natypes;i++){
+    for (int j=0;j<Natypes;j++){
+      double epu=sqrt(atypes[i].coeff1*atypes[j].coeff1);
+      double sigma=(atypes[i].coeff2+atypes[j].coeff2)*0.5;
+      //sigma=sqrt(atypes_v[i].coeff2*atypes_v[j].coeff2);
+      pair_coeff[i][j][0]=48 * epu*pow(sigma,12.0);
+      pair_coeff[i][j][1]=24 * epu*pow(sigma,6.0);
+    }
+  }
 }
 
 void
@@ -108,8 +75,8 @@ Variables::ionRotation(void){
   random_device seed;
 	double A,B,C,x,y,z;
 	A=seed(),B=seed(),C=seed();
-	for(auto &a : AA[0][0].inAtoms) {x=a.qx,y=a.qy,z=a.qz; ROTATION(a.qx,a.qy,a.qz,A,B,C,x,y,z);}
-    int is=AA[0][0].inAtoms.size();
+	for(auto &a : CG[0][0].inAtoms) {x=a.qx,y=a.qy,z=a.qz; ROTATION(a.qx,a.qy,a.qz,A,B,C,x,y,z);}
+    int is=CG[0][0].inAtoms.size();
     for(int i=0;i<is-1;i++) {
         for(int j=i+1;j<is;j++){
             int flag=0;
@@ -132,11 +99,12 @@ Variables::ionRotation(void){
         }
     }
 }
+
 void
 Variables::ionInitialVelocity(double T) {
 	random_device seed;
 	default_random_engine engine(seed());
-  for(auto &a : AA[0][0].inAtoms) {
+  for(auto &a : CG[0][0].inAtoms) {
     double matom=a.mass*1e-3/Nw;
     normal_distribution<> dist(0.0, sqrt(kb*T/matom));
 		a.px=dist(engine)*1e-5;

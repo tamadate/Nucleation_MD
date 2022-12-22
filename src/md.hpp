@@ -73,8 +73,8 @@ class MD {
 	void make_pair_vaporion(void);
 	void make_pair_vaporvapor();
 	void check_pairlist(void);
-  void makeDiatomicProp_in(Molecule_out &gasOut);
-	void makePolyatomicProp_in(Molecule_out &vapOut);
+  void makeDiatomicProp_in(Molecule &gasOut);
+	void makePolyatomicProp_in(Molecule &vapOut);
 	double margin_length;
 
 //	initialization

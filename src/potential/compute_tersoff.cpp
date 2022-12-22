@@ -11,8 +11,8 @@
 /////////////////////////////////////////////////////////////////////
 void
 PotentialTersoff::compute(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->AA[0][0].inAtoms.data();
-	const int is = vars->AA[0][0].inAtoms.size();
+	Atom *ions = vars->CG[0][0].inAtoms.data();
+	const int is = vars->CG[0][0].inAtoms.size();
 	U=0;
 	Pressure=0;
 	for(auto &a : pairs){
@@ -108,8 +108,8 @@ PotentialTersoff::compute(Variables *vars, FLAG *flags) {
 
 double
 PotentialTersoff::compute_virial(Variables *vars) {
-/*	Atom *ions = vars->AA[0][0].inAtoms.data();
-	const int is = vars->AA[0][0].inAtoms.size();
+/*	Atom *ions = vars->CG[0][0].inAtoms.data();
+	const int is = vars->CG[0][0].inAtoms.size();
 	double virial=0;
 	for(auto &a : pairs){
 		int i=a.i;
@@ -274,8 +274,8 @@ PotentialTersoff::check_pairlist(Variables *vars){
 void
 PotentialTersoff::make_pair(Variables *vars){
 	pairs.clear();
-	Atom *ions = vars->AA[0][0].inAtoms.data();
-	int is=vars->AA[0][0].inAtoms.size();
+	Atom *ions = vars->CG[0][0].inAtoms.data();
+	int is=vars->CG[0][0].inAtoms.size();
 	for (int i=0; i<is; i++){
 		Pair_many p;
 		p.i=i;

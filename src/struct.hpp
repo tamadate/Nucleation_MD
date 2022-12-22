@@ -27,9 +27,6 @@ struct Atom {
 	double fx, fy, fz;
 	double mass;
 	int ix, iy, iz;
-  std::vector<double> fxMP;
-  std::vector<double> fyMP;
-  std::vector<double> fzMP;
 };
 
 //------------------------------------------------------------------------
@@ -57,20 +54,14 @@ struct Pair_many{
 struct Molecule {
  	double qx, qy, qz;
 	double px, py, pz;
+	double fx, fy, fz;
 	double mass;
-	int ix, iy, iz;
 	int id;
+	int inFlag;
 	std::vector<Atom> inAtoms;
 	std::vector<Bond> bonds;
 	std::vector<Angle> angles;
 	std::vector<Dihedral> dihedrals;
-};
-
-struct Molecule_out {
- 	double qx, qy, qz;
-	double px, py, pz;
-	double mass;
-	int inFlag;
 };
 
 struct Potentials {

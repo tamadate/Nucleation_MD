@@ -4,68 +4,78 @@
 /////////////////////////////////////////////////////////////////////
 /*
 	- Randomly arraying gas molecule around an ion with avoiding the
-	overlapping. The velocity is picked from  the Maxwell-Boltzumann
+	overlapping.
+  - The velocity is picked from  the Maxwell-Boltzumann
 	distribution
-	- Set ion's center of mass (maybe -> 0), make pair list for initial
-	step of simulation, reset the margine size.
 */
 /////////////////////////////////////////////////////////////////////
 
 void
 MD::initialization_vapor(void) {
 	vars->CG[2].resize(Nof_around_vapor);
-	double nion=vars->AA[0][0].inAtoms.size();
-	double dx,dy,dz, d,min_gv, min_iv, min_vv, gv, iv, vv;
-	gv=10, iv=10, vv=10;	/*	minimum vapor-vapor, vapor-ion, vapor-gas distance */
+	double dis=10;	/*	minimum vapor-vapor, vapor-ion, vapor-gas distance */
 
-    // Set random number generator
+  // Maxwell-Boltzumann distribution generator
 	random_device seed;
 	default_random_engine engine(seed());
 	normal_distribution<> distvapor(0.0, sqrt(kb*T/pp->mvapor));
 	mt19937 mt(seed());
 	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
 
-    // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
+  // Sampling vapor molecules
 	int i=0;
 	do {
- 		Molecule_out a;
-		min_gv=min_iv=min_vv=10000.0;
+ 		Molecule a;
+		double minDis=10000.0;
+    // sample random position (x, y, z)
 		a.qx=r(mt), a.qy=r(mt), a.qz=r(mt);
+
+    // calculate minimum distance from existing atoms (min_dis)
+    // min distance from existing vapor molecules
 		if(i>0){
 			for(auto &b : vars->CG[2]) {
-				dx = a.qx - b.qx;
-				dy = a.qy - b.qy;
-				dz = a.qz - b.qz;
+				double dx = a.qx - b.qx;
+				double dy = a.qy - b.qy;
+				double dz = a.qz - b.qz;
 				adjust_periodic(dx, dy, dz, d_size);
-				d=sqrt(dx*dx+dy*dy+dz*dz);
-				if(d<min_vv) min_vv=d; // minimum vapor-vapor distance
+				double d=sqrt(dx*dx+dy*dy+dz*dz);
+				if(d<minDis) minDis=d; // minimum vapor-vapor distance
 			}
 		}
-		for(auto &b : vars->AA[0][0].inAtoms) {
-			dx=a.qx-b.qx;
-			dy=a.qy-b.qy;
-			dz=a.qz-b.qz;
-			adjust_periodic(dx, dy, dz, d_size);
-			d=sqrt(dx*dx+dy*dy+dz*dz);
-			if(d<min_iv) min_iv=d; // minimum vapor-ion distance
+    // min distance from existing ion atoms
+		for(auto &mol : vars->CG[0]) {
+      for(auto &at : mol.inAtoms) {
+  			double dx=a.qx-at.qx;
+  			double dy=a.qy-at.qy;
+  			double dz=a.qz-at.qz;
+  			adjust_periodic(dx, dy, dz, d_size);
+  			double d=sqrt(dx*dx+dy*dy+dz*dz);
+  			if(d<minDis) minDis=d; // minimum vapor-ion distance
+      }
 		}
+    // min distance from existing gas molecules
     for(auto &b : vars->CG[1]) {
-			dx=a.qx-b.qx;
-			dy=a.qy-b.qy;
-			dz=a.qz-b.qz;
+			double dx=a.qx-b.qx;
+			double dy=a.qy-b.qy;
+			double dz=a.qz-b.qz;
 			adjust_periodic(dx, dy, dz, d_size);
-			d=sqrt(dx*dx+dy*dy+dz*dz);
-			if(d<min_gv) min_gv=d; // minimum gas-vapor distance
+			double d=sqrt(dx*dx+dy*dy+dz*dz);
+			if(d<minDis) minDis=d; // minimum gas-vapor distance
 		}
-		if(min_gv>gv && min_iv>iv && min_vv>vv){
+
+    // if min_dis is less than criteria, add the sampled molecule (a)
+		if(minDis>dis){
 			a.px=distvapor(engine)*1e-5;
 			a.py=distvapor(engine)*1e-5;
 			a.pz=distvapor(engine)*1e-5;
 			a.mass=pp->Mvapor;
-
+      a.id=i;
+      a.bonds=vars->bonds_v;
+      a.angles=vars->angles_v;
+      a.dihedrals=vars->dihedrals_v;
 			vars->CG[2][i]=a;
 			i++;
 		}
-		collisionFlagVapor.push_back(0);
+		//collisionFlagVapor.push_back(0);
 	} while(i<Nof_around_vapor);
 }

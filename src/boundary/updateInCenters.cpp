@@ -4,8 +4,9 @@
 
 void
 MD:: updateInCenters(void){
-	for (auto &a : vars->AA){
+	for (auto &a : vars->CG){
 		for (auto &b : a){
+			if(b.inFlag==0) continue;
 			double X=0;
 			double Y=0;
 			double Z=0;

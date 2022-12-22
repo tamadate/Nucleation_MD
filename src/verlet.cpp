@@ -25,13 +25,12 @@ MD::verlet(void) {
 	update_position();
 
 	if(flags->nose_hoover_ion==1)	nosehoover_zeta();
-	//if(flags->nose_hoover_gas==1)	nosehoover_zeta_gas();
 	check_pairlist();
 	vars->totalVirial=0;
 	for (auto &a : InterInter) a->compute(vars,flags);
 	for (auto &a : IntraInter) a->compute(vars,flags);
 
-	forceCombine();
+	//forceCombine();
 
 	velocity_calculation();	//	v(t+dt/2) -> v(t+dt) using F(x(t+dt))
 
@@ -49,13 +48,21 @@ void
 MD::velocity_calculation(void) {
 	vars->times.tvel-=omp_get_wtime();
 	double const Coeff=0.5*dt*4.184e-4;
-	for (auto &mols : vars->AA){
+	for (auto &mols : vars->CG){
 		for (auto &mol : mols){
-			for (auto &a : mol.inAtoms){
-				double Coeff2=Coeff/a.mass;
-				a.px += a.fx *Coeff2;
-				a.py += a.fy *Coeff2;
-				a.pz += a.fz *Coeff2;
+			if(mol.inFlag){
+				for (auto &a : mol.inAtoms){
+					double Coeff2=Coeff/a.mass;
+					a.px += a.fx *Coeff2;
+					a.py += a.fy *Coeff2;
+					a.pz += a.fz *Coeff2;
+				}
+			}
+			else{
+				double Coeff2=Coeff/mol.mass;
+				mol.px += mol.fx *Coeff2;
+				mol.py += mol.fy *Coeff2;
+				mol.pz += mol.fz *Coeff2;
 			}
 		}
 	}
@@ -70,35 +77,23 @@ MD::velocity_calculation(void) {
 void
 MD::update_position(void) {
 	vars->times.tpos-=omp_get_wtime();
-	for (auto &mols : vars->AA){
+	for (auto &mols : vars->CG){
 		for (auto &mol : mols){
-			for (auto &a : mol.inAtoms){
-				a.qx += a.px * dt;
-				a.qy += a.py * dt;
-				a.qz += a.pz * dt;
-				a.fx=a.fy=a.fz=0.0;
-				for(int nth=0;nth<Nth;nth++){
-					a.fxMP[nth]=a.fyMP[nth]=a.fzMP[nth]=0;
+			if(mol.inFlag){
+				for (auto &a : mol.inAtoms){
+					a.qx += a.px * dt;
+					a.qy += a.py * dt;
+					a.qz += a.pz * dt;
+					a.fx=a.fy=a.fz=0.0;
 				}
+			}
+			else{
+				mol.qx += mol.px * dt;
+				mol.qy += mol.py * dt;
+				mol.qz += mol.pz * dt;
+				mol.fx=mol.fy=mol.fz=0.0;
 			}
 		}
 	}
 	vars->times.tpos+=omp_get_wtime();
-}
-
-void
-MD::forceCombine(void){
-	vars->times.tetc-=omp_get_wtime();
-	for (auto &mols : vars->AA){
-		for (auto &mol : mols){
-			for (auto &a : mol.inAtoms){
-				for(int nth=0;nth<Nth;nth++){
-					a.fx += a.fxMP[nth];
-					a.fy += a.fyMP[nth];
-					a.fz += a.fzMP[nth];
-				}
-			}
-		}
-	}
-	vars->times.tetc+=omp_get_wtime();
 }

@@ -7,7 +7,7 @@ MD::velocity_scaling(void) {
 	double Tp;
 	Tp=300;
 //	Tp=2500-2.2e-4*vars->time;
-	for (auto &a : vars->AA[0][0].inAtoms){
+	for (auto &a : vars->CG[0][0].inAtoms){
 		double ratio=sqrt(Tp/obs->Tin[0]);
 		a.px*=ratio;
 		a.py*=ratio;
@@ -19,7 +19,7 @@ MD::velocity_scaling(void) {
 void
 MD::nosehoover_zeta(void){
 	obs->computeProps(vars,0);
-	int g=vars->AA[0][0].inAtoms.size()*3;
+	int g=vars->CG[0][0].inAtoms.size()*3;
 	double Q_inv = 0.0001;
 	vars->zeta_ion += (obs->Tin[0] - pp->Tnh_ion)*g*kb_real*Q_inv*dt;
 }
@@ -28,7 +28,7 @@ MD::nosehoover_zeta(void){
 void
 MD::nosehoover_ion(void){
 	double Coeff=exp(-vars->zeta_ion*0.5*dt);
-	for (auto &a : vars->AA[0][0].inAtoms) {
+	for (auto &a : vars->CG[0][0].inAtoms) {
 		a.px *= Coeff;
     a.py *= Coeff;
     a.pz *= Coeff;

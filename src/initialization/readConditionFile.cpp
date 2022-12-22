@@ -45,40 +45,44 @@ MD::readCondFile(char* condfile){
 			cout<<"Vapor stick position file -->\t\t"<<readings[1]<<endl;
 		}
 		if(readings[0]=="Gas"){
+			Atom_type at;
 			if(readings[1]=="He"){
 				gastype=1;
-				vars->atypes_g.mass=4.027;
-				vars->atypes_g.name="He";
-				vars->atypes_g.coeff1=0.0203;
-				vars->atypes_g.coeff2=2.556;
+				at.mass=4.027;
+				at.name="He";
+				at.coeff1=0.0203;
+				at.coeff2=2.556;
 			}
 			if(readings[1]=="N2"){
 				gastype=2;
-				vars->atypes_g.mass=14.01;
-				vars->atypes_g.name="N";
-				vars->atypes_g.coeff1=0.1098;
-				vars->atypes_g.coeff2=3.27351824993;
+				at.mass=14.01;
+				at.name="N";
+				at.coeff1=0.1098;
+				at.coeff2=3.27351824993;
 			}
 			if(readings[1]=="N2monoatomic"){
 				gastype=3;
-				vars->atypes_g.mass=28.02;
-				vars->atypes_g.name="N2";
-				vars->atypes_g.coeff1=0.14397;
-				vars->atypes_g.coeff2=3.798;
+				at.mass=28.02;
+				at.name="N2";
+				at.coeff1=0.14397;
+				at.coeff2=3.798;
 			}
 			if(readings[1]=="Ar"){
 				gastype=4;
-				vars->atypes_g.mass=28.02;
-				vars->atypes_g.name="Ar";
-				vars->atypes_g.coeff1=0.14397;
-				vars->atypes_g.coeff2=3.798;
+				at.mass=28.02;
+				at.name="Ar";
+				at.coeff1=0.14397;
+				at.coeff2=3.798;
 			}
+			vars->atypes.push_back(at);
 			Nof_around_gas=stoi(readings[2]);
 			vars->CG[1].resize(Nof_around_gas);
-			double epu=sqrt(vars->atypes_g.coeff1*vars->atypes_g.coeff1);
-			double sigma=(vars->atypes_g.coeff2+vars->atypes_g.coeff2)*0.5;
-			vars->pair_coeff_g[0]=48 * epu*pow(sigma,12.0);
-			vars->pair_coeff_g[1]=24 * epu*pow(sigma,6.0);
+
+			vars->pair_coeff.resize(1);
+			double epu=at.coeff1;
+			double sigma=at.coeff2;
+			vars->pair_coeff[0][0][0]=48 * epu*pow(sigma,12.0);
+			vars->pair_coeff[0][0][1]=24 * epu*pow(sigma,6.0);
 			cout<<"Gastype\t\t\t"<<readings[1]<<endl;
 			cout<<"Number of gases\t\t"<<Nof_around_gas<<endl;
 		}

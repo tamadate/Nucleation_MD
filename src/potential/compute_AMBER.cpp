@@ -19,11 +19,9 @@ PotentialAMBER::compute(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->AA[0][0].inAtoms.data();
+	Atom *ions = vars->CG[0][0].inAtoms.data();
 	int lpsize=longPair.size();
-	#pragma omp parallel for
 	for (int ip=0;ip<lpsize;ip++) {
-		int nth=omp_get_thread_num();
 		int i=longPair[ip].i;
 		int j=longPair[ip].j;
 		double dx = ions[i].qx - ions[j].qx;
@@ -37,28 +35,26 @@ PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
 		double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);
 		double force_coul = qqrd2e * ions[i].charge * ions[j].charge * sqrt(r2inv);
 		double force_pair = (force_lj + force_coul)*r2inv;
-		ions[i].fxMP[nth] += force_pair * dx;
-		ions[i].fyMP[nth] += force_pair * dy;
-		ions[i].fzMP[nth] += force_pair * dz;
-		ions[j].fxMP[nth] -= force_pair * dx;
-		ions[j].fyMP[nth] -= force_pair * dy;
-		ions[j].fzMP[nth] -= force_pair * dz;
+		ions[i].fx += force_pair * dx;
+		ions[i].fy += force_pair * dy;
+		ions[i].fz += force_pair * dz;
+		ions[j].fx -= force_pair * dx;
+		ions[j].fy -= force_pair * dy;
+		ions[j].fz -= force_pair * dz;
 		if(flags->eflag) {
-			vars->U_MP[nth].Uion+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-			vars->U_MP[nth].Uion+=force_coul;
+			vars->Utotal.Uion+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+			vars->Utotal.Uion+=force_coul;
 		}
 	}
 }
 
 void
 PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->AA[0][0].inAtoms.data();
+	Atom *ions = vars->CG[0][0].inAtoms.data();
 	Bond_type *btypes = vars->btypes.data();
-	Bond *bonds=vars->AA[0][0].bonds.data();
-	int bsize=vars->AA[0][0].bonds.size();
-	#pragma omp parallel for
+	Bond *bonds=vars->CG[0][0].bonds.data();
+	int bsize=vars->CG[0][0].bonds.size();
 	for (int ib=0;ib<bsize;ib++) {
-		int nth=omp_get_thread_num();
 		int i=bonds[ib].atom1;
 		int j=bonds[ib].atom2;
 		int type=bonds[ib].type;
@@ -71,26 +67,24 @@ PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
 		double rk = btypes[type].coeff[0] * dr;
 		double force_bond_harmonic;
 		force_bond_harmonic = -2.0*rk/r;
-		ions[i].fxMP[nth] += force_bond_harmonic * dx;
-		ions[i].fyMP[nth] += force_bond_harmonic * dy;
-		ions[i].fzMP[nth] += force_bond_harmonic * dz;
-		ions[j].fxMP[nth] -= force_bond_harmonic * dx;
-		ions[j].fyMP[nth] -= force_bond_harmonic * dy;
-		ions[j].fzMP[nth] -= force_bond_harmonic * dz;
-		if(flags->eflag) vars->U_MP[nth].Uion+=rk*dr;
+		ions[i].fx += force_bond_harmonic * dx;
+		ions[i].fy += force_bond_harmonic * dy;
+		ions[i].fz += force_bond_harmonic * dz;
+		ions[j].fx -= force_bond_harmonic * dx;
+		ions[j].fy -= force_bond_harmonic * dy;
+		ions[j].fz -= force_bond_harmonic * dz;
+		if(flags->eflag) vars->Utotal.Uion+=rk*dr;
 	}
 }
 
 void
 PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->AA[0][0].inAtoms.data();
+	Atom *ions = vars->CG[0][0].inAtoms.data();
 	Angle_type *ctypes = vars->ctypes.data();
-	Angle *angles=vars->AA[0][0].angles.data();
-	int asize=vars->AA[0][0].angles.size();
-	#pragma omp parallel for
+	Angle *angles=vars->CG[0][0].angles.data();
+	int asize=vars->CG[0][0].angles.size();
 	for (int ian=0;ian<asize;ian++) {
 		double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
-		int nth=omp_get_thread_num();
 		int i=angles[ian].atom1;
 		int j=angles[ian].atom2;
 		int k=angles[ian].atom3;
@@ -120,30 +114,28 @@ PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
   	f3[0] = a22*dx2 + a12*dx1;
   	f3[1] = a22*dy2 + a12*dy1;
   	f3[2] = a22*dz2 + a12*dz1;
-  	ions[i].fxMP[nth] += f1[0];
-		ions[i].fyMP[nth] += f1[1];
-		ions[i].fzMP[nth] += f1[2];
-  	ions[j].fxMP[nth] -= f1[0] + f3[0];
-		ions[j].fyMP[nth] -= f1[1] + f3[1];
-		ions[j].fzMP[nth] -= f1[2] + f3[2];
-		ions[k].fxMP[nth] += f3[0];
-		ions[k].fyMP[nth] += f3[1];
-		ions[k].fzMP[nth] += f3[2];
-    if (flags->eflag) vars->U_MP[nth].Uion+= tk*dtheta;
+  	ions[i].fx += f1[0];
+		ions[i].fy += f1[1];
+		ions[i].fz += f1[2];
+  	ions[j].fx -= f1[0] + f3[0];
+		ions[j].fy -= f1[1] + f3[1];
+		ions[j].fz -= f1[2] + f3[2];
+		ions[k].fx += f3[0];
+		ions[k].fy += f3[1];
+		ions[k].fz += f3[2];
+    if (flags->eflag) vars->Utotal.Uion+= tk*dtheta;
 	}
 }
 
 void
 PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->AA[0][0].inAtoms.data();
+	Atom *ions = vars->CG[0][0].inAtoms.data();
 	Dihedral_type *dtypes = vars->dtypes.data();
-	Dihedral *dihedrals=vars->AA[0][0].dihedrals.data();
-	int dsize=vars->AA[0][0].dihedrals.size();
-	#pragma omp parallel for
+	Dihedral *dihedrals=vars->CG[0][0].dihedrals.data();
+	int dsize=vars->CG[0][0].dihedrals.size();
 	for (int idi=0;idi<dsize;idi++) {
 		double ff2[3],ff4[3],ff1[3],ff3[3];
 
-		int nth=omp_get_thread_num();
 		int i=dihedrals[idi].atom1;
 		int j=dihedrals[idi].atom2;
 		int k=dihedrals[idi].atom3;
@@ -207,7 +199,7 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 	            df1=0.0;
 	        }
 			df += (-dtypes[type].coeff[JJ5] * df1);
-			if (flags->eflag) vars->U_MP[nth].Uion+= dtypes[type].coeff[JJ5] * p_;
+			if (flags->eflag) vars->Utotal.Uion+= dtypes[type].coeff[JJ5] * p_;
 		}
 
 
@@ -242,18 +234,18 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 		ff3[1] = -sy2 - ff4[1];
 		ff3[2] = -sz2 - ff4[2];
 
-		ions[i].fxMP[nth] += ff1[0];
-		ions[i].fyMP[nth] += ff1[1];
-		ions[i].fzMP[nth] += ff1[2];
-		ions[j].fxMP[nth] += ff2[0];
-		ions[j].fyMP[nth] += ff2[1];
-		ions[j].fzMP[nth] += ff2[2];
-		ions[k].fxMP[nth] += ff3[0];
-		ions[k].fyMP[nth] += ff3[1];
-		ions[k].fzMP[nth] += ff3[2];
-		ions[l].fxMP[nth] += ff4[0];
-		ions[l].fyMP[nth] += ff4[1];
-		ions[l].fzMP[nth] += ff4[2];
+		ions[i].fx += ff1[0];
+		ions[i].fy += ff1[1];
+		ions[i].fz += ff1[2];
+		ions[j].fx += ff2[0];
+		ions[j].fy += ff2[1];
+		ions[j].fz += ff2[2];
+		ions[k].fx += ff3[0];
+		ions[k].fy += ff3[1];
+		ions[k].fz += ff3[2];
+		ions[l].fx += ff4[0];
+		ions[l].fy += ff4[1];
+		ions[l].fz += ff4[2];
 
 	}
 }
@@ -262,7 +254,7 @@ void
 PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 	std::vector<Pair> noLong;
 	Pair p;
-	for (auto &b : vars-> AA[0][0].bonds) {
+	for (auto &b : vars-> CG[0][0].bonds) {
 		p.i=b.atom1;
 		p.j=b.atom2;
 		if(p.j<p.i) {
@@ -271,7 +263,7 @@ PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 		}
 		noLong.push_back(p);
 	}
-	for (auto &b : vars-> AA[0][0].angles) {
+	for (auto &b : vars-> CG[0][0].angles) {
 		p.i=b.atom1;
 		p.j=b.atom3;
 		if(p.j<p.i) {
@@ -280,7 +272,7 @@ PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 		}
 		noLong.push_back(p);
 	}
-	for (auto &b : vars-> AA[0][0].dihedrals) {
+	for (auto &b : vars-> CG[0][0].dihedrals) {
 		p.i=b.atom1;
 		p.j=b.atom4;
 		if(p.j<p.i) {
@@ -290,8 +282,8 @@ PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 		noLong.push_back(p);
 	}
 
-	Atom *ions=vars->AA[0][0].inAtoms.data();
-	const int is=vars->AA[0][0].inAtoms.size();
+	Atom *ions=vars->CG[0][0].inAtoms.data();
+	const int is=vars->CG[0][0].inAtoms.size();
 	for(int i=0;i<is-1;i++){
 		for(int j=i+1;j<is;j++){
 			int flag=1;

@@ -11,13 +11,7 @@
 MD::MD(char* condfile, int calcNumber) {
 	startTime=omp_get_wtime();
 	calculation_number =  calcNumber;
-	#pragma omp parallel
-	{
-		#pragma omp single
-		{
-			Nth=omp_get_num_threads();
-		}
-	}
+
 	vars = new Variables();
 	obs = new Observer();
 	pp = new Physical();
@@ -25,6 +19,7 @@ MD::MD(char* condfile, int calcNumber) {
 	mbdist = new MBdist();
 	mbdistV = new MBdist();
 
+	// Default calculation parameters
 	dt = 0.5;	/*	fs	*/
 	CUTOFF = 20.0;	/*	A	*/
 	MARGIN = 10.0;	/*	A	*/
@@ -32,10 +27,10 @@ MD::MD(char* condfile, int calcNumber) {
 	T=300;
 	p=1e5;
 	positionLogStep=0;
-	totalVaporIn=0;
+	totalVaporIn=1;
+
 	setCondition(condfile);
 	output_initial();
-
 	vars->read_initial(atomFile,vaporFile);
 	vars->ionInitialVelocity(T);
 
@@ -53,18 +48,5 @@ MD::MD(char* condfile, int calcNumber) {
 
 	mbdist -> makeWeightedMB(pp->cgas,pp->mgas,T);
 	mbdistV -> makeWeightedMB(pp->cvapor,pp->mvapor,T);
+	
 }
-
-/////////////////////////////////////////////////////////////////////
-/*
-	destructor
-*/
-/////////////////////////////////////////////////////////////////////
-
-
-
-/*########################################################################################
-
------Calculating center of mass and velocity of center of mass-----
-
-#######################################################################################*/

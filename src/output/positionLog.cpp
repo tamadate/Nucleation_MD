@@ -6,9 +6,9 @@
 void
 MD::positionLog(void){
 	updateInCenters();
-	Atom *ion=vars->AA[0][0].inAtoms.data();
+	Atom *ion=vars->CG[0][0].inAtoms.data();
 	int i=0;
-	for(auto &vin : vars->AA[2]){
+	for(auto &vin : vars->CG[2]){
 		double minDist=1e10;
 		int closeAtomID=0;
 		for(auto &j : stickPositionList){

@@ -11,8 +11,8 @@
 /////////////////////////////////////////////////////////////////////
 void
 PotentialSW::compute(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->AA[0][0].inAtoms.data();
-	const int is = vars->AA[0][0].inAtoms.size();
+	Atom *ions = vars->CG[0][0].inAtoms.data();
+	const int is = vars->CG[0][0].inAtoms.size();
 	U=0;
 	Pressure=0;
 	virial=0;
@@ -90,8 +90,8 @@ PotentialSW::compute(Variables *vars, FLAG *flags) {
 
 double
 PotentialSW::computeVirial(Variables *vars) {
-	Atom *ions = vars->AA[0][0].inAtoms.data();
-	const int is = vars->AA[0][0].inAtoms.size();
+	Atom *ions = vars->CG[0][0].inAtoms.data();
+	const int is = vars->CG[0][0].inAtoms.size();
 /*	double virial=0;
 	for(auto &a : vars->ions){
 		virial+=a.fx*a.qx;
@@ -179,8 +179,8 @@ PotentialSW::check_pairlist(Variables *vars){
 void
 PotentialSW::make_pair(Variables *vars){
 	pairs.clear();
-	Atom *ions = vars->AA[0][0].inAtoms.data();
-	int is=vars->AA[0][0].inAtoms.size();
+	Atom *ions = vars->CG[0][0].inAtoms.data();
+	int is=vars->CG[0][0].inAtoms.size();
 	for (int i=0; i<is; i++){
 		Pair_many p;
 		p.i=i;
