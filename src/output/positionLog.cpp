@@ -6,15 +6,16 @@
 void
 MD::positionLog(void){
 	updateInCenters();
-	Atom *ion=vars->AA[0][0].inAtoms.data();
+ 	Molecule *mols=vars->Molecules.data();
+	Atom *ion=vars->Molecules[0].inAtoms.data();
 	int i=0;
-	for(auto &vin : vars->AA[2]){
+	for(auto i : vars->MolID[2]){
 		double minDist=1e10;
 		int closeAtomID=0;
 		for(auto &j : stickPositionList){
-			double dx=vin.qx-ion[j].qx;
-			double dy=vin.qy-ion[j].qy;
-			double dz=vin.qz-ion[j].qz;
+			double dx=mols[i].qx-ion[j].qx;
+			double dy=mols[i].qy-ion[j].qy;
+			double dz=mols[i].qz-ion[j].qz;
 			double dr2=dx*dx+dy*dy+dz*dz;
 			if(dr2<minDist){
 				closeAtomID=j;

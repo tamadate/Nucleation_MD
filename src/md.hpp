@@ -74,6 +74,7 @@ class MD {
 	void make_pair_vaporion(void);
 	void make_pairsLJCoulHybrid();
 	void make_pairLJHybrid(void);
+	void make_pairLJCoul(void);
 	void check_pairlist(void);
   void makeDiatomicProp_in(Molecule &gasOut);
 	void makePolyatomicProp_in(Molecule &vapOut);

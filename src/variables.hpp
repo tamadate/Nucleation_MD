@@ -34,6 +34,7 @@ public:
   std::vector<Pair> ion_pairs;
 	std::vector<Pair> pairsLJHybrid;	/*	gas-ion interaction pair list	*/
 	std::vector<Pair> pairsLJ;	/*	gas-ion interaction pair list	*/
+	std::vector<Pair> pairsLJCoul;	/*	gas-ion interaction pair list	*/
 	std::vector<Pair> pairs_gv;	/*	gas-vapor interaction pair list	*/
 	std::vector<Pair> pairs_gg;	/*	gas-gas interaction pair list	*/
 	std::vector<Pair> pairsLJCoulHybrid;	/*	gas-gas interaction pair list	*/

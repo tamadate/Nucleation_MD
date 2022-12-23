@@ -2,11 +2,15 @@
 
 int
 Variables::readIonFile(char* infile){
-
   ifstream stream(infile);
 	string str;
 	int iflag=0;
 	int num_atoms=0;
+  int Natypes=atypes.size();
+  int Nbtypes=btypes.size();
+  int Nctypes=ctypes.size();
+  int Ndtypes=dtypes.size();
+
 
 	while(getline(stream,str)) {
 		if(str.length()==0) continue;
@@ -18,8 +22,11 @@ Variables::readIonFile(char* infile){
 		if (str=="bonds") {iflag=6; continue;}
 		if (str=="angles") {iflag=7; continue;}
 		if (str=="dihedrals") {iflag=8; continue;}
-	    string tmp;
-    	istringstream stream(str);
+
+    string tmp;
+  	istringstream stream(str);
+
+    // Atomic
 		if (iflag==1) {
 			Atom_type at;
 			int loop=0;
@@ -53,6 +60,8 @@ Variables::readIonFile(char* infile){
 			atypes.push_back(at);
 			num_atoms++;
 		}
+
+    // Bond potential parameters
 		if (iflag==2) {
 			Bond_type bt;
 			int loop=0;
@@ -63,6 +72,8 @@ Variables::readIonFile(char* infile){
 			}
 			btypes.push_back(bt);
 		}
+
+    // Angle potential parameters
 		if (iflag==3) {
 			Angle_type at;
 			int loop=0;
@@ -73,6 +84,8 @@ Variables::readIonFile(char* infile){
 			}
 			ctypes.push_back(at);
 		}
+
+    // Dihedral potential parameters
 		if (iflag==4) {
 			Dihedral_type dit;
 			int loop=0;
@@ -104,19 +117,16 @@ Variables::readIonFile(char* infile){
 			}
 			dtypes.push_back(dit);
 		}
+
+    // Atom list
 		if (iflag==5) {
 			Atom a;
 			int loop=0;
 			a.fx=a.fy=a.fz=a.px=a.py=a.pz=0;
-			for (int thread=0;thread<Nth;thread++){
-				a.fxMP.push_back(0);
-				a.fyMP.push_back(0);
-				a.fzMP.push_back(0);
-			}
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0) a.id=stoi(tmp);
 				if (loop==1) {
-          a.type=stoi(tmp)-1;
+          a.type=stoi(tmp)-1+Natypes;
           a.mass=atypes[a.type].mass;
         }
 				if (loop==2) a.charge=stod(tmp);
@@ -128,8 +138,10 @@ Variables::readIonFile(char* infile){
 				if (loop==8) a.pz=stod(tmp);
 				loop++;
 			}
-			AA[0][0].inAtoms.push_back(a);
+			Molecules[0].inAtoms.push_back(a);
 		}
+
+    // Bond list
 		if (iflag==6) {
 		 	Bond b;
 			int loop=0;
@@ -137,11 +149,13 @@ Variables::readIonFile(char* infile){
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0) b.atom1 = stoi(tmp)-1;
 				if (loop==1) b.atom2 = stoi(tmp)-1;
-				if (loop==2) b.type=stoi(tmp)-1;
+				if (loop==2) b.type=stoi(tmp)-1+Nbtypes;
 				loop++;
 			}
-      AA[0][0].bonds.push_back(b);
+      Molecules[0].bonds.push_back(b);
 		}
+
+    // Angle list
 		if (iflag==7) {
 			Angle c;
 			int loop=0;
@@ -149,11 +163,13 @@ Variables::readIonFile(char* infile){
 				if (loop==0) c.atom1=stoi(tmp)-1;
 				if (loop==1) c.atom2=stoi(tmp)-1;
 				if (loop==2) c.atom3=stoi(tmp)-1;
-				if (loop==3) c.type=stoi(tmp)-1;
+				if (loop==3) c.type=stoi(tmp)-1+Nctypes;
 				loop++;
 			}
-			AA[0][0].angles.push_back(c);
+			Molecules[0].angles.push_back(c);
 		}
+
+    // Dihedral list
 		if (iflag==8) {
 			Dihedral d;
 			int loop=0;
@@ -162,26 +178,12 @@ Variables::readIonFile(char* infile){
 				if (loop==1) d.atom2=stoi(tmp)-1;
 				if (loop==2) d.atom3=stoi(tmp)-1;
 				if (loop==3) d.atom4=stoi(tmp)-1;
-				if (loop==4) d.type=stoi(tmp)-1;
+				if (loop==4) d.type=stoi(tmp)-1+Ndtypes;
 				loop++;
 			}
-			AA[0][0].dihedrals.push_back(d);
+			Molecules[0].dihedrals.push_back(d);
 		}
 	}
-	pair_coeff.resize(num_atoms);
-	for (int i=0;i<num_atoms;i++){
-		pair_coeff[i].resize(num_atoms);
-		for (int j=0;j<num_atoms;j++){
-			pair_coeff[i][j].resize(2);
-		}
-	}
-	for (int i=0;i<num_atoms;i++){
-		for (int j=0;j<num_atoms;j++){
-			double epu=sqrt(atypes[i].coeff1*atypes[j].coeff1);
-			double sigma=(atypes[i].coeff2+atypes[j].coeff2)*0.5;
-			pair_coeff[i][j][0]=48 * epu*pow(sigma,12.0);
-			pair_coeff[i][j][1]=24 * epu*pow(sigma,6.0);
-		}
-	}
+
   return num_atoms;
 }

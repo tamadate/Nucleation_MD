@@ -10,26 +10,26 @@
 void
 PotentialLJCoul::compute(Variables *vars, FLAG *flags) {
 	Molecule *mols = vars->Molecules.data();
-	Molecule *ions = vars->Molecules[0].inAtoms.data();
+	Atom *ions = vars->Molecules[0].inAtoms.data();
 	vars->times.tvi-=omp_get_wtime();
 	for(auto &p : vars->pairsLJCoul){
 		int i=p.i;
 		int j=p.j;
-		for (auto &a : mols[i].inAtoms){
-			double dx = ag.qx - ions[j].qx;
-			double dy = ag.qy - ions[j].qy;
-			double dz = ag.qz - ions[j].qz;
+		for (auto &at : mols[i].inAtoms){
+			double dx = at.qx - ions[j].qx;
+			double dy = at.qy - ions[j].qy;
+			double dz = at.qz - ions[j].qz;
 			double rsq = (dx * dx + dy * dy + dz * dz);
 			double r2inv = 1/rsq;
-			int type1=ag.type;
+			int type1=at.type;
 			int type2=ions[j].type;
 			double r6inv = r2inv * r2inv * r2inv;
-			double force_lj = r6inv * (vars->pair_coeff_vi[type1][type2][0] * r6inv - vars->pair_coeff_vi[type1][type2][1]);
-			double force_coul = qqrd2e * ag.charge * ions[j].charge * sqrt(r2inv);
+			double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);
+			double force_coul = qqrd2e * at.charge * ions[j].charge * sqrt(r2inv);
 			double force_pair = (force_lj + force_coul)*r2inv;
-			ag.fx += force_pair * dx;
-			ag.fy += force_pair * dy;
-			ag.fz += force_pair * dz;
+			at.fx += force_pair * dx;
+			at.fy += force_pair * dy;
+			at.fz += force_pair * dz;
 			ions[j].fx -= force_pair * dx;
 			ions[j].fy -= force_pair * dy;
 			ions[j].fz -= force_pair * dz;

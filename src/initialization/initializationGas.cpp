@@ -12,61 +12,74 @@ This makes connection between thermal relaxation and main diffusion coeficient c
 
 /////////////////////////////////////////////////////////////////////
 /*
-	- Randomly arraying gas molecule around an ion with avoiding the
-	overlapping. The velocity is picked from  the Maxwell-Boltzumann
+	- Randomly aranging gas molecule around an ion with avoiding the
+	overlapping.
+	- The velocity is picked from  the Maxwell-Boltzumann
 	distribution
-	- Set ion's center of mass (maybe -> 0), make pair list for initial
-	step of simulation, reset the margine size.
 */
 /////////////////////////////////////////////////////////////////////
 
 void
 MD::initialization_gas(void) {
-	vars->CG[1].resize(Nof_around_gas);
-	double nion=vars->AA[0][0].inAtoms.size();
 	double dx,dy,dz, d;
 	double dis=5;	/*	minimum gas-gas, gas-ion distance */
+	int Nsofar=vars->Molecules.size();
 
-  // Set random number generator
+  // Maxwell-Boltzumann distribution generator
 	random_device seed;
 	default_random_engine engine(seed());
 	normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mgas));
 	mt19937 mt(seed());
 	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
 
-    // Generate random x, y, z positions and calculate minimum gas-gas distance.
+  // Sampling gas molecules
 	int i=0;
 	do {
-		Molecule_out a;
+		Molecule a;
 		double min_dis=10000.0;
+		// sample random position (x, y, z)
 		a.qx=r(mt), a.qy=r(mt), a.qz=r(mt);
-		if(i>0){
-			for(auto &b : vars->CG[1]){
-				dx=a.qx-b.qx;
-				dy=a.qy-b.qx;
-				dz=a.qx-b.qx;
+
+		// calculate minimum distance from existing atoms (min_dis)
+		int loop=0;
+		for(auto &b : vars->Molecules){
+			// min distance from ion atoms
+			if(loop==0){
+				for(auto &c : b.inAtoms) {
+					double dx=a.qx-c.qx;
+					double dy=a.qy-c.qy;
+					double dz=a.qz-c.qz;
+					adjust_periodic(dx, dy, dz, d_size);
+					double d=sqrt(dx*dx+dy*dy+dz*dz);
+					if(d<min_dis) min_dis=d; // minimum gas-ion distance
+				}
+			}
+			// min distance from existing gas & vapor molecules
+			else{
+				double dx=a.qx-b.qx;
+				double dy=a.qy-b.qx;
+				double dz=a.qx-b.qx;
 				adjust_periodic(dx, dy, dz, d_size);
-				d=sqrt(dx*dx+dy*dy+dz*dz);
+				double d=sqrt(dx*dx+dy*dy+dz*dz);
 				if(d<min_dis) min_dis=d; // minimum gas-gas distance
 			}
+			loop++;
 		}
-		for(auto &b : vars->AA[0][0].inAtoms) {
-			dx=a.qx-b.qx;
-			dy=a.qy-b.qy;
-			dz=a.qz-b.qz;
-			adjust_periodic(dx, dy, dz, d_size);
-			d=sqrt(dx*dx+dy*dy+dz*dz);
-			if(d<min_dis) min_dis=d; // minimum gas-ion distance
-		}
+
+		// if min_dis is less than criteria, add the sampled molecule (a)
 		if(min_dis>dis){
+			// sample velocities from Maxwell-Boltzumann distribution
+			// set mass and id
 			a.px=distgas(engine)*1e-5;
 			a.py=distgas(engine)*1e-5;
 			a.pz=distgas(engine)*1e-5;
 			a.mass=pp->Mgas;
-
-			vars->CG[1][i]=a;
+			a.type=1;
+			a.id=i;
+			vars->Molecules.push_back(a);
+			vars->MolID[1].push_back(Nsofar+i);
 			i++;
 		}
-		collisionFlagGas.push_back(0);
+		//collisionFlagGas.push_back(0);
 	} while(i<Nof_around_gas);
 }
