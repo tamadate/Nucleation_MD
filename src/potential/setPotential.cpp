@@ -1,6 +1,6 @@
 
-#include "md.hpp"
-#include "potential/potential.hpp"
+#include "../md.hpp"
+#include "potential.hpp"
 
 void
 MD::setPotential(FLAG *flags,int mode){
@@ -44,7 +44,7 @@ MD::setPotential(FLAG *flags,int mode){
 //ion-vapor
 	flag=0;
 	if(flags->inter_vi && mode) {
-		InterInter.push_back(new PotentialVaporIon());
+		InterInter.push_back(new PotentialLJCoul());
 		cout<<"|\tL-J-C\t|"<<endl;
 		flag=1;
 	}

@@ -3,7 +3,7 @@
 
 void
 MD::analysis_ion(void) {
-	Molecule *ion = vars -> Molecules.data();
+	Molecule *ion = vars -> Molecules[0].data();
 	ion[0].qx=0;
 	ion[0].qy=0;
 	ion[0].qz=0;
@@ -11,7 +11,7 @@ MD::analysis_ion(void) {
 	ion[0].py=0;
 	ion[0].pz=0;
 
-	for ( auto &a : ion[0].inAtoms)	{
+	for ( auto &a : ion.inAtoms)	{
 		ion[0].qx += a.qx * a.mass;
 		ion[0].qy += a.qy * a.mass;
 		ion[0].qz += a.qz * a.mass;

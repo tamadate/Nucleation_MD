@@ -7,10 +7,6 @@ Variables::readVaporFile(char* infile){
 	string str;
 	int iflag=0;
 	int num_atoms=0;
-  int Natypes=atypes.size();
-  int Nbtypes=btypes.size();
-  int Nctypes=ctypes.size();
-  int Ndtypes=dtypes.size();
 
 	while(getline(stream,str)) {
 		if(str.length()==0) continue;
@@ -54,7 +50,7 @@ Variables::readVaporFile(char* infile){
 				if (loop==4) at.coeff2=stod(tmp);
 				loop++;
 			}
-			atypes.push_back(at);
+			atypes_v.push_back(at);
 			num_atoms++;
 		}
 		if (iflag==2) {
@@ -65,7 +61,7 @@ Variables::readVaporFile(char* infile){
 				if (loop==3) bt.coeff[1]=stod(tmp);
 				loop++;
 			}
-			btypes.push_back(bt);
+			btypes_v.push_back(bt);
 		}
 		if (iflag==3) {
 			Angle_type at;
@@ -75,7 +71,7 @@ Variables::readVaporFile(char* infile){
 				if (loop==3) at.coeff[1]=stod(tmp)/180.0*M_PI;
 				loop++;
 			}
-			ctypes.push_back(at);
+			ctypes_v.push_back(at);
 		}
 		if (iflag==4) {
 			Dihedral_type dit;
@@ -106,17 +102,22 @@ Variables::readVaporFile(char* infile){
 				}
 				loop++;
 			}
-			dtypes.push_back(dit);
+			dtypes_v.push_back(dit);
 		}
 		if (iflag==5) {
 			Atom a;
 			int loop=0;
 			a.fx=a.fy=a.fz=a.px=a.py=a.pz=0;
+			for (int thread=0;thread<Nth;thread++){
+				a.fxMP.push_back(0);
+				a.fyMP.push_back(0);
+				a.fzMP.push_back(0);
+			}
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0) a.id=stoi(tmp);
 				if (loop==1) {
-          a.type=stoi(tmp)-1+Natypes;
-          a.mass=atypes[a.type].mass;
+          a.type=stoi(tmp)-1;
+          a.mass=atypes_v[a.type].mass;
         }
 				if (loop==2) a.charge=stod(tmp);
 				if (loop==3) a.qx=stod(tmp);
@@ -136,7 +137,7 @@ Variables::readVaporFile(char* infile){
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0) b.atom1 = stoi(tmp)-1;
 				if (loop==1) b.atom2 = stoi(tmp)-1;
-				if (loop==2) b.type=stoi(tmp)-1+Nbtypes;
+				if (loop==2) b.type=stoi(tmp)-1;
 				loop++;
 			}
 			bonds_v.push_back(b);
@@ -148,7 +149,7 @@ Variables::readVaporFile(char* infile){
 				if (loop==0) c.atom1=stoi(tmp)-1;
 				if (loop==1) c.atom2=stoi(tmp)-1;
 				if (loop==2) c.atom3=stoi(tmp)-1;
-				if (loop==3) c.type=stoi(tmp)-1+Nctypes;
+				if (loop==3) c.type=stoi(tmp)-1;
 				loop++;
 			}
 			angles_v.push_back(c);
@@ -161,12 +162,27 @@ Variables::readVaporFile(char* infile){
 				if (loop==1) d.atom2=stoi(tmp)-1;
 				if (loop==2) d.atom3=stoi(tmp)-1;
 				if (loop==3) d.atom4=stoi(tmp)-1;
-				if (loop==4) d.type=stoi(tmp)-1+Ndtypes;
+				if (loop==4) d.type=stoi(tmp)-1;
 				loop++;
 			}
 			dihedrals_v.push_back(d);
 		}
 	}
-
+	pair_coeff_v.resize(num_atoms);
+	for (int i=0;i<num_atoms;i++){
+		pair_coeff_v[i].resize(num_atoms);
+		for (int j=0;j<num_atoms;j++){
+			pair_coeff_v[i][j].resize(2);
+		}
+	}
+	for (int i=0;i<num_atoms;i++){
+		for (int j=0;j<num_atoms;j++){
+			double epu=sqrt(atypes_v[i].coeff1*atypes_v[j].coeff1);
+			double sigma=(atypes_v[i].coeff2+atypes_v[j].coeff2)*0.5;
+			//sigma=sqrt(atypes_v[i].coeff2*atypes_v[j].coeff2);
+			pair_coeff_v[i][j][0]=48 * epu*pow(sigma,12.0);
+			pair_coeff_v[i][j][1]=24 * epu*pow(sigma,6.0);
+		}
+	}
   return num_atoms;
 }

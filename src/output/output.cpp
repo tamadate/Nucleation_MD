@@ -42,7 +42,7 @@ void
 MD::output(void){
 	sprintf(filepath, "ion_%d_%d.dat", int(T), int(calculation_number));
 	FILE*f=fopen(filepath, "a");
-	Molecule *ions = vars->Molecules.data();
+	Molecule *ions = vars->AA[0].data();
 	fprintf(f, "%f %f %f %f %e %e %e\n", vars->time/1e6, ions[0].qx, ions[0].qy, ions[0].qz, ions[0].px, ions[0].py, ions[0].pz);
 	fclose(f);
 }
@@ -68,9 +68,10 @@ void
 MD::Ovin(int i){
 	sprintf(filepath, "vapor_in_%d.dat", int(calculation_number));
 	FILE*f=fopen(filepath, "a");
-	Molecule *mols=vars->Molecules.data();
-	fprintf(f, "%d %e %e %e %e %e %e %e\n", i,itime*dt,mols[i].qx-mols[0].qx,mols[i].qy-mols[0].qy,mols[i].qz-mols[0].qz,\
-	mols[i].px-mols[0].px,mols[i].py-mols[0].py,mols[i].pz-mols[0].pz);
+	Molecule *vap=vars->AA[2].data();
+	Molecule *ion=vars->AA[0].data();
+	fprintf(f, "%d %e %e %e %e %e %e %e\n", i,itime*dt,vap[i].qx-ion[0].qx,vap[i].qy-ion[0].qy,vap[i].qz-ion[0].qz,\
+	vap[i].px-ion[0].px,vap[i].py-ion[0].py,vap[i].pz-ion[0].pz);
 	fclose(f);
 }
 
@@ -78,9 +79,10 @@ void
 MD::Ovout(int i){
 	sprintf(filepath, "vapor_out_%d.dat", int(calculation_number));
 	FILE*f=fopen(filepath, "a");
-	Molecule *mols=vars->Molecules.data();
-	fprintf(f, "%d %e %e %e %e %e %e %e\n", i,itime*dt,mols[i].qx-mols[0].qx,mols[i].qy-mols[0].qy,mols[i].qz-mols[0].qz,\
-	mols[i].px-mols[0].px,mols[i].py-mols[0].py,mols[i].pz-mols[0].pz);
+	Molecule *vap=vars->AA[2].data();
+	Molecule *ion=vars->AA[0].data();
+	fprintf(f, "%d %e %e %e %e %e %e %e\n", i,itime*dt,vap[i].qx-ion[0].qx,vap[i].qy-ion[0].qy,vap[i].qz-ion[0].qz,\
+	vap[i].px-ion[0].px,vap[i].py-ion[0].py,vap[i].pz-ion[0].pz);
 	fclose(f);
 }
 
@@ -97,6 +99,7 @@ MD::display(int output_ONOFF){
 		double Kout=0;
 		for(auto &kout : obs->Kout) Kout+=kout;
 
+		vars->Ucombine();
     std::cout << "-------------------TIME = " << vars->time/1000.0 << " ps----------------------" << endl;
 		cout<<"*Inside propeties"<<endl;
 		printf("  %-15s%-12s%-12s%-12s\n", "Prop", "Ion", "Gas", "Vapor");
@@ -137,12 +140,13 @@ MD::display(int output_ONOFF){
 
 void
 MD::exportDumpIn(void) {
-	Molecule *mols = vars->Molecules.data();
 	int count = vars->time;
 	FILE*f=fopen(pp->dump_path, "a");
 	int Natom=0;
-	for (auto &a : vars->Molecules){
-		Natom+=a.inAtoms.size();
+	for (auto &a : vars->AA){
+		for (auto &b : a){
+			Natom+=b.inAtoms.size();
+		}
 	}
 
 	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n",
@@ -151,25 +155,25 @@ MD::exportDumpIn(void) {
 	double X,Y,Z;
 	X=Y=Z=0;
 	if(flags->dump_fix==1) {
-		X=vars->Molecules[0].qx;
-		Y=vars->Molecules[0].qy;
-		Z=vars->Molecules[0].qz;
+		X=vars->AA[0][0].qx;
+		Y=vars->AA[0][0].qy;
+		Z=vars->AA[0][0].qz;
 	}
 
 	int ID=0;
-	for (auto &a : vars->Molecules[0].inAtoms) {
+	for (auto &a : vars->AA[0][0].inAtoms) {
 		fprintf(f,"%d %s %f %f %f %f %f %f\n",ID,vars->atypes[a.type].name.c_str(),a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
 		ID++;
 	}
-	for (auto i : vars->MolID[1]) {
-		for (auto &b : mols[i].inAtoms) {
-			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes[b.type].name+"(g)").c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+	for (auto &a : vars->AA[1]) {
+		for (auto &b : a.inAtoms) {
+			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes_g.name+"(g)").c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
 			ID++;
 		}
 	}
-	for (auto i : vars->MolID[2]) {
-		for (auto &b : mols[i].inAtoms) {
-			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes[b.type].name+"(v)").c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+	for (auto &a : vars->AA[2]) {
+		for (auto &b : a.inAtoms) {
+			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes_v[b.type].name+"(v)").c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
 			ID++;
 		}
 	}
@@ -179,10 +183,10 @@ MD::exportDumpIn(void) {
 // secret command
 void
 MD::exportDumpOut(void) {
-	Molecule *mols = vars->Molecules.data();
 	int count = vars->time;
 	FILE*f=fopen("out.dump", "a");
-	int Natom=vars->Molecules.size();
+	int Natom=0;
+	for (auto &a : vars->CG) Natom+=a.size();
 
 	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n",
 	count, Natom, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
@@ -190,15 +194,15 @@ MD::exportDumpOut(void) {
 	double X,Y,Z;
 	X=Y=Z=0;
 	if(flags->dump_fix==1) {
-		X=vars->Molecules[0].qx;
-		Y=vars->Molecules[0].qy;
-		Z=vars->Molecules[0].qz;
+		X=vars->AA[0][0].qx;
+		Y=vars->AA[0][0].qy;
+		Z=vars->AA[0][0].qz;
 	}
 
 	int ID=0;
-	for(int i=3;i<3;i++){
-		for (auto j : vars->MolID[i]) {
-			fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,i,mols[j].qx-X,mols[j].qy-Y,mols[j].qz-Z,mols[j].px,mols[j].py,mols[j].pz);
+	for(int i=0;i<3;i++){
+		for (auto &a : vars->CG[i]) {
+			fprintf(f,"%d %d %f %f %f %f %f %f\n",ID,i,a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);
 			ID++;
 		}
 	}

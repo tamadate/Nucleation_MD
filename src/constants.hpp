@@ -18,9 +18,6 @@
 #include "struct.hpp"
 #include "flags.hpp"
 //#pragma GCC target("avx2")
-#define AA 00000001
-#define CG 00000010
-#define AACG 00000011
 
 using namespace std;
 //------------------------------------------------------------------------
@@ -57,6 +54,8 @@ const double Cpress=1e30/Nw*4184;
 const double eV_to_kcalmol=23.061;
 const double real_to_kcalmol=10000/4.184;	/*	A^2 g fs^-2 mol^-1 to kcal/mol*/
 const double kb_real_inv = 1/kb_real;     /* boltzmann constant with real unit kcal/molK*/
-
+const int AA=00000001;
+const int CG=00000010;
+const int AACG=00000011;
 
 void adjust_periodic(double &dx, double &dy, double &dz, double d_size);
