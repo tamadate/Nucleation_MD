@@ -5,9 +5,10 @@ void
 Observer::computeProps(Variables *vars,int molID){
 	Kin[molID]=0;
 	double Nin=0;
+	Molecule *mols = vars -> Molecules.data();
 
-	for(auto &mol : vars->CG[molID]){
-		for (auto &at : mol.inAtoms){
+	for(auto i : vars->MolID[molID]){
+		for (auto &at : mols[i].inAtoms){
 			Kin[molID] += at.px * at.px * at.mass;
 			Kin[molID] += at.py * at.py * at.mass;
 			Kin[molID] += at.pz * at.pz * at.mass;
@@ -20,10 +21,10 @@ Observer::computeProps(Variables *vars,int molID){
 	Kout[molID]=0;
 	double Nout=0;
 
-	for(auto &mol : vars->CG[molID]){
-		Kout[molID] += mol.px * mol.px * mol.mass;
-		Kout[molID] += mol.py * mol.py * mol.mass;
-		Kout[molID] += mol.pz * mol.pz * mol.mass;
+	for(auto i : vars->MolID[molID]){
+		Kout[molID] += mols[i].px * mols[i].px * mols[i].mass;
+		Kout[molID] += mols[i].py * mols[i].py * mols[i].mass;
+		Kout[molID] += mols[i].pz * mols[i].pz * mols[i].mass;
 		Nout++;
 	}
 	Kout[molID]*= (0.5 * real_to_kcalmol);

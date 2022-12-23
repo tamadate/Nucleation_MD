@@ -10,8 +10,10 @@ public:
 
 	/*variables*/
   int Nth;
-	// dammy: CG[0], gas: CG[1], vapor: CG[0]
-	std::vector<vector<Molecule>> CG;
+	// dammy: Molecules[0], gas: Molecules[1], vapor: Molecules[0]
+	std::vector<Molecule> Molecules;
+	std::vector<int> Region;
+	std::vector<std::vector<int>> MolID;
 
 	double time;
 	double zeta_ion;
@@ -26,9 +28,11 @@ public:
 
   void tzero(void)	{times.tion=times.tgas=times.tvap=times.tgi=times.tvv=times.tvg=times.tvi=times.tpair=0;}
 	double Usum(void)	{return Utotal.Uion+Utotal.Ugas+Utotal.Uvap+Utotal.Ugi+Utotal.Ugg+Utotal.Uvg+Utotal.Uvi+Utotal.Uvv;}
+	double distFromIon(Molecule mol);
 
 	/*vectors for potential calculation*/
   std::vector<Pair> ion_pairs;
+	std::vector<Pair> pairsShort;	/*	gas-ion interaction pair list	*/
 	std::vector<Pair> pairs_gi;	/*	gas-ion interaction pair list	*/
 	std::vector<Pair> pairs_gv;	/*	gas-vapor interaction pair list	*/
 	std::vector<Pair> pairs_gg;	/*	gas-gas interaction pair list	*/
@@ -46,12 +50,14 @@ public:
 	std::vector<Dihedral> dihedrals_v;
 	std::vector<Atom> atomGas(int gastype);
 	std::vector<vector<vector<double>>> pair_coeff;
+	double pair_coeff_CG[3][3][2];
 
 	double bornCoeff[2][2][5];
 
 	void setGasPotentials(void);
 	void setBMHPotential(void);
 	void setCrossPotentials(int Nion,int Nvapor);
+	void setInitialRegion(void);
 
 	/*initialization and export to dump file*/
 	void read_initial(char* ionFile, char* vaporFile);

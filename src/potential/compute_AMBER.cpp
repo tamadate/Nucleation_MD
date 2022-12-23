@@ -19,7 +19,7 @@ PotentialAMBER::compute(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->CG[0][0].inAtoms.data();
+	Atom *ions = vars->Molecules[0].inAtoms.data();
 	int lpsize=longPair.size();
 	for (int ip=0;ip<lpsize;ip++) {
 		int i=longPair[ip].i;
@@ -50,10 +50,10 @@ PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->CG[0][0].inAtoms.data();
+	Atom *ions = vars->Molecules[0].inAtoms.data();
 	Bond_type *btypes = vars->btypes.data();
-	Bond *bonds=vars->CG[0][0].bonds.data();
-	int bsize=vars->CG[0][0].bonds.size();
+	Bond *bonds=vars->Molecules[0].bonds.data();
+	int bsize=vars->Molecules[0].bonds.size();
 	for (int ib=0;ib<bsize;ib++) {
 		int i=bonds[ib].atom1;
 		int j=bonds[ib].atom2;
@@ -79,10 +79,10 @@ PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->CG[0][0].inAtoms.data();
+	Atom *ions = vars->Molecules[0].inAtoms.data();
 	Angle_type *ctypes = vars->ctypes.data();
-	Angle *angles=vars->CG[0][0].angles.data();
-	int asize=vars->CG[0][0].angles.size();
+	Angle *angles=vars->Molecules[0].angles.data();
+	int asize=vars->Molecules[0].angles.size();
 	for (int ian=0;ian<asize;ian++) {
 		double dx1, dy1, dz1, dx2, dy2, dz2, rsq1, rsq2, r1, r2, C, Cs, dtheta, tk, a, a11, a12, a22, f1[3], f3[3];
 		int i=angles[ian].atom1;
@@ -129,10 +129,10 @@ PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
 
 void
 PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
-	Atom *ions = vars->CG[0][0].inAtoms.data();
+	Atom *ions = vars->Molecules[0].inAtoms.data();
 	Dihedral_type *dtypes = vars->dtypes.data();
-	Dihedral *dihedrals=vars->CG[0][0].dihedrals.data();
-	int dsize=vars->CG[0][0].dihedrals.size();
+	Dihedral *dihedrals=vars->Molecules[0].dihedrals.data();
+	int dsize=vars->Molecules[0].dihedrals.size();
 	for (int idi=0;idi<dsize;idi++) {
 		double ff2[3],ff4[3],ff1[3],ff3[3];
 
@@ -254,7 +254,7 @@ void
 PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 	std::vector<Pair> noLong;
 	Pair p;
-	for (auto &b : vars-> CG[0][0].bonds) {
+	for (auto &b : vars-> Molecules[0].bonds) {
 		p.i=b.atom1;
 		p.j=b.atom2;
 		if(p.j<p.i) {
@@ -263,7 +263,7 @@ PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 		}
 		noLong.push_back(p);
 	}
-	for (auto &b : vars-> CG[0][0].angles) {
+	for (auto &b : vars-> Molecules[0].angles) {
 		p.i=b.atom1;
 		p.j=b.atom3;
 		if(p.j<p.i) {
@@ -272,7 +272,7 @@ PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 		}
 		noLong.push_back(p);
 	}
-	for (auto &b : vars-> CG[0][0].dihedrals) {
+	for (auto &b : vars-> Molecules[0].dihedrals) {
 		p.i=b.atom1;
 		p.j=b.atom4;
 		if(p.j<p.i) {
@@ -282,8 +282,8 @@ PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
 		noLong.push_back(p);
 	}
 
-	Atom *ions=vars->CG[0][0].inAtoms.data();
-	const int is=vars->CG[0][0].inAtoms.size();
+	Atom *ions=vars->Molecules[0].inAtoms.data();
+	const int is=vars->Molecules[0].inAtoms.size();
 	for(int i=0;i<is-1;i++){
 		for(int j=i+1;j<is;j++){
 			int flag=1;

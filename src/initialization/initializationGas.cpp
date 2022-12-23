@@ -21,9 +21,9 @@ This makes connection between thermal relaxation and main diffusion coeficient c
 
 void
 MD::initialization_gas(void) {
-	vars->CG[1].resize(Nof_around_gas); // reserve memorry
 	double dx,dy,dz, d;
 	double dis=5;	/*	minimum gas-gas, gas-ion distance */
+	int Nsofar=vars->Molecules.size();
 
   // Maxwell-Boltzumann distribution generator
 	random_device seed;
@@ -41,25 +41,29 @@ MD::initialization_gas(void) {
 		a.qx=r(mt), a.qy=r(mt), a.qz=r(mt);
 
 		// calculate minimum distance from existing atoms (min_dis)
-		// min distance from existing gas molecules
-		if(i>0){
-			for(auto &b : vars->CG[1]){
-				dx=a.qx-b.qx;
-				dy=a.qy-b.qx;
-				dz=a.qx-b.qx;
+		int loop=0;
+		for(auto &b : vars->Molecules){
+			// min distance from ion atoms
+			if(loop==0){
+				for(auto &c : b.inAtoms) {
+					double dx=a.qx-c.qx;
+					double dy=a.qy-c.qy;
+					double dz=a.qz-c.qz;
+					adjust_periodic(dx, dy, dz, d_size);
+					double d=sqrt(dx*dx+dy*dy+dz*dz);
+					if(d<min_dis) min_dis=d; // minimum gas-ion distance
+				}
+			}
+			// min distance from existing gas & vapor molecules
+			else{
+				double dx=a.qx-b.qx;
+				double dy=a.qy-b.qx;
+				double dz=a.qx-b.qx;
 				adjust_periodic(dx, dy, dz, d_size);
-				d=sqrt(dx*dx+dy*dy+dz*dz);
+				double d=sqrt(dx*dx+dy*dy+dz*dz);
 				if(d<min_dis) min_dis=d; // minimum gas-gas distance
 			}
-		}
-		// min distance from existing gas molecules
-		for(auto &b : vars->CG[0][0].inAtoms) {
-			dx=a.qx-b.qx;
-			dy=a.qy-b.qy;
-			dz=a.qz-b.qz;
-			adjust_periodic(dx, dy, dz, d_size);
-			d=sqrt(dx*dx+dy*dy+dz*dz);
-			if(d<min_dis) min_dis=d; // minimum gas-ion distance
+			loop++;
 		}
 
 		// if min_dis is less than criteria, add the sampled molecule (a)
@@ -70,9 +74,10 @@ MD::initialization_gas(void) {
 			a.py=distgas(engine)*1e-5;
 			a.pz=distgas(engine)*1e-5;
 			a.mass=pp->Mgas;
+			a.type=1;
 			a.id=i;
-
-			vars->CG[1][i]=a;
+			vars->Molecules.push_back(a);
+			vars->MolID[1].push_back(Nsofar+i);
 			i++;
 		}
 		//collisionFlagGas.push_back(0);

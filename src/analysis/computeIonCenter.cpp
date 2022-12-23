@@ -3,7 +3,7 @@
 
 void
 MD::analysis_ion(void) {
-	Molecule *ion = vars -> CG[0].data();
+	Molecule *ion = vars -> Molecules.data();
 	ion[0].qx=0;
 	ion[0].qy=0;
 	ion[0].qz=0;

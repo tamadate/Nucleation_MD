@@ -9,12 +9,10 @@
 /////////////////////////////////////////////////////////////////////
 void
 Potential::compute(Variables *vars, FLAG *flags){
-	Atom *ions = vars->CG[0][0].inAtoms.data();
+	Atom *ions = vars->Molecules[0].inAtoms.data();
 	vars->times.tion-=omp_get_wtime();
 	int ipsize=vars->ion_pairs.size();
-	#pragma omp parallel for
 	for (int ip=0;ip<ipsize;ip++){
-		int nth=omp_get_thread_num();
 		int i=vars->ion_pairs[ip].i;
 		int j=vars->ion_pairs[ip].j;
 		double dx = ions[i].qx - ions[j].qx;
@@ -49,24 +47,23 @@ Potential::compute(Variables *vars, FLAG *flags){
 void
 PotentialGasIntra::compute(Variables *vars, FLAG *flags){
 	vars->times.tgas-=omp_get_wtime();
-	for(auto &mol : vars->CG[1]){
-		if(mol.inFlag==0) continue;
-		Atom *g1= & mol.inAtoms[0];
-		Atom *g2= & mol.inAtoms[1];
-    double dx = mol.inAtoms[0].qx - mol.inAtoms[1].qx;
-    double dy = mol.inAtoms[0].qy - mol.inAtoms[1].qy;
-    double dz = mol.inAtoms[0].qz - mol.inAtoms[1].qz;
+	Molecule *mols = vars->Molecules.data();
+	for(auto &i : vars->MolID[1]){
+		double dr2=vars->distFromIon(mols[i]);
+    double dx = mols[i].inAtoms[0].qx - mols[i].inAtoms[1].qx;
+    double dy = mols[i].inAtoms[0].qy - mols[i].inAtoms[1].qy;
+    double dz = mols[i].inAtoms[0].qz - mols[i].inAtoms[1].qz;
     double rsq = (dx * dx + dy * dy + dz * dz);
     double r = sqrt(rsq);
 		double dr= r - 1.098;
     double rk = 1221.7 * dr;
     double force_bond_harmonic = -2.0*rk/r;
-    mol.inAtoms[0].fx += force_bond_harmonic * dx;
-    mol.inAtoms[0].fy += force_bond_harmonic * dy;
-    mol.inAtoms[0].fz += force_bond_harmonic * dz;
-    mol.inAtoms[1].fx -= force_bond_harmonic * dx;
-    mol.inAtoms[1].fy -= force_bond_harmonic * dy;
-    mol.inAtoms[1].fz -= force_bond_harmonic * dz;
+    mols[i].inAtoms[0].fx += force_bond_harmonic * dx;
+    mols[i].inAtoms[0].fy += force_bond_harmonic * dy;
+    mols[i].inAtoms[0].fz += force_bond_harmonic * dz;
+    mols[i].inAtoms[1].fx -= force_bond_harmonic * dx;
+    mols[i].inAtoms[1].fy -= force_bond_harmonic * dy;
+    mols[i].inAtoms[1].fz -= force_bond_harmonic * dz;
 		if(flags->eflag) vars->Utotal.Ugas+=rk*dr;
 	}
 	vars->times.tgas+=omp_get_wtime();

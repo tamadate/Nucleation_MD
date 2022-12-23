@@ -2,7 +2,6 @@
 
 int
 Variables::readIonFile(char* infile){
-
   ifstream stream(infile);
 	string str;
 	int iflag=0;
@@ -139,7 +138,7 @@ Variables::readIonFile(char* infile){
 				if (loop==8) a.pz=stod(tmp);
 				loop++;
 			}
-			CG[0][0].inAtoms.push_back(a);
+			Molecules[0].inAtoms.push_back(a);
 		}
 
     // Bond list
@@ -153,7 +152,7 @@ Variables::readIonFile(char* infile){
 				if (loop==2) b.type=stoi(tmp)-1+Nbtypes;
 				loop++;
 			}
-      CG[0][0].bonds.push_back(b);
+      Molecules[0].bonds.push_back(b);
 		}
 
     // Angle list
@@ -167,7 +166,7 @@ Variables::readIonFile(char* infile){
 				if (loop==3) c.type=stoi(tmp)-1+Nctypes;
 				loop++;
 			}
-			CG[0][0].angles.push_back(c);
+			Molecules[0].angles.push_back(c);
 		}
 
     // Dihedral list
@@ -182,7 +181,7 @@ Variables::readIonFile(char* infile){
 				if (loop==4) d.type=stoi(tmp)-1+Ndtypes;
 				loop++;
 			}
-			CG[0][0].dihedrals.push_back(d);
+			Molecules[0].dihedrals.push_back(d);
 		}
 	}
 

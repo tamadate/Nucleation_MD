@@ -9,13 +9,13 @@
 /////////////////////////////////////////////////////////////////////
 void
 PotentialGasIon::compute(Variables *vars, FLAG *flags) {
-	Molecule *gases = vars->CG[1].data();
-	Atom *ions = vars->CG[0][0].inAtoms.data();
+	Molecule *mols = vars->Molecules.data();
+	Atom *ions = vars->Molecules[0].inAtoms.data();
 	vars->times.tgi-=omp_get_wtime();
 	for(auto &p : vars->pairs_gi){
 		int i=p.i;
 		int j=p.j;
-		for (auto &ag : gases[i].inAtoms){
+		for (auto &ag : mols[i].inAtoms){
 			double dx = ag.qx - ions[j].qx;
 			double dy = ag.qy - ions[j].qy;
 			double dz = ag.qz - ions[j].qz;
@@ -49,35 +49,52 @@ PotentialGasIon::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
-	Molecule *gases = vars->CG[1].data();
-	Molecule *vapors = vars->CG[2].data();
+	Molecule *mols = vars->Molecules.data();
 	vars->times.tvg-=omp_get_wtime();
-	for(auto &p : vars->pairs_gv){
+	for(auto &p : vars->pairsShort){
 		int i=p.i;
 		int j=p.j;
-		for (auto &ag : gases[i].inAtoms){
-			for (auto &av : vapors[j].inAtoms){
-				double dx = av.qx - ag.qx;
-				double dy = av.qy - ag.qy;
-				double dz = av.qz - ag.qz;
-				double rsq = (dx * dx + dy * dy + dz * dz);
-				double r2inv = 1/rsq;
-				int type1=ag.type;
-				int type2=av.type;
-				double r6inv = r2inv * r2inv * r2inv;
-				double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);
-				double force_pair = (force_lj)*r2inv;
-				av.fx += force_pair * dx;
-				av.fy += force_pair * dy;
-				av.fz += force_pair * dz;
-				ag.fx -= force_pair * dx;
-				ag.fy -= force_pair * dy;
-				ag.fz -= force_pair * dz;
-				if(flags->eflag) {
-					vars->Utotal.Uvg+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+		int UNION=vars->Region[i]|vars->Region[j];	// Region[i] union Region[j]
+		double w=mols[i].w*mols[j].w;
+		if((UNION&CG)==CG){
+			int type1=mols[i].type;
+			int type2=mols[j].type;
+			double force_lj = r6inv * (vars->pair_coeff_CG[type1][type2][0] * r6inv - vars->pair_coeff_CG[type1][type2][1]);
+			double force_pair = (force_lj)*r2inv*(1-w);
+			av.fx += force_pair * dx;
+			av.fy += force_pair * dy;
+			av.fz += force_pair * dz;
+			ag.fx -= force_pair * dx;
+			ag.fy -= force_pair * dy;
+			ag.fz -= force_pair * dz;
+			if(flags->eflag) {
+				vars->Utotal.Uvg+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+			}
+		}
+		if((UNION&AA)==AA){
+			for (auto &ag : mols[i].inAtoms){
+				for (auto &av : mols[j].inAtoms){
+					double dx = av.qx - ag.qx;
+					double dy = av.qy - ag.qy;
+					double dz = av.qz - ag.qz;
+					double rsq = (dx * dx + dy * dy + dz * dz);
+					double r2inv = 1/rsq;
+					double r6inv = r2inv * r2inv * r2inv;
+						int type1=ag.type;
+						int type2=av.type;
+						double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);
+						double force_pair = (force_lj)*r2inv*w;
+						av.fx += force_pair * dx;
+						av.fy += force_pair * dy;
+						av.fz += force_pair * dz;
+						ag.fx -= force_pair * dx;
+						ag.fy -= force_pair * dy;
+						ag.fz -= force_pair * dz;
+						if(flags->eflag) {
+							vars->Utotal.Uvg+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+						}
+					}
 				}
-					//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-					//	vars->totalVirial+=force_lj;
 			}
 		}
 	}
@@ -93,13 +110,12 @@ PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
-	Molecule *vapors = vars->CG[2].data();
-	const int is = vars->CG[0][0].inAtoms.size();
-	const int vin_size = vars->CG[2].size();
+	Molecule *mols = vars->Molecules.data();
 	vars->times.tvi-=omp_get_wtime();
-	for(int i=0;i<vin_size;i++){
-		for (auto &av : vapors[i].inAtoms){
-			for(auto &ai : vars->CG[0][0].inAtoms){
+	for(auto i : vars->MolID[2]){
+		if(vars->Region[i]==AACG) continue;
+		for (auto &av : mols[i].inAtoms){
+			for(auto &ai : vars->Molecules[0].inAtoms){
 				double dx = av.qx - ai.qx;
 				double dy = av.qy - ai.qy;
 				double dz = av.qz - ai.qz;
@@ -135,35 +151,38 @@ PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
-	Molecule *vapors = vars->CG[2].data();
-	const int vs = vars->pairs_vv.size();
+	Molecule *mols = vars->Molecules.data();
+	const int vs = vars->MolID[2].size();
 	vars->times.tvv-=omp_get_wtime();
-	for(int i=0;i<vs;i++){
-		Pair p=vars->pairs_vv[i];
-		for (auto &av1 : vapors[p.i].inAtoms){
-			for (auto &av2 : vapors[p.j].inAtoms){
-				double dx = av1.qx - av2.qx;
-				double dy = av1.qy - av2.qy;
-				double dz = av1.qz - av2.qz;
-				double rsq = (dx * dx + dy * dy + dz * dz);
-				double r2inv = 1/rsq;
-				int type1=av1.type;
-				int type2=av2.type;
-				double r6inv = r2inv * r2inv * r2inv;
-				double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);
-				double force_coul = qqrd2e * av1.charge * av2.charge * sqrt(r2inv);
-				double force_pair = (force_lj + force_coul)*r2inv;
-				av1.fx += force_pair * dx;
-				av1.fy += force_pair * dy;
-				av1.fz += force_pair * dz;
-				av2.fx -= force_pair * dx;
-				av2.fy -= force_pair * dy;
-				av2.fz -= force_pair * dz;
-				if(flags->eflag) {
-					vars->Utotal.Uvv+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-					vars->Utotal.Uvv+=force_coul;
+	for(int i=0;i<vs-1;i++){
+		double rv12=vars->distFromIon(mols[i]);
+		for(int j=i+1;j<vs;j++){
+			double rv22=vars->distFromIon(mols[j]);
+			for (auto &av1 : mols[i].inAtoms){
+				for (auto &av2 : mols[j].inAtoms){
+					double dx = av1.qx - av2.qx;
+					double dy = av1.qy - av2.qy;
+					double dz = av1.qz - av2.qz;
+					double rsq = (dx * dx + dy * dy + dz * dz);
+					double r2inv = 1/rsq;
+					int type1=av1.type;
+					int type2=av2.type;
+					double r6inv = r2inv * r2inv * r2inv;
+					double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);
+					double force_coul = qqrd2e * av1.charge * av2.charge * sqrt(r2inv);
+					double force_pair = (force_lj + force_coul)*r2inv;
+					av1.fx += force_pair * dx;
+					av1.fy += force_pair * dy;
+					av1.fz += force_pair * dz;
+					av2.fx -= force_pair * dx;
+					av2.fy -= force_pair * dy;
+					av2.fz -= force_pair * dz;
+					if(flags->eflag) {
+						vars->Utotal.Uvv+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+						vars->Utotal.Uvv+=force_coul;
+					}
+					//	vars->totalVirial+=force_lj;
 				}
-				//	vars->totalVirial+=force_lj;
 			}
 		}
 	}
@@ -216,12 +235,14 @@ PotentialIonDipole::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialGasGas::compute(Variables *vars, FLAG *flags) {
-	Molecule *gases = vars->CG[1].data();
+	Molecule *mols = vars->Molecules.data();
 	for(auto &p : vars->pairs_gg){
 		int i=p.i;
 		int j=p.j;
-		for (auto &ag1 : gases[i].inAtoms){
-			for (auto &ag2 : gases[j].inAtoms){
+		double rg12=vars->distFromIon(mols[i]);
+		double rg22=vars->distFromIon(mols[j]);
+		for (auto &ag1 : mols[i].inAtoms){
+			for (auto &ag2 : mols[j].inAtoms){
 				double dx = ag1.qx - ag2.qx;
 				double dy = ag1.qy - ag2.qy;
 				double dz = ag1.qz - ag2.qz;
@@ -255,7 +276,7 @@ PotentialGasGas::compute(Variables *vars, FLAG *flags) {
 /////////////////////////////////////////////////////////////////////
 void
 PotentialEfield::compute(Variables *vars, FLAG *flags) {
-    for (auto &a : vars->CG[0][0].inAtoms) {
+    for (auto &a : vars->Molecules[0].inAtoms) {
 		a.fx+=6.2665e-5*a.charge*Ecoeff[0];
 		a.fy+=6.2665e-5*a.charge*Ecoeff[1];
 		a.fz+=6.2665e-5*a.charge*Ecoeff[2];

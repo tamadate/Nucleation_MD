@@ -5,6 +5,9 @@
 #include "PhysicalProp.hpp"
 #include "flags.hpp"
 #include "boundary/MBdist.hpp"
+#define AA 00000001
+#define CG 00000010
+#define AACG 00000011
 //------------------------------------------------------------------------
 
 class MD {
@@ -64,7 +67,7 @@ class MD {
 	void forceCombine(void);
 
 //	pair list
-	void updateInOut(int molFlag);
+	void updateInOut(void);
 	void make_pair(void);
 	void makePairXX(int type1, int type2, int cut);
 	void make_pair_gasgas(void);
@@ -72,6 +75,7 @@ class MD {
 	void make_pair_gasvapor(void);
 	void make_pair_vaporion(void);
 	void make_pair_vaporvapor();
+	void make_pair_short(void);
 	void check_pairlist(void);
   void makeDiatomicProp_in(Molecule &gasOut);
 	void makePolyatomicProp_in(Molecule &vapOut);
@@ -86,6 +90,7 @@ class MD {
 	void boundary_scaling_gas_move(void);
 	void boundary_scaling_ion_move(void);
 	void boundary_scaling_vapor_move(void);
+	double weightFunc(double dr2);
 	int loop, loop_update;	/*	current fixing time(loop) and update fixing time(loop) of out_gas for multi-timestep	*/
 	double pre_ion[3];
 

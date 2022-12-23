@@ -39,8 +39,15 @@ const double SN2=107, TrefN2=273.0, myuN2=1.663e-5; // REF
 //------------------------------------------------------------------------
 
 /*******************Coeff.************************/
-const double Rinter=100;	// Radius of interaction area
-const double RI2=Rinter*Rinter;
+const double Rinter=100;	   // boundary of AA and CG models
+const double BoundL=10;     // Thickness of overlapping region
+const double BoundMergin=10;   // Mergin of overlapping region
+const double RAA=Rinter+BoundL;   // Mergin of overlapping region
+const double RAA2=RAA*RAA;
+const double RCG=Rinter-BoundL;   // Mergin of overlapping region
+const double RCG2=RCG*RCG;
+const double RI2=(Rinter+BoundL+BoundMergin)*(Rinter+BoundL+BoundMergin); // AA outside boundary radius
+const double RO2=(Rinter-BoundL-BoundMergin)*(Rinter-BoundL-BoundMergin); // CG hollow boundary radius
 const double cal=4187;
 const double qqrd2e=e*e/4.0/M_PI/e0*Nw*1e10/4184.0;
 const double Cpress=1e30/Nw*4184;

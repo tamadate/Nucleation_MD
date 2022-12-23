@@ -39,6 +39,7 @@ MD::MD(char* condfile, int calcNumber) {
 		takeOver();
 		//cout<<takeOverFile<<endl;
 	}
+
 	initialization_gas();	//Set initial positions & velocities for gas
   initialization_vapor();	//Set initial positions & velocities for vapor
 	analysis_ion();
@@ -48,5 +49,5 @@ MD::MD(char* condfile, int calcNumber) {
 
 	mbdist -> makeWeightedMB(pp->cgas,pp->mgas,T);
 	mbdistV -> makeWeightedMB(pp->cvapor,pp->mvapor,T);
-	
+
 }

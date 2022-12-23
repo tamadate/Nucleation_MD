@@ -57,7 +57,8 @@ struct Molecule {
 	double fx, fy, fz;
 	double mass;
 	int id;
-	int inFlag;
+	double w;
+	int type;
 	std::vector<Atom> inAtoms;
 	std::vector<Bond> bonds;
 	std::vector<Angle> angles;

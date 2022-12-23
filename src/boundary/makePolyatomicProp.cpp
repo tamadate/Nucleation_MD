@@ -69,7 +69,7 @@ MD::makePolyatomicProp_in(Molecule &vapOut){
 
 	sprintf(filepath, "vapor_in_%d.dat", int(calculation_number));
 	FILE*f=fopen(filepath, "a");
-	Molecule *ion=vars->CG[0].data();
+	Molecule *ion=vars->Molecules.data();
 	fprintf(f, "%d %e %e %e %e %e %e %e\n", totalVaporIn,itime*dt,vapOut.qx-ion[0].qx,vapOut.qy-ion[0].qy,vapOut.qz-ion[0].qz,\
 	vapOut.px-ion[0].px,vapOut.py-ion[0].py,vapOut.pz-ion[0].pz);
 	fclose(f);

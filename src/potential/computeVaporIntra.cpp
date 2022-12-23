@@ -10,6 +10,7 @@
 /**********************************Force calculation******************************************/
 void
 PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
+	Molecule *mols = vars->Molecules.data();
 	Bond_type *btypes = vars->btypes.data();
 	Angle_type *ctypes = vars->ctypes.data();
 	Dihedral_type *dtypes = vars->dtypes.data();
@@ -29,39 +30,40 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 	double a33,a13,a23;
 	double s2,cx,cy,cz,cmag,dx,phi,si,siinv,sin2;
 	vars->times.tvap-=omp_get_wtime();
-	for(auto &mol : vars->CG[2]){
-		if(mol.inFlag==0) continue;
-		for (auto &b : mol.bonds) {
+	for(auto i : vars->MolID[2]){
+		if(mols[i].inFlag==0) continue;
+		double DR2=vars->distFromIon(mols[i]);
+		for (auto &b : mols[i].bonds) {
 			int i=b.atom1, j=b.atom2, type=(b.type);
-			dx1 = mol.inAtoms[i].qx - mol.inAtoms[j].qx;
-			dy1 = mol.inAtoms[i].qy - mol.inAtoms[j].qy;
-			dz1 = mol.inAtoms[i].qz - mol.inAtoms[j].qz;
+			dx1 = mols[i].inAtoms[i].qx - mols[i].inAtoms[j].qx;
+			dy1 = mols[i].inAtoms[i].qy - mols[i].inAtoms[j].qy;
+			dz1 = mols[i].inAtoms[i].qz - mols[i].inAtoms[j].qz;
 			rsq1 = (dx1 * dx1 + dy1 * dy1 + dz1 * dz1);
 			r1 = sqrt(rsq1);
 			double dr = (r1-btypes[type].coeff[1]);
 			double rk = btypes[type].coeff[0] * dr;
 			double force_bond_harmonic;
 			force_bond_harmonic = -2.0*rk/r1;
-			mol.inAtoms[i].fx += force_bond_harmonic * dx1;
-			mol.inAtoms[i].fy += force_bond_harmonic * dy1;
-			mol.inAtoms[i].fz += force_bond_harmonic * dz1;
-			mol.inAtoms[j].fx -= force_bond_harmonic * dx1;
-			mol.inAtoms[j].fy -= force_bond_harmonic * dy1;
-			mol.inAtoms[j].fz -= force_bond_harmonic * dz1;
+			mols[i].inAtoms[i].fx += force_bond_harmonic * dx1;
+			mols[i].inAtoms[i].fy += force_bond_harmonic * dy1;
+			mols[i].inAtoms[i].fz += force_bond_harmonic * dz1;
+			mols[i].inAtoms[j].fx -= force_bond_harmonic * dx1;
+			mols[i].inAtoms[j].fy -= force_bond_harmonic * dy1;
+			mols[i].inAtoms[j].fz -= force_bond_harmonic * dz1;
 			if(flags->eflag) vars->Utotal.Uvap+=rk*dr;
 		}
 
-		for (auto &c : mol.angles) {
+		for (auto &c : mols[i].angles) {
 		    int i, j, k, type;
 			i=c.atom1, j=c.atom2, k=c.atom3, type=c.type;
-			dx1 = mol.inAtoms[i].qx - mol.inAtoms[j].qx;
-			dy1 = mol.inAtoms[i].qy - mol.inAtoms[j].qy;
-			dz1 = mol.inAtoms[i].qz - mol.inAtoms[j].qz;
+			dx1 = mols[i].inAtoms[i].qx - mols[i].inAtoms[j].qx;
+			dy1 = mols[i].inAtoms[i].qy - mols[i].inAtoms[j].qy;
+			dz1 = mols[i].inAtoms[i].qz - mols[i].inAtoms[j].qz;
 			rsq1 = (dx1 * dx1 + dy1 * dy1 + dz1 * dz1);
 			r1 = sqrt(rsq1);
-			dx2 = mol.inAtoms[k].qx - mol.inAtoms[j].qx;
-			dy2 = mol.inAtoms[k].qy - mol.inAtoms[j].qy;
-			dz2 = mol.inAtoms[k].qz - mol.inAtoms[j].qz;
+			dx2 = mols[i].inAtoms[k].qx - mols[i].inAtoms[j].qx;
+			dy2 = mols[i].inAtoms[k].qy - mols[i].inAtoms[j].qy;
+			dz2 = mols[i].inAtoms[k].qz - mols[i].inAtoms[j].qz;
 			rsq2 = (dx2 * dx2 + dy2 * dy2 + dz2 * dz2);
 			r2 = sqrt(rsq2);
 			C = dx1*dx2 + dy1*dy2 + dz1*dz2;
@@ -79,36 +81,36 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			f3[0] = a22*dx2 + a12*dx1;
 			f3[1] = a22*dy2 + a12*dy1;
 			f3[2] = a22*dz2 + a12*dz1;
-			mol.inAtoms[i].fx += f1[0];
-			mol.inAtoms[i].fy += f1[1];
-			mol.inAtoms[i].fz += f1[2];
-			mol.inAtoms[j].fx -= f1[0] + f3[0];
-			mol.inAtoms[j].fy -= f1[1] + f3[1];
-			mol.inAtoms[j].fz -= f1[2] + f3[2];
-			mol.inAtoms[k].fx += f3[0];
-			mol.inAtoms[k].fy += f3[1];
-			mol.inAtoms[k].fz += f3[2];
+			mols[i].inAtoms[i].fx += f1[0];
+			mols[i].inAtoms[i].fy += f1[1];
+			mols[i].inAtoms[i].fz += f1[2];
+			mols[i].inAtoms[j].fx -= f1[0] + f3[0];
+			mols[i].inAtoms[j].fy -= f1[1] + f3[1];
+			mols[i].inAtoms[j].fz -= f1[2] + f3[2];
+			mols[i].inAtoms[k].fx += f3[0];
+			mols[i].inAtoms[k].fy += f3[1];
+			mols[i].inAtoms[k].fz += f3[2];
 			if (flags->eflag) vars->Utotal.Uvap+= tk*dtheta;
 		}
 
 
-		for (auto &d : mol.dihedrals) {
+		for (auto &d : mols[i].dihedrals) {
 			int i=d.atom1, j=d.atom2, k=d.atom3, l=d.atom4, type=d.type;
 			// 1st bond
-			vb1x = mol.inAtoms[i].qx - mol.inAtoms[j].qx;
-			vb1y = mol.inAtoms[i].qy - mol.inAtoms[j].qy;
-			vb1z = mol.inAtoms[i].qz - mol.inAtoms[j].qz;
+			vb1x = mols[i].inAtoms[i].qx - mols[i].inAtoms[j].qx;
+			vb1y = mols[i].inAtoms[i].qy - mols[i].inAtoms[j].qy;
+			vb1z = mols[i].inAtoms[i].qz - mols[i].inAtoms[j].qz;
 			// 2nd bond
-			vb2x = mol.inAtoms[k].qx - mol.inAtoms[j].qx;
-			vb2y = mol.inAtoms[k].qy - mol.inAtoms[j].qy;
-			vb2z = mol.inAtoms[k].qz - mol.inAtoms[j].qz;
+			vb2x = mols[i].inAtoms[k].qx - mols[i].inAtoms[j].qx;
+			vb2y = mols[i].inAtoms[k].qy - mols[i].inAtoms[j].qy;
+			vb2z = mols[i].inAtoms[k].qz - mols[i].inAtoms[j].qz;
 			vb2xm = -vb2x;
 			vb2ym = -vb2y;
 			vb2zm = -vb2z;
 			// 3rd bond
-			vb3x = mol.inAtoms[l].qx - mol.inAtoms[k].qx;
-			vb3y = mol.inAtoms[l].qy - mol.inAtoms[k].qy;
-			vb3z = mol.inAtoms[l].qz - mol.inAtoms[k].qz;
+			vb3x = mols[i].inAtoms[l].qx - mols[i].inAtoms[k].qx;
+			vb3y = mols[i].inAtoms[l].qy - mols[i].inAtoms[k].qy;
+			vb3z = mols[i].inAtoms[l].qz - mols[i].inAtoms[k].qz;
 
 			ax = vb1y*vb2zm - vb1z*vb2ym;
 			ay = vb1z*vb2xm - vb1x*vb2zm;
@@ -183,18 +185,18 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 			ff3[1] = -sy2 - ff4[1];
 			ff3[2] = -sz2 - ff4[2];
 
-			mol.inAtoms[i].fx += ff1[0];
-			mol.inAtoms[i].fy += ff1[1];
-			mol.inAtoms[i].fz += ff1[2];
-			mol.inAtoms[j].fx += ff2[0];
-			mol.inAtoms[j].fy += ff2[1];
-			mol.inAtoms[j].fz += ff2[2];
-			mol.inAtoms[k].fx += ff3[0];
-			mol.inAtoms[k].fy += ff3[1];
-			mol.inAtoms[k].fz += ff3[2];
-			mol.inAtoms[l].fx += ff4[0];
-			mol.inAtoms[l].fy += ff4[1];
-			mol.inAtoms[l].fz += ff4[2];
+			mols[i].inAtoms[i].fx += ff1[0];
+			mols[i].inAtoms[i].fy += ff1[1];
+			mols[i].inAtoms[i].fz += ff1[2];
+			mols[i].inAtoms[j].fx += ff2[0];
+			mols[i].inAtoms[j].fy += ff2[1];
+			mols[i].inAtoms[j].fz += ff2[2];
+			mols[i].inAtoms[k].fx += ff3[0];
+			mols[i].inAtoms[k].fy += ff3[1];
+			mols[i].inAtoms[k].fz += ff3[2];
+			mols[i].inAtoms[l].fx += ff4[0];
+			mols[i].inAtoms[l].fy += ff4[1];
+			mols[i].inAtoms[l].fz += ff4[2];
 
 		}
 	}

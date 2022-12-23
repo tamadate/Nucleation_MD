@@ -3,8 +3,14 @@
 Variables::Variables(void) {
   time = 0.0;
   Utotal.Uion=Utotal.Ugas=Utotal.Uvap=Utotal.Ugi=Utotal.Ugg=Utotal.Uvg=Utotal.Uvi=Utotal.Uvv=0;
-	CG.resize(3);		// ion, gas, vapor
-	CG[0].resize(1);// ion, gas, vapor
+
+  Molecule mol;
+  mol.qx=mol.qy=mol.qz;
+  mol.px=mol.py=mol.pz;
+  mol.fx=mol.fy=mol.fz;
+  mol.inFlag=0;
+  MolID.resize(3);
+  MolID[0].push_back(0);
 }
 
 
@@ -14,6 +20,7 @@ Variables::read_initial(char* ionFile, char* vaporFile) {
   int Ntype_vapor=readVaporFile(vaporFile);
   setBMHPotential();
   setCrossPotentials(Ntype_ion,Ntype_vapor);
+  setInitialRegion();
   ionRotation();
 }
 
@@ -37,6 +44,19 @@ Variables::setCrossPotentials(int Nion,int Nvapor){
       pair_coeff[i][j][1]=24 * epu*pow(sigma,6.0);
     }
   }
+
+  double epu11=0.14397; // gas CG potential
+  double sigma11=3.798; // gas CG potential
+  double epu22=0.14397; // vapor CG potential
+  double sigma22=3.798; // vapor CG potential
+  double epu22=sqrt(epu11*epu22);
+  double sigma22=(sigma11+sigma11)*0.5;
+  pair_coeff_CG[1][1][0]= 48 * epu11*pow(sigma11,12.0);
+  pair_coeff_CG[1][1][1]= 24 * epu11*pow(sigma11,6.0);
+  pair_coeff_CG[2][2][0]= 48 * epu22*pow(sigma22,12.0);
+  pair_coeff_CG[2][2][1]= 24 * epu22*pow(sigma22,6.0);
+  pair_coeff_CG[1][2][0]=pair_coeff_CG[2][1][1]= 48 * epu12*pow(sigma12,12.0);
+  pair_coeff_CG[1][2][1]=pair_coeff_CG[2][1][1]= 24 * epu12*pow(sigma12,6.0);
 }
 
 void
@@ -75,8 +95,8 @@ Variables::ionRotation(void){
   random_device seed;
 	double A,B,C,x,y,z;
 	A=seed(),B=seed(),C=seed();
-	for(auto &a : CG[0][0].inAtoms) {x=a.qx,y=a.qy,z=a.qz; ROTATION(a.qx,a.qy,a.qz,A,B,C,x,y,z);}
-    int is=CG[0][0].inAtoms.size();
+	for(auto &a : Molecules[0].inAtoms) {x=a.qx,y=a.qy,z=a.qz; ROTATION(a.qx,a.qy,a.qz,A,B,C,x,y,z);}
+    int is=Molecules[0].inAtoms.size();
     for(int i=0;i<is-1;i++) {
         for(int j=i+1;j<is;j++){
             int flag=0;
@@ -104,11 +124,28 @@ void
 Variables::ionInitialVelocity(double T) {
 	random_device seed;
 	default_random_engine engine(seed());
-  for(auto &a : CG[0][0].inAtoms) {
+  for(auto &a : Molecules[0].inAtoms) {
     double matom=a.mass*1e-3/Nw;
     normal_distribution<> dist(0.0, sqrt(kb*T/matom));
 		a.px=dist(engine)*1e-5;
 		a.py=dist(engine)*1e-5;
 		a.pz=dist(engine)*1e-5;
 	}
+}
+
+void
+Variables::setInitialRegion(void) {
+  int Nmol=Molecules.size();
+  Region.resize(Nmol);
+  for (auto &mols : Molecules){
+    double dy=mols[i].qy-mols[0].qy;
+    double dx=mols[i].qx-mols[0].qx;
+    double dz=mols[i].qz-mols[0].qz;
+    double dr2=dx*dx+dy*dy+dz*dz;
+    if(dr2<RO2) Region[i]=00000001;
+    else {
+      if(dr2<RI2) Region[i]=00000011;
+      else Region[i]=00000010;
+    }
+  }
 }
