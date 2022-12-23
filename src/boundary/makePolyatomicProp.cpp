@@ -34,7 +34,6 @@ MD::makeDiatomicProp_in(Molecule &gasOut){
 		ag.pz+=gasOut.pz;
   }
 	gasOut.inAtoms=at;
-	gasOut.inFlag=1;
 }
 
 
@@ -65,7 +64,6 @@ MD::makePolyatomicProp_in(Molecule &vapOut){
 	totalVaporIn++;
 	vapOut.id=totalVaporIn;
 	vapOut.inAtoms=at;
-	vapOut.inFlag=1;
 
 	sprintf(filepath, "vapor_in_%d.dat", int(calculation_number));
 	FILE*f=fopen(filepath, "a");

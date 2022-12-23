@@ -18,6 +18,9 @@
 #include "struct.hpp"
 #include "flags.hpp"
 //#pragma GCC target("avx2")
+#define AA 00000001
+#define CG 00000010
+#define AACG 00000011
 
 using namespace std;
 //------------------------------------------------------------------------
@@ -46,8 +49,8 @@ const double RAA=Rinter+BoundL;   // Mergin of overlapping region
 const double RAA2=RAA*RAA;
 const double RCG=Rinter-BoundL;   // Mergin of overlapping region
 const double RCG2=RCG*RCG;
-const double RI2=(Rinter+BoundL+BoundMergin)*(Rinter+BoundL+BoundMergin); // AA outside boundary radius
-const double RO2=(Rinter-BoundL-BoundMergin)*(Rinter-BoundL-BoundMergin); // CG hollow boundary radius
+const double RI2=(RAA+BoundMergin)*(RAA+BoundMergin); // AA outside boundary radius
+const double RO2=(RCG-BoundMergin)*(RCG-BoundMergin); // CG hollow boundary radius
 const double cal=4187;
 const double qqrd2e=e*e/4.0/M_PI/e0*Nw*1e10/4184.0;
 const double Cpress=1e30/Nw*4184;

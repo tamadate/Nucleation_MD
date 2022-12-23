@@ -31,7 +31,7 @@ PotentialVaporIntra::compute(Variables *vars, FLAG *flags) {
 	double s2,cx,cy,cz,cmag,dx,phi,si,siinv,sin2;
 	vars->times.tvap-=omp_get_wtime();
 	for(auto i : vars->MolID[2]){
-		if(mols[i].inFlag==0) continue;
+		if(vars->Region[i]==CG) continue;
 		double DR2=vars->distFromIon(mols[i]);
 		for (auto &b : mols[i].bonds) {
 			int i=b.atom1, j=b.atom2, type=(b.type);

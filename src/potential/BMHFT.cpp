@@ -1,7 +1,8 @@
 #include "potential.hpp"
 /*########################################################################################
 
------compute intramolecular interaction-----
+Compute ion intramolecular interaction _ Born-Mayer-Huggins-Fumi-Tosi
+- Currently, NaCl is only avairable particle
 
 #######################################################################################*/
 

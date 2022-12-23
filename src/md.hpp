@@ -5,9 +5,7 @@
 #include "PhysicalProp.hpp"
 #include "flags.hpp"
 #include "boundary/MBdist.hpp"
-#define AA 00000001
-#define CG 00000010
-#define AACG 00000011
+
 //------------------------------------------------------------------------
 
 class MD {
@@ -71,11 +69,11 @@ class MD {
 	void make_pair(void);
 	void makePairXX(int type1, int type2, int cut);
 	void make_pair_gasgas(void);
-	void make_pair_gasion(void);
+	void make_pairLJ(void);
 	void make_pair_gasvapor(void);
 	void make_pair_vaporion(void);
-	void make_pair_vaporvapor();
-	void make_pair_short(void);
+	void make_pairsLJCoulHybrid();
+	void make_pairLJHybrid(void);
 	void check_pairlist(void);
   void makeDiatomicProp_in(Molecule &gasOut);
 	void makePolyatomicProp_in(Molecule &vapOut);

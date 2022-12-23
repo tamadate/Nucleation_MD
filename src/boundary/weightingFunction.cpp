@@ -1,6 +1,6 @@
 #include "../md.hpp"
 
-void
+double
 MD:: weightFunc(double dr2){
   double returnValue=0;
   if(dr2<RCG2) {

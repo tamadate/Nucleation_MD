@@ -1,5 +1,5 @@
 NAME        = ../../test2/myprogram
-SRCS        = ./src/*cpp ./src/potential/*cpp ./src/boundary/*cpp ./src/analysis/*cpp ./src/initialization/*cpp ./src/output/*cpp ./src/thermostat/*cpp
+SRCS        = ./src/*cpp ./src/*/*cpp ./src/*/*/*cpp
 OBJS        = $(SRCS:.cpp=.o)
 CXX         = g++
 CXXFLAGS    = -std=c++11 -fopenmp

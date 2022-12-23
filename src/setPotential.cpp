@@ -1,7 +1,6 @@
-//------------------------------------------------------------------------
-#include "../md.hpp"
-//------------------------------------------------------------------------
 
+#include "md.hpp"
+#include "potential/potential.hpp"
 
 void
 MD::setPotential(FLAG *flags,int mode){
@@ -36,7 +35,7 @@ MD::setPotential(FLAG *flags,int mode){
 //ion-gas
 	flag=0;
 	if(flags->force_lj && mode) {
-		InterInter.push_back(new PotentialGasIon());
+		InterInter.push_back(new PotentialLJ());
 		cout<<"|\tL-J\t";
 		flag=1;
 	}
@@ -54,20 +53,10 @@ MD::setPotential(FLAG *flags,int mode){
 //gas-ion(skip)
 	cout<<"gas\t|\t-\t";
 
-//gas-gas
-	flag=0;
-	if(flags->inter_gg) {
-		InterInter.push_back(new PotentialGasGas());
-		cout<<"|\tL-J\t";
-		flag=1;
-	}
-	if(flag==0)	cout<<"|\tNO\t";
-
-
 //gas-vapor
 	flag=0;
 	if(flags->inter_vg && mode) {
-		InterInter.push_back(new PotentialVaporGas());
+		InterInter.push_back(new PotentialLJHybrid());
 		cout<<"|\tL-J\t|"<<endl;
 		flag=1;
 	}
@@ -81,7 +70,7 @@ MD::setPotential(FLAG *flags,int mode){
 //vapor-vapor
 	flag=0;
 	if(flags->inter_vv && mode) {
-		InterInter.push_back(new PotentialVaporVapor());
+		InterInter.push_back(new PotentialLJCoulHybrid());
 		cout<<"|\tL-J-C\t|"<<endl;
 		flag=1;
 	}

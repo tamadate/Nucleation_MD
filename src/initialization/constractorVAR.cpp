@@ -8,7 +8,6 @@ Variables::Variables(void) {
   mol.qx=mol.qy=mol.qz;
   mol.px=mol.py=mol.pz;
   mol.fx=mol.fy=mol.fz;
-  mol.inFlag=0;
   MolID.resize(3);
   MolID[0].push_back(0);
 }
@@ -49,8 +48,8 @@ Variables::setCrossPotentials(int Nion,int Nvapor){
   double sigma11=3.798; // gas CG potential
   double epu22=0.14397; // vapor CG potential
   double sigma22=3.798; // vapor CG potential
-  double epu22=sqrt(epu11*epu22);
-  double sigma22=(sigma11+sigma11)*0.5;
+  double epu12=sqrt(epu11*epu22);
+  double sigma12=(sigma11+sigma11)*0.5;
   pair_coeff_CG[1][1][0]= 48 * epu11*pow(sigma11,12.0);
   pair_coeff_CG[1][1][1]= 24 * epu11*pow(sigma11,6.0);
   pair_coeff_CG[2][2][0]= 48 * epu22*pow(sigma22,12.0);
@@ -137,15 +136,17 @@ void
 Variables::setInitialRegion(void) {
   int Nmol=Molecules.size();
   Region.resize(Nmol);
-  for (auto &mols : Molecules){
-    double dy=mols[i].qy-mols[0].qy;
-    double dx=mols[i].qx-mols[0].qx;
-    double dz=mols[i].qz-mols[0].qz;
+  int i=0;
+  for (auto &mol : Molecules){
+    double dx=mol.qx-Molecules[0].qx;
+    double dy=mol.qy-Molecules[0].qy;
+    double dz=mol.qz-Molecules[0].qz;
     double dr2=dx*dx+dy*dy+dz*dz;
     if(dr2<RO2) Region[i]=00000001;
     else {
       if(dr2<RI2) Region[i]=00000011;
       else Region[i]=00000010;
     }
+    i++;
   }
 }
