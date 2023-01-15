@@ -149,10 +149,11 @@ class plot:
         #self.axs.scatter(press,datas.T[3]*datas.T[5],color = "black")
         #self.axs.scatter(press,datas.T[4]*datas.T[5],color = "red")
         K0=(datas.T[3][0]+datas.T[4][0])*0.5
-        self.axs.scatter(press,datas.T[3]/K0,color = "black")
-        self.axs.scatter(press,datas.T[4]/K0,color = "red")
-        self.axs.scatter(exp[0],exp[1],facecolor="none",edgecolor="blue",marker="^")
+        self.axs.scatter(press,datas.T[3]/K0,color = "black",label="MSD")
+        self.axs.scatter(press,datas.T[4]/K0,color = "red",label="VACF")
+        self.axs.scatter(exp[0],exp[1],facecolor="none",edgecolor="blue",marker="^",label="Experiment")
         self.axs.set_xlim(-10,300)
+        self.axs.legend()
 
         plt.savefig(str(directory)+"diffusionSummary.png", dpi=1000)
         plt.show()
