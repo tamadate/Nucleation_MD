@@ -161,6 +161,43 @@ class cluster:
 		f_FM=self.con.delta2*np.pi*self.con.c*C	# vapor flux into the interaction sphere in free molecular limit [1/s]
 		print ("f_FM="+str(f_FM*1e-9)+"[1/ns]\tf_sim="+str(f_sim*1e-9)+"[1/ns]")
 
+	def evaporationRate(self):
+		timeEvap=np.zeros(0)
+		psim=np.zeros(self.con.Nmax)
+		for i in np.arange(self.con.pal):
+			if(np.isin(i,self.con.error)):
+				continue
+			I=self.con.I+i
+
+			## Reading vapor_in file
+		    ## column[0]="vapor id" column[1]="entering time, tin"
+			filePath=self.con.directory+"vapor_in_"+str(I)+".dat"
+			if(os.stat(filePath).st_size == 0):	# if the file is empty
+				continue
+			inVapor=np.loadtxt(filePath)
+			if(np.size(inVapor)<9):
+				if(inVapor[1]>self.con.tEND*1e15): # ignore tin>tend
+					continue
+				inVapor=np.array([inVapor])
+			else:
+				negs=np.where((inVapor[:,1]>self.con.tEND*1e15))
+				inVapor=np.delete(inVapor,negs,axis=0)
+
+			## Reading vapor_out file
+		    ## column[0]="vapor id" column[1]="leaving time, tin"
+			outVapor=np.loadtxt(self.con.directory+"vapor_out_"+str(I)+".dat")
+			if(np.size(outVapor)<9):
+				if(outVapor[1]>self.con.tEND*1e15): # ignore tout>tend
+					continue
+				outVapor=np.array([outVapor])
+			else:
+				negs=np.where((outVapor.T[1]>self.con.tEND*1e15))
+				outVapor=np.delete(outVapor,negs,axis=0)
+			for j in np.arange(np.size(outVapor.T[1])-1):
+				timeEvap=np.append(timeEvap,outVapor.T[1][j+1]-outVapor.T[1][j])
+			
+		self.plot.plotEvapTimeDist(timeEvap,self.con.figOutput)
+
 
 	def compute(self):
 		self.Upot()

@@ -94,6 +94,22 @@ class plot:
             plt.savefig(str(self.directory)+"stickTimeDist.png", dpi=1000)
         plt.show()
 
+    def plotEvapTimeDist(self,tss,figOutput):
+        self.pltNormal()
+        fig, axs = plt.subplots(1,1,figsize=(5,5))
+        self.axNormal(axs)
+        negs=np.where(tss<=0)
+        axs.set_xlabel("Logarithm of time [-]",fontsize=self.labelSize)
+        axs.set_ylabel("Number of event [-]",fontsize=self.labelSize)
+        #axs.set_yscale("log")
+        axs.hist(np.log10(np.delete(tss,negs)),alpha=0.3,bins=50,label="$\it {t}$$_{sim}$",color="blue")
+        ymin,ymax=axs.get_ylim()
+        axs.text(-10.5, ymax*0.8, r"$t_s$ = "+'{:.3f}'.format(np.average(np.delete(tss,negs))*1e9)+" ns", fontsize = 10)
+        fig.tight_layout()
+        if(figOutput):
+            plt.savefig(str(self.directory)+"evapTimeDist.png", dpi=1000)
+        plt.show()
+
     #-----------------------------------------------------------------------------#
     def plotStickVaporDist(self,nv,ppoi,psim,Nbase,figOutput):
         self.pltNormal()
@@ -142,21 +158,6 @@ class plot:
             plt.savefig(fileName, dpi=1000)
         plt.show()
 
-    def plotMobilityShift(self,press,datas,directory,exp):
-        self.axs.set_xlabel("Vapor pressure [Pa]",fontsize=self.labelSize)
-        #self.axs.set_ylabel(r"Normalized mobility, $Z_p/Z_{p,0}$ [-]",fontsize=self.labelSize)
-        self.axs.set_ylabel(r"Mobility shift, $Z_p/Z_{p,0}$ [-]",fontsize=self.labelSize)
-        #self.axs.scatter(press,datas.T[3]*datas.T[5],color = "black")
-        #self.axs.scatter(press,datas.T[4]*datas.T[5],color = "red")
-        K0=(datas.T[3][0]+datas.T[4][0])*0.5
-        self.axs.scatter(press,datas.T[3]/K0,color = "black",label="MSD")
-        self.axs.scatter(press,datas.T[4]/K0,color = "red",label="VACF")
-        self.axs.scatter(exp[0],exp[1],facecolor="none",edgecolor="blue",marker="^",label="Experiment")
-        self.axs.set_xlim(-10,300)
-        self.axs.legend()
-
-        plt.savefig(str(directory)+"diffusionSummary.png", dpi=1000)
-        plt.show()
 
     def plotStickLocation(self,vaporIDstr,dist,aminoNames,distAmino,directory):
         self.axs.flat[0].bar(vaporIDstr,dist/np.sum(dist))

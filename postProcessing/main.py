@@ -35,10 +35,11 @@ error.errorCheck(con)
 clu=cluster.cluster(con)
 #clu.compute()
 clu.Upot()
+clu.evaporationRate()
 #print(clu.con.error)
 
 #diff=diffusionCoeff.diffusionCoeff(con)
 #diff.compute()
 
-stk=stickPosition.stickPosition(con)
-stk.compute()
+#stk=stickPosition.stickPosition(con)
+#stk.compute()
