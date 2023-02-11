@@ -8,11 +8,6 @@ Variables::atomGas(int gastype) {
 	a.type=gastype;
 	a.px=a.py=a.pz=a.fx=a.fy=a.fz=a.charge=a.ix=a.iy=a.iz=0;
 
-  for (int thread=0;thread<Nth;thread++){
-    a.fxMP.push_back(0);
-    a.fyMP.push_back(0);
-    a.fzMP.push_back(0);
-  }
 
 
 	if(gastype==1){

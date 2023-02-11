@@ -42,3 +42,5 @@ class stickPosition:
 				distAmino[np.where(aminoNames==amino[i])]+=N
 
 		self.plot.plotStickLocation(vaporIDstr,dist,aminoNames,distAmino,self.con.directory)
+		np.savetxt(self.con.directory+"distAmino.dat",distAmino)
+		np.savetxt(self.con.directory+"distHydrogen.dat",dist)

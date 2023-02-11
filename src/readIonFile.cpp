@@ -108,11 +108,6 @@ Variables::readIonFile(char* infile){
 			Atom a;
 			int loop=0;
 			a.fx=a.fy=a.fz=a.px=a.py=a.pz=0;
-			for (int thread=0;thread<Nth;thread++){
-				a.fxMP.push_back(0);
-				a.fyMP.push_back(0);
-				a.fzMP.push_back(0);
-			}
 			while(getline(stream,tmp,'\t')) {
 				if (loop==0) a.id=stoi(tmp);
 				if (loop==1) {

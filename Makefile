@@ -1,4 +1,4 @@
-NAME        = ../../test2/myprogram
+NAME        = MD.out
 SRCS        = ./src/*cpp
 OBJS        = $(SRCS:.cpp=.o)
 CXX         = g++

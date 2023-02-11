@@ -12,9 +12,7 @@ Potential::compute(Variables *vars, FLAG *flags){
 	Atom *ions = vars->ions.data();
 	vars->times.tion-=omp_get_wtime();
 	int ipsize=vars->ion_pairs.size();
-	#pragma omp parallel for
 	for (int ip=0;ip<ipsize;ip++){
-		int nth=omp_get_thread_num();
 		int i=vars->ion_pairs[ip].i;
 		int j=vars->ion_pairs[ip].j;
 		double dx = ions[i].qx - ions[j].qx;
@@ -28,15 +26,15 @@ Potential::compute(Variables *vars, FLAG *flags){
 		double force_lj = r6inv * (vars->pair_coeff[type1][type2][0] * r6inv - vars->pair_coeff[type1][type2][1]);
 		double force_coul = qqrd2e * ions[i].charge * ions[j].charge * sqrt(r2inv);
 		double force_pair = (force_lj + force_coul)*r2inv;
-		ions[i].fxMP[nth] += force_pair * dx;
-		ions[i].fyMP[nth] += force_pair * dy;
-		ions[i].fzMP[nth] += force_pair * dz;
-		ions[j].fxMP[nth] -= force_pair * dx;
-		ions[j].fyMP[nth] -= force_pair * dy;
-		ions[j].fzMP[nth] -= force_pair * dz;
+		ions[i].fx += force_pair * dx;
+		ions[i].fy += force_pair * dy;
+		ions[i].fz += force_pair * dz;
+		ions[j].fx -= force_pair * dx;
+		ions[j].fy -= force_pair * dy;
+		ions[j].fz -= force_pair * dz;
 		if(flags->eflag) {
-			vars->U_MP[nth].Uion+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-			vars->U_MP[nth].Uion+=force_coul;
+			vars->Utotal.Uion+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+			vars->Utotal.Uion+=force_coul;
 		}
 /*		if(flags->vflag){
 			vars->totalVirial+=force_lj+force_coul;

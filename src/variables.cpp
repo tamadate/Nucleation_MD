@@ -13,7 +13,6 @@ Variables::Variables(void) {
   for (int nth=0;nth<Nth;nth++){
     Potentials Us;
     Us.Uion=Us.Ugas=Us.Uvap=Us.Ugi=Us.Ugg=Us.Uvg=Us.Uvi=Us.Uvv=0;
-    U_MP.push_back(Us);
   }
 }
 

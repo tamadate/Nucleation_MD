@@ -24,7 +24,6 @@ MD::make_pair(void){
 	Molecule *gases = vars->gases.data();
 	double vmax2 = 0.0;
 	int gos=vars->gas_out.size();
-	//#pragma omp parallel for
 	for (auto &a : vars->gas_out) {
 		double px=gases[a].px;
 		double py=gases[a].py;
@@ -215,13 +214,11 @@ MD::check_pairlist(void){
 		Molecule *gases = vars->gases.data();
 		Molecule *vapors = vars->vapors.data();
 		boundary_scaling_ion_move();
-		//#pragma omp parallel for
 		for (auto &i : vars->gas_out) {
         gases[i].qx += gases[i].px*dt*loop;
         gases[i].qy += gases[i].py*dt*loop;
         gases[i].qz += gases[i].pz*dt*loop;
 		}
-		//#pragma omp parallel for
 		for (auto &i : vars->vapor_out) {
         vapors[i].qx += vapors[i].px*dt*loop;
         vapors[i].qy += vapors[i].py*dt*loop;

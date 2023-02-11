@@ -41,7 +41,7 @@ MD::MD(char* condfile, int calcNumber) {
 
 	setPotential(flags,1);
 	initialization_gas();	//Set initial positions & velocities for gas
-  initialization_vapor();	//Set initial positions & velocities for vapor
+  	initialization_vapor();	//Set initial positions & velocities for vapor
 	analysis_ion();
 	make_pair();
 	margin_length = MARGIN;

@@ -5,6 +5,7 @@
 #include "PhysicalProp.hpp"
 #include "flags.hpp"
 #include "MBdist.hpp"
+#include "rigid.hpp"
 //------------------------------------------------------------------------
 
 class MD {
@@ -52,6 +53,7 @@ class MD {
 	FLAG *flags;
 	MBdist *mbdist;
 	MBdist *mbdistV;
+	Rigid *rigid;
 
 //	vectors for pairlist
 	double margin_length;
@@ -65,9 +67,8 @@ class MD {
 	void verlet(void);
 	void update_position(void);
 	void velocity_calculation(void);
-  void update_position_constrained(void);
-  void update_velocity_constrained(void);
-	void forceCombine(void);
+	void update_position_constrained(void);
+	void update_velocity_constrained(void);
 
 //	pair list
 	void update_vapor_in(void);

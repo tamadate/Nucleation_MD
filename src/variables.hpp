@@ -9,37 +9,22 @@ public:
 	~Variables(void){};
 
 	/*variables*/
-  int Nth;
+  	int Nth;
 	std::vector<Atom> ions;
 	std::vector<Molecule> gases;
-  std::vector<Molecule> vapors;
+  	std::vector<Molecule> vapors;
 	double time;
 	double zeta_ion;
 	double zeta_gas;
 
 	Potentials Utotal;
-  std::vector<Potentials> U_MP;
 	Times times;
 
 	void Uzero(void)	{
 		Utotal.Uion=Utotal.Ugas=Utotal.Uvap=Utotal.Ugi=Utotal.Ugg=Utotal.Uvg=Utotal.Uvi=Utotal.Uvv=0;
-		for (int nth=0;nth<Nth;nth++){
-			U_MP[nth].Uion=U_MP[nth].Ugas=U_MP[nth].Uvap=U_MP[nth].Ugi=U_MP[nth].Ugg=U_MP[nth].Uvg=U_MP[nth].Uvi=U_MP[nth].Uvv=0;
-		}
-  }
-  void Ucombine(void)	{
-    for (int nth=0;nth<Nth;nth++){
-      Utotal.Uion+=U_MP[nth].Uion;
-      Utotal.Uvap+=U_MP[nth].Uvap;
-      Utotal.Ugas+=U_MP[nth].Ugas;
-      Utotal.Ugi+=U_MP[nth].Ugi;
-      Utotal.Ugg+=U_MP[nth].Ugg;
-      Utotal.Uvg+=U_MP[nth].Uvg;
-      Utotal.Uvi+=U_MP[nth].Uvi;
-      Utotal.Uvv+=U_MP[nth].Uvv;
-    }
-  }
-  void tzero(void)	{times.tion=times.tgas=times.tvap=times.tgi=times.tvv=times.tvg=times.tvi=times.tpair=0;}
+  	}
+
+  	void tzero(void)	{times.tion=times.tgas=times.tvap=times.tgi=times.tvv=times.tvg=times.tvi=times.tpair=0;}
 	double Usum(void)	{return Utotal.Uion+Utotal.Ugas+Utotal.Uvap+Utotal.Ugi+Utotal.Ugg+Utotal.Uvg+Utotal.Uvi+Utotal.Uvv;}
 
 	std::vector<int> gas_in;	/*	gas list around ion1	*/
@@ -48,7 +33,7 @@ public:
 	std::vector<int> vapor_out;	/*	gas list far from ion1	*/
 
 	/*vectors for potential calculation*/
-  std::vector<Pair> ion_pairs;
+  	std::vector<Pair> ion_pairs;
 	std::vector<Pair> pairs_gi;	/*	gas-ion interaction pair list	*/
 	std::vector<Pair> pairs_gv;	/*	gas-vapor interaction pair list	*/
 	std::vector<Pair> pairs_gg;	/*	gas-gas interaction pair list	*/

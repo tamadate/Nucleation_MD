@@ -103,7 +103,7 @@ MD::setPotential(FLAG *flags,int mode){
 		cout<<"gas-ion inter -->\tIon induced"<<endl;
 	}
 	if(flags->efield) {
-		InterInter.push_back(new PotentialEfield());
+		InterInter.push_back(new PotentialEfield(Ecoeff[0],Ecoeff[1],Ecoeff[2]));
 		cout<<"Efield -->\tON"<<endl;
 	}
 
