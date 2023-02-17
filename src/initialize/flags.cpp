@@ -13,39 +13,9 @@ FLAG::FLAG(void) {
 	dump_2nd=1;
 	gyration=0;
 	RDF=0;
-
-//	ion intratomic interaction
-	force_ters=0;
-	force_sw=0;
-	force_born=0;
-	intra_AMBER=0;
-
-//	ion-gas interaction
-	force_lj=0;
-	force_ion_dipole=0;
-
-//	Electric field
-	efield=0;
-
-//	gas-gas interaction
-	inter_gg=0;
-
-	inter_vv=0;
-
-	inter_vg=0;
-
-	inter_vi=0;
-
-	vapor_intra=1;
-
-	gas_intra=1;
-
-//couase-grain
 	cg=0;
-
 	eflag=0;
-
-
+	inter=false;
 }
 
 /**********************************destractor******************************************/

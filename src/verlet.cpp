@@ -20,7 +20,6 @@ void
 MD::verlet(void) {
 	velocity_calculation(); //	v(t) -> v(t+dt/2) using F(x(t))
 	analysis_ion();
-	if(flags->fix_cell_center==1) fix_cell_center();
 	if(flags->velocity_scaling==1)	velocity_scaling();
 
 	update_position();
@@ -118,16 +117,3 @@ MD::update_position(void) {
 }
 
 
-/////////////////////////////////////////////////////////////////////
-/*
-	- Fix center of domain (v-v_center)
-*/
-/////////////////////////////////////////////////////////////////////
-void
-MD::fix_cell_center(void) {
-	for (auto &a : vars->ions) {
-		a.px -= ion_v[0];
-		a.py -= ion_v[1];
-		a.pz -= ion_v[2];
-	}
-}

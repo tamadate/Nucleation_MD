@@ -22,8 +22,6 @@ MD::MD(char* condfile, int calcNumber) {
 	obs = new Observer();
 	pp = new Physical();
 	flags = new FLAG();
-	mbdist = new MBdist();
-	mbdistV = new MBdist();
 
 	dt = 0.5;	/*	fs	*/
 	CUTOFF = 20.0;	/*	A	*/
@@ -47,7 +45,6 @@ MD::MD(char* condfile, int calcNumber) {
 	vars->ionRotation();
 	vars->ionInitialVelocity(T);
 
-	setPotential(flags,1);
 	initialization_gas();	//Set initial positions & velocities for gas
   	initialization_vapor();	//Set initial positions & velocities for vapor
 	analysis_ion();
@@ -55,8 +52,10 @@ MD::MD(char* condfile, int calcNumber) {
 	margin_length = MARGIN;
 	vars->tzero();
 
-	mbdist -> makeWeightedMB(pp->cgas,pp->mgas,T);
-	mbdistV -> makeWeightedMB(pp->cvapor,pp->mvapor,T);
+	mbdist = new MBdist(pp->cgas,pp->mgas,T);
+	mbdist -> makeWeightedMB();
+	mbdistV = new MBdist(pp->cvapor,pp->mvapor,T);
+	mbdistV -> makeWeightedMB();
 }
 
 /////////////////////////////////////////////////////////////////////

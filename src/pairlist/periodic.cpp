@@ -56,7 +56,7 @@ MD::boundary_scaling_gas_move(void){
 		if (gases[i].qy > pre_ion[1]+HL) gases[i].qy -= d_size, flagy++, flag++;
 		if (gases[i].qz > pre_ion[2]+HL) gases[i].qz -= d_size, flagz++, flag++;
 		if (flag>0) {
-			if(mbdist->number>mbdist->vflux.size()*0.9) {mbdist->makeWeightedMB(pp->cgas,pp->mgas,T);}
+			if(mbdist->number>mbdist->vflux.size()*0.9) {mbdist->makeWeightedMB();}
 		    vx=gases[i].px*gases[i].mass;
 		    vy=gases[i].py*gases[i].mass;
 		    vz=gases[i].pz*gases[i].mass;
@@ -102,7 +102,7 @@ MD::boundary_scaling_vapor_move(void){
 		if (vapors[i].qy > pre_ion[1]+HL) vapors[i].qy -= d_size, flagy++, flag++;
 		if (vapors[i].qz > pre_ion[2]+HL) vapors[i].qz -= d_size, flagz++, flag++;
 		if (flag>0) {
-			if(mbdistV->number>mbdistV->vflux.size()*0.9) {mbdistV->makeWeightedMB(pp->cvapor,pp->mvapor,T);}
+			if(mbdistV->number>mbdistV->vflux.size()*0.9) {mbdistV->makeWeightedMB();}
 		    vx=vapors[i].px;
 		    vy=vapors[i].py;
 		    vz=vapors[i].pz;

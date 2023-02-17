@@ -75,9 +75,7 @@ class MD {
 //	initialization
 	void initialization_gas(void);
 	void initialization_vapor(void);
-	void setCondition(char* condfile);
 	void readCondFile(char* condfile);
-	void setPotential(FLAG *flags,int mode);
 
 //	periodic
 	void periodic(void);	/*	periodic condition for gas_in	*/
@@ -120,7 +118,6 @@ class MD {
 	char vaporFile[100];
 	char vaporStickFile[100];
 	char filepath_gyration[100];
-	void fix_cell_center(void);
 	void gyration_initial(void);
 	void gyration_out(MD *md2);
 	string gyration_path;

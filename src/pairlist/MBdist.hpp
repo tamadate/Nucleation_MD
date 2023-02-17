@@ -10,8 +10,11 @@ class MBdist {
 		int number;
 		std::vector<double> vflux;	/*	seed of vf(v)/c	*/
 		int* dis;	/*	number of gas molecuole v(dv*i)<v<v(dv*(i+1)) */
+		double meanVel;
+		double mass;
+		double T;
 
-		void makeWeightedMB(double meanVel, double mass, double T){
+		void makeWeightedMB(){
 			number=0;
 			double vmax=5.0*meanVel;	/*	max velocity of gas molecule in flux velocity distribution */
 			double dv=vmax/M;	/*	resolution of flux velocity distribution */
@@ -43,6 +46,10 @@ class MBdist {
 			delete [] dis;
 		};
 
-		MBdist(){};
+		MBdist(double c, double m, double t){
+			meanVel=c;
+			mass=m;
+			T=t;
+		};
 		~MBdist(){};
 };
