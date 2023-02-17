@@ -1,11 +1,10 @@
 #pragma once
 #include "variables.hpp"
-#include "observer.hpp"
-#include "potential.hpp"
+#include "output/observer.hpp"
+#include "potential/potential.hpp"
 #include "PhysicalProp.hpp"
 #include "flags.hpp"
-#include "MBdist.hpp"
-#include "rigid.hpp"
+#include "pairlist/MBdist.hpp"
 //------------------------------------------------------------------------
 
 class MD {
@@ -37,15 +36,12 @@ class MD {
 	double CL2;
 	double d_size;
 	double V;
-	void setCondition(char* condfile);
-	void readCondFile(char* condfile);
 
 	long int itime;
 	std::vector<long int> collisionFlagGas;
 	std::vector<long int> collisionFlagVapor;
 	std::vector<Potential*> InterInter;
 	std::vector<Potential*> IntraInter;
-	void setPotential(FLAG *flags,int mode);
 
 	Variables *vars;
 	Observer *obs;
@@ -53,41 +49,35 @@ class MD {
 	FLAG *flags;
 	MBdist *mbdist;
 	MBdist *mbdistV;
-	Rigid *rigid;
 
 //	vectors for pairlist
 	double margin_length;
 
 //	General functions
-	void updateGasinCenters(void);
-	void updateVaporinCenters(void);
 
 //	velocity verlet
-	void run_diff(char** argv);
+	void run(char** argv);
 	void verlet(void);
 	void update_position(void);
 	void velocity_calculation(void);
-	void update_position_constrained(void);
-	void update_velocity_constrained(void);
 
 //	pair list
 	void update_vapor_in(void);
 	void update_gas_in(void);
 	void make_pair(void);
-	void make_pair_gasgas(void);
-	void make_pair_gasion(void);
-	void make_pair_gasvapor(void);
-	void make_pair_vaporion(void);
-	void make_pair_vaporvapor();
 	void check_pairlist(void);
-  void makeDiatomicProp_in(int i);
-  void makeDiatomicProp_out(int i);
+	void makeDiatomicProp_in(int i);
+	void makeDiatomicProp_out(int i);
 	void makePolyatomicProp_in(int i);
 	void makePolyatomicProp_out(int i);
+	void updateInCenters(void);
 
 //	initialization
 	void initialization_gas(void);
-  void initialization_vapor(void);
+	void initialization_vapor(void);
+	void setCondition(char* condfile);
+	void readCondFile(char* condfile);
+	void setPotential(FLAG *flags,int mode);
 
 //	periodic
 	void periodic(void);	/*	periodic condition for gas_in	*/
@@ -102,7 +92,6 @@ class MD {
 	void analysis_ion(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
 	double ion_r[3];
 	double ion_v[3];	/*	center of ion1 and ion2	*/
-	double ion_f[3];
 	double gas_r[3];
 	double gas_v[3];	/*	center of ion1 and ion2	*/
 	double gyration;
@@ -146,15 +135,11 @@ class MD {
 	void setNVE(void);
 	void setNVTion(double temp);
 
-
-	double del2,CD2,rmin2;
 	double totalPotential;
 
 
 	MD(char* condfile,int calcNumber);
 	~MD(void);
-	void run(char** argv);
-	int yesno;	/*	flag for collision or not collision	*/
 };
 
 

@@ -5,10 +5,8 @@ std::vector<Atom>
 Variables::atomGas(int gastype) {
  	std::vector<Atom> atms;
 	Atom a;
-	a.type=gastype;
+	a.type=0;
 	a.px=a.py=a.pz=a.fx=a.fy=a.fz=a.charge=a.ix=a.iy=a.iz=0;
-
-
 
 	if(gastype==1){
 		a.id = 0;

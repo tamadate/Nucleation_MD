@@ -5,7 +5,7 @@
 
 void
 MD::positionLog(void){
-	updateVaporinCenters();
+	updateInCenters();
 	for(auto &i : vars->vapor_in){
 		double minDist=1e10;
 		int closeAtomID=0;

@@ -121,13 +121,7 @@ class cluster:
 				ts[iin]=time2-time1-result.x[0]*1e-15	# result.x[0] is theoretical residence time in interaction sphere
 				tth[iin]=time2-time1	# result.x[0] is theoretical residence time in interaction sphere
 			tss=np.append(tss,tth)
-			for i in Nstick[int(self.con.teq/self.con.dt_post):]:
-			    psim[int(i)]+=1
-		negs=np.where((tss<self.con.tcut))	# indexes of ts<self.con.tcut
-		tss=np.delete(tss,negs)
-		np.savetxt(self.con.directory+"probability.dat",psim)
-		np.savetxt(self.con.directory+"stickTime.dat",tss)
-		np.savetxt(self.con.directory+"totalCalculation.dat",np.array([self.con.pal-np.size(self.con.error)]))
+		#np.savetxt("ts.dat",ts)
 		self.plot.plotNvap(times,self.con.teq,Nstick,self.con.figOutput)
 		self.plot.plotStickTimeDist(tss,tth,self.con.figOutput)
 
@@ -156,80 +150,6 @@ class cluster:
 		f_sim=np.size(ts)/self.con.tEND	# vapor flux into the interaction sphere [1/s]
 		f_FM=self.con.delta2*np.pi*self.con.c*C	# vapor flux into the interaction sphere in free molecular limit [1/s]
 		print ("f_FM="+str(f_FM*1e-9)+"[1/ns]\tf_sim="+str(f_sim*1e-9)+"[1/ns]")
-
-	def evaporationRate(self):
-		timeEvap=np.zeros(0)
-		psim=np.zeros(self.con.Nmax)
-		for i in np.arange(self.con.pal):
-			if(np.isin(i,self.con.error)):
-				continue
-			I=self.con.I+i
-
-			## Reading vapor_in file
-		    ## column[0]="vapor id" column[1]="entering time, tin"
-			filePath=self.con.directory+"vapor_in_"+str(I)+".dat"
-			if(os.stat(filePath).st_size == 0):	# if the file is empty
-				continue
-			inVapor=np.loadtxt(filePath)
-			if(np.size(inVapor)<9):
-				if(inVapor[1]>self.con.tEND*1e15): # ignore tin>tend
-					continue
-				inVapor=np.array([inVapor])
-			else:
-				negs=np.where((inVapor[:,1]>self.con.tEND*1e15))
-				inVapor=np.delete(inVapor,negs,axis=0)
-
-			## Reading vapor_out file
-		    ## column[0]="vapor id" column[1]="leaving time, tin"
-			outVapor=np.loadtxt(self.con.directory+"vapor_out_"+str(I)+".dat")
-			if(np.size(outVapor)<9):
-				if(outVapor[1]>self.con.tEND*1e15): # ignore tout>tend
-					continue
-				outVapor=np.array([outVapor])
-			else:
-				negs=np.where((outVapor.T[1]>self.con.tEND*1e15))
-				outVapor=np.delete(outVapor,negs,axis=0)
-			for j in np.arange(np.size(outVapor.T[1])-1):
-				timeEvap=np.append(timeEvap,outVapor.T[1][j+1]-outVapor.T[1][j])
-		np.savetxt(self.con.directory+"evapTime.dat",timeEvap)
-		self.plot.plotEvapTimeDist(timeEvap,self.con.figOutput)
-
-	def arrivalRate(self):
-		timeEvap=np.zeros(0)
-		psim=np.zeros(self.con.Nmax)
-		for i in np.arange(self.con.pal):
-			if(np.isin(i,self.con.error)):
-				continue
-			I=self.con.I+i
-
-			## Reading vapor_in file
-		    ## column[0]="vapor id" column[1]="entering time, tin"
-			filePath=self.con.directory+"vapor_in_"+str(I)+".dat"
-			if(os.stat(filePath).st_size == 0):	# if the file is empty
-				continue
-			inVapor=np.loadtxt(filePath)
-			if(np.size(inVapor)<9):
-				if(inVapor[1]>self.con.tEND*1e15): # ignore tin>tend
-					continue
-				inVapor=np.array([inVapor])
-			else:
-				negs=np.where((inVapor[:,1]>self.con.tEND*1e15))
-				inVapor=np.delete(inVapor,negs,axis=0)
-
-			## Reading vapor_out file
-		    ## column[0]="vapor id" column[1]="leaving time, tin"
-			outVapor=np.loadtxt(self.con.directory+"vapor_out_"+str(I)+".dat")
-			if(np.size(outVapor)<9):
-				if(inVapor[1]>self.con.tEND*1e15): # ignore tout>tend
-					continue
-				inVapor=np.array([inVapor])
-			else:
-				negs=np.where((inVapor.T[1]>self.con.tEND*1e15))
-				outVapor=np.delete(inVapor,negs,axis=0)
-			for j in np.arange(np.size(inVapor.T[1])-1):
-				timeEvap=np.append(timeEvap,inVapor.T[1][j+1]-inVapor.T[1][j])
-		np.savetxt(self.con.directory+"arriveTime.dat",timeEvap)
-		self.plot.plotEvapTimeDist(timeEvap,self.con.figOutput)
 
 
 	def compute(self):
