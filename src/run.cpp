@@ -16,18 +16,16 @@
 void
 MD::run(char** argv) {
 /****Thermal relaxation****/
-  const int logger=10000;
-	setPotential(flags,0);
+  	const int logger=10000;
 	for (auto &a : IntraInter) {a->printName();}
 	for (auto &a : InterInter) {a->printName();}
 	for (itime=0; itime < step_relax; itime++) {
 		if (itime%OBSERVE==0) {
-			display(1);
-			export_dump_close();
+			obs->display();
+			obs->export_dump_close();
 			vars->time=(itime*dt);
 		}
     	verlet();
-		//if ((itime+1)%pp->OBSERVE==0) flags->eflag=1;
 	}
 
 /*
@@ -40,10 +38,9 @@ step of simulation, reset the margine size.
 */
 	vars->time=0;
 	itime=0;
-	setPotential(flags,1);
-	for (auto &a : vars->ions) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
-	for (auto &a : vars->gases) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
-	analysis_ion();
+	for (auto &a : vars->ions) a.qx-=vars->ion_r[0], a.qy-=vars->ion_r[1], a.qz-=vars->ion_r[2];
+	for (auto &a : vars->gases) a.qx-=vars->ion_r[0], a.qy-=vars->ion_r[1], a.qz-=vars->ion_r[2];
+	getIonCenterProp();
 	make_pair();
 	margin_length = MARGIN;
 	setNVE();
@@ -54,17 +51,17 @@ step of simulation, reset the margine size.
 		if(itime%positionLogStep==0) positionLog();
     }
     if(itime%logger==0){
-		analysis_gas();
-		output();
-		//output_gas();
+		getGasCenterProp();
+		obs->outputIonCenter();
+		//obs->outputIonCenter();
 		vars->time+=(logger*dt);
     }
     if (itime%OBSERVE==0) {
-        display(0);
-        export_dump_close();
+        obs->display();
+        obs->export_dump_close();
     }
 	if ((itime+1)%OBSERVE==0) {
-		flags->eflag=1;
+		flags->eflag=true;
 		vars->Uzero();
     }
   	verlet();

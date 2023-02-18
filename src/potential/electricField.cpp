@@ -1,6 +1,26 @@
 #include "potential.hpp"
 
 
+/////////////////////////////////////////////////////////////////////
+/*
+	- Calculate force working on gas-gas (LJ)
+	1 Td = E/N = 10e-17 Vcm2 = 10-21 Vm2
+	N = 1e5 / (1.38e-23 * 300) = 2.41e25 #/m3
+	E = N * 10-21 = 2.41e4 V/m
+	F = qE = 1.6e-19 * 2.41e4 * z = 3.856e-15 * z J/m
+		= 3.856e-15 * 1e-3 / 4.18 * 6.02e23 * 1e-10 * z kcal/mol/A
+		= 5.55e-5 * z kcal/mol/A
+*/
+/////////////////////////////////////////////////////////////////////
+void
+PotentialEfield::compute(Variables *vars, FLAG *flags) {
+    for (auto &a : vars->ions) {
+		a.fx+=5.55e-5*a.charge*Ecoeff[0];
+		a.fy+=5.55e-5*a.charge*Ecoeff[1];
+		a.fz+=5.55e-5*a.charge*Ecoeff[2];
+	}
+
+}
 
 
 /////////////////////////////////////////////////////////////////////
@@ -9,7 +29,6 @@
 	molecules. Because ion have a charge, ion induce the gas dipole.
 */
 /////////////////////////////////////////////////////////////////////
-
 
 // charge devided by number of atoms in ions
 void
@@ -41,24 +60,3 @@ PotentialIonDipole::compute(Variables *vars, FLAG *flags) {
 	}*/
 }
 
-
-/////////////////////////////////////////////////////////////////////
-/*
-	- Calculate force working on gas-gas (LJ)
-	1 Td = E/N = 10e-17 Vcm2 = 10-21 Vm2
-	N = 1e5 / (1.38e-23 * 300) = 2.41e25 #/m3
-	E = N * 10-21 = 2.41e4 V/m
-	F = qE = 1.6e-19 * 2.41e4 * z = 3.856e-15 * z J/m
-		= 3.856e-15 * 1e-3 / 4.18 * 6.02e23 * 1e-10 * z kcal/mol/A
-		= 5.55e-5 * z kcal/mol/A
-*/
-/////////////////////////////////////////////////////////////////////
-void
-PotentialEfield::compute(Variables *vars, FLAG *flags) {
-    for (auto &a : vars->ions) {
-		a.fx+=5.55e-5*a.charge*Ecoeff[0];
-		a.fy+=5.55e-5*a.charge*Ecoeff[1];
-		a.fz+=5.55e-5*a.charge*Ecoeff[2];
-	}
-
-}

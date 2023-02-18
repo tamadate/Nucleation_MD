@@ -27,12 +27,14 @@ MD::periodic(void) {
 	for (int k=0;k<gis;k++) {
 		int i=vars->gas_in[k];
 		flag=flagx=flagy=flagz=0;
-		if (gases[i].qx < ion_r[0]-HL) gases[i].qx += d_size, flagx--, flag++;
-		if (gases[i].qy < ion_r[1]-HL) gases[i].qy += d_size, flagy--, flag++;
-		if (gases[i].qz < ion_r[2]-HL) gases[i].qz += d_size, flagz--, flag++;
-		if (gases[i].qx > ion_r[0]+HL) gases[i].qx -= d_size, flagx++, flag++;
-		if (gases[i].qy > ion_r[1]+HL) gases[i].qy -= d_size, flagy++, flag++;
-		if (gases[i].qz > ion_r[2]+HL) gases[i].qz -= d_size, flagz++, flag++;
+		double dx,dy,dz;
+		double dr2=distFromIonCenter(gases[i],dx,dy,dz);
+		if (dx < -HL) gases[i].qx += d_size, flagx--, flag++;
+		if (dy < -HL) gases[i].qy += d_size, flagy--, flag++;
+		if (dz < -HL) gases[i].qz += d_size, flagz--, flag++;
+		if (dx > HL) gases[i].qx -= d_size, flagx++, flag++;
+		if (dy > HL) gases[i].qy -= d_size, flagy++, flag++;
+		if (dz > HL) gases[i].qz -= d_size, flagz++, flag++;
 	}
 }
 
@@ -49,14 +51,16 @@ MD::boundary_scaling_gas_move(void){
 
 	for (auto &i : vars->gas_out){
 		flag=flagx=flagy=flagz=0;
-		if (gases[i].qx < pre_ion[0]-HL) gases[i].qx += d_size, flagx--, flag++;
-		if (gases[i].qy < pre_ion[1]-HL) gases[i].qy += d_size, flagy--, flag++;
-		if (gases[i].qz < pre_ion[2]-HL) gases[i].qz += d_size, flagz--, flag++;
-		if (gases[i].qx > pre_ion[0]+HL) gases[i].qx -= d_size, flagx++, flag++;
-		if (gases[i].qy > pre_ion[1]+HL) gases[i].qy -= d_size, flagy++, flag++;
-		if (gases[i].qz > pre_ion[2]+HL) gases[i].qz -= d_size, flagz++, flag++;
+		double dx,dy,dz;
+		double dr2=distFromIonCenter(gases[i],dx,dy,dz);
+		if (dx < -HL) gases[i].qx += d_size, flagx--, flag++;
+		if (dy < -HL) gases[i].qy += d_size, flagy--, flag++;
+		if (dz < -HL) gases[i].qz += d_size, flagz--, flag++;
+		if (dx > HL) gases[i].qx -= d_size, flagx++, flag++;
+		if (dy > HL) gases[i].qy -= d_size, flagy++, flag++;
+		if (dz > HL) gases[i].qz -= d_size, flagz++, flag++;
 		if (flag>0) {
-			if(mbdist->number>mbdist->vflux.size()*0.9) {mbdist->makeWeightedMB(pp->cgas,pp->mgas,T);}
+			if(mbdist->number>mbdist->vflux.size()*0.9) {mbdist->makeWeightedMB();}
 		    vx=gases[i].px*gases[i].mass;
 		    vy=gases[i].py*gases[i].mass;
 		    vz=gases[i].pz*gases[i].mass;
@@ -95,14 +99,16 @@ MD::boundary_scaling_vapor_move(void){
 
 	for (auto &i : vars->vapor_out){
 		flag=flagx=flagy=flagz=0;
-		if (vapors[i].qx < pre_ion[0]-HL) vapors[i].qx += d_size, flagx--, flag++;
-		if (vapors[i].qy < pre_ion[1]-HL) vapors[i].qy += d_size, flagy--, flag++;
-		if (vapors[i].qz < pre_ion[2]-HL) vapors[i].qz += d_size, flagz--, flag++;
-		if (vapors[i].qx > pre_ion[0]+HL) vapors[i].qx -= d_size, flagx++, flag++;
-		if (vapors[i].qy > pre_ion[1]+HL) vapors[i].qy -= d_size, flagy++, flag++;
-		if (vapors[i].qz > pre_ion[2]+HL) vapors[i].qz -= d_size, flagz++, flag++;
+		double dx,dy,dz;
+		double dr2=distFromIonCenter(vapors[i],dx,dy,dz);
+		if (dx < -HL) vapors[i].qx += d_size, flagx--, flag++;
+		if (dy < -HL) vapors[i].qy += d_size, flagy--, flag++;
+		if (dz < -HL) vapors[i].qz += d_size, flagz--, flag++;
+		if (dx > HL) vapors[i].qx -= d_size, flagx++, flag++;
+		if (dy > HL) vapors[i].qy -= d_size, flagy++, flag++;
+		if (dz > HL) vapors[i].qz -= d_size, flagz++, flag++;
 		if (flag>0) {
-			if(mbdistV->number>mbdistV->vflux.size()*0.9) {mbdistV->makeWeightedMB(pp->cvapor,pp->mvapor,T);}
+			if(mbdistV->number>mbdistV->vflux.size()*0.9) {mbdistV->makeWeightedMB();}
 		    vx=vapors[i].px;
 		    vy=vapors[i].py;
 		    vz=vapors[i].pz;
@@ -130,12 +136,14 @@ MD::boundary_scaling_ion_move(void){
 
 	for (auto &i : vars->gas_out){
 		flag=flagx=flagy=flagz=0;
-		if (gases[i].qx < ion_r[0]-HL) gases[i].qx += d_size, flagx--, flag++;
-		if (gases[i].qy < ion_r[1]-HL) gases[i].qy += d_size, flagy--, flag++;
-		if (gases[i].qz < ion_r[2]-HL) gases[i].qz += d_size, flagz--, flag++;
-		if (gases[i].qx > ion_r[0]+HL) gases[i].qx -= d_size, flagx++, flag++;
-		if (gases[i].qy > ion_r[1]+HL) gases[i].qy -= d_size, flagy++, flag++;
-		if (gases[i].qz > ion_r[2]+HL) gases[i].qz -= d_size, flagz++, flag++;
+		double dx,dy,dz;
+		double dr2=distFromIonCenter(gases[i],dx,dy,dz);
+		if (dx < -HL) gases[i].qx += d_size, flagx--, flag++;
+		if (dy < -HL) gases[i].qy += d_size, flagy--, flag++;
+		if (dz < -HL) gases[i].qz += d_size, flagz--, flag++;
+		if (dx > HL) gases[i].qx -= d_size, flagx++, flag++;
+		if (dy > HL) gases[i].qy -= d_size, flagy++, flag++;
+		if (dz > HL) gases[i].qz -= d_size, flagz++, flag++;
 		if (flag>0) {
 			gases[i].px = distgas(mt) *1e-5;
 			gases[i].py = distgas(mt) *1e-5;
@@ -148,12 +156,14 @@ MD::boundary_scaling_ion_move(void){
 
 	for (auto &i : vars->vapor_out){
 		flag=flagx=flagy=flagz=0;
-		if (vapors[i].qx < ion_r[0]-HL) vapors[i].qx += d_size, flag++;
-		if (vapors[i].qy < ion_r[1]-HL) vapors[i].qy += d_size, flag++;
-		if (vapors[i].qz < ion_r[2]-HL) vapors[i].qz += d_size, flag++;
-		if (vapors[i].qx > ion_r[0]+HL) vapors[i].qx -= d_size, flag++;
-		if (vapors[i].qy > ion_r[1]+HL) vapors[i].qy -= d_size, flag++;
-		if (vapors[i].qz > ion_r[2]+HL) vapors[i].qz -= d_size, flag++;
+		double dx,dy,dz;
+		double dr2=distFromIonCenter(vapors[i],dx,dy,dz);
+		if (dx < -HL) vapors[i].qx += d_size, flagx--, flag++;
+		if (dy < -HL) vapors[i].qy += d_size, flagy--, flag++;
+		if (dz < -HL) vapors[i].qz += d_size, flagz--, flag++;
+		if (dx > HL) vapors[i].qx -= d_size, flagx++, flag++;
+		if (dy > HL) vapors[i].qy -= d_size, flagy++, flag++;
+		if (dz > HL) vapors[i].qz -= d_size, flagz++, flag++;
 		if (flag>0) {
 			vapors[i].px = distvapor(mt) *1e-5;
 			vapors[i].py = distvapor(mt) *1e-5;

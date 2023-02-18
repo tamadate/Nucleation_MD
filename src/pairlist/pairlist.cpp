@@ -1,6 +1,4 @@
-//------------------------------------------------------------------------
 #include "../md.hpp"
-//------------------------------------------------------------------------
 
 
 /////////////////////////////////////////////////////////////////////
@@ -29,7 +27,7 @@ MD::make_pair(void){
 		double v2 = px*px + py*py + pz*pz;
 		if (vmax2 < v2) vmax2 = v2;
 	}
-	double vion2=ion_v[0]*ion_v[0]+ion_v[1]*ion_v[1]+ion_v[2]*ion_v[2];
+	double vion2=vars->ion_v[0]*vars->ion_v[0]+vars->ion_v[1]*vars->ion_v[1]+vars->ion_v[2]*vars->ion_v[2];
 	if (vmax2<vion2) vmax2=vion2;
 	double vmax = sqrt(vmax2);
 
@@ -50,10 +48,8 @@ MD::update_gas_in(void){
 	vars->gas_out.clear();
 
 	for (int i=0;i<Nof_around_gas;i++){
-		double dx = gases[i].qx - ion_r[0];
-		double dy = gases[i].qy - ion_r[1];
-		double dz = gases[i].qz - ion_r[2];
-		double r2 = (dx * dx + dy * dy + dz * dz);
+		double dx,dy,dz;
+		double r2 = distFromIonCenter(gases[i],dx,dy,dz);
 		if (r2 < RI2){
 			//if inter-gas interaction flag is ON, stand flag_in ON
 			//if flag_in ON, molecule push back to vars->gas_in
@@ -82,13 +78,11 @@ MD::update_vapor_in(void){
 	vars->vapor_out.clear();
 
 	for (int i=0;i<Nof_around_vapor;i++){
-		double dx = vapors[i].qx - ion_r[0];
-		double dy = vapors[i].qy - ion_r[1];
-		double dz = vapors[i].qz - ion_r[2];
-		double r2 = (dx * dx + dy * dy + dz * dz);
+		double dx,dy,dz;
+		double r2 = distFromIonCenter(vapors[i],dx,dy,dz);
 		if (r2 < RI2) {
 			if(r2<100 && collisionFlagVapor[i]==0){
-				Ovin(i);
+				obs->Ovin(i,itime*dt);
 				collisionFlagVapor[i]=itime;
 			}
 			vars->vapor_in.push_back(i);
@@ -127,9 +121,9 @@ MD::check_pairlist(void){
 		boundary_scaling_vapor_move();
 		boundary_scaling_ion_move();
 		make_pair();
-		pre_ion[0]=ion_r[0];
-		pre_ion[1]=ion_r[1];
-		pre_ion[2]=ion_r[2];
+		pre_ion[0]=vars->ion_r[0];
+		pre_ion[1]=vars->ion_r[1];
+		pre_ion[2]=vars->ion_r[2];
 	}
 //	if(flags->force_sw==1) sw->check_pairlist(vars);
 //	if(flags->force_ters==1) ters->check_pairlist(vars);

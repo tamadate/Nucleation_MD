@@ -55,6 +55,7 @@ MD::readCondFile(char* condfile){
 				a.name="N";
 				a.coeff1=0.1098;
 				a.coeff2=3.27351824993;
+				IntraInter.push_back(new PotentialGasIntra());
 			}
 			if(readings[1]=="N2monoatomic"){
 				gastype=3;
@@ -107,10 +108,10 @@ MD::readCondFile(char* condfile){
 			ostringstream ss;
 			ss<<readings[1]<<"_"<<calculation_number<<".dump";
 			string tmp2=ss.str();
-			pp->dump_path=new char[tmp2.length()+1];
-			strcpy(pp->dump_path,tmp2.c_str());
+			obs->fileDump=new char[tmp2.length()+1];
+			strcpy(obs->fileDump,tmp2.c_str());
 			OBSERVE=stoi(readings[2]);
-			FILE*f=fopen(pp->dump_path, "w");
+			FILE*f=fopen(obs->fileDump, "w");
 			fclose(f);
 			cout<<"Dump file -->\t\t"<<tmp2<<endl;
 		}
@@ -132,59 +133,53 @@ MD::readCondFile(char* condfile){
 		}
 		if (readings[0]=="NVTgas") {
 			if (readings[1]=="OFF") {
-				flags->nose_hoover_gas=0;
 				cout<<"Nose-Hoover for gas --> OFF"<<endl;
 			}
 			else {
-				flags->nose_hoover_gas=1;
 				pp->Tnh_gas=stod(readings[1]);
 				cout<<"Nose-Hoover for gas --> ON --> "<<pp->Tnh_gas<<" K"<<endl;
 			}
 		}
 
-		if (readings[0]=="Interactions") {continue;}
+		if (readings[0]=="Interactions") {
+			CL2 = (CUTOFF)*(CUTOFF);
+			ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
+			continue;
+		}
 		if (readings[1]=="gg") {
-			if (readings[2]=="LJ") flags->inter_gg=1;
-			else if (readings[2]=="OFF") flags->inter_gg=0;
+			if (readings[2]=="LJ") InterInter.push_back(new PotentialGasGas(ML2));
+			else if (readings[2]=="OFF") ;
 			else printf("**************Uknown gas gas parameter was found**************\n");
 		}
 		if (readings[1]=="gi"||readings[1]=="ig") {
-			if (readings[2]=="LJ") flags->force_lj=1;
-			else if (readings[2]=="ion dipole") flags->force_ion_dipole=1;
-			else if (readings[2]=="OFF") {
-				flags->force_ion_dipole=0;
-				flags->force_lj=0;
-			}
+			if (readings[2]=="LJ") InterInter.push_back(new PotentialGasIon(ML2));
+			else if (readings[2]=="ion dipole") InterInter.push_back(new PotentialIonDipole());
+			else if (readings[2]=="OFF") ;
 			else printf("**************Uknown gas ion parameter was found**************\n");
 		}
 		if (readings[1]=="ion") {
-			if (readings[2]=="AMBER") flags->intra_AMBER=1;
-			else if (readings[2]=="Stilinger-Weber") flags->force_sw=1;
-			else if (readings[2]=="Tersoff") flags->force_ters=1;
-			else if (readings[2]=="Born-Mayer-Huggins-NaCl") flags->force_born=1;
+			if (readings[2]=="AMBER") IntraInter.push_back(new PotentialAMBER());
+			else if (readings[2]=="Stilinger-Weber") IntraInter.push_back(new PotentialSW());
+			else if (readings[2]=="Tersoff") IntraInter.push_back(new PotentialTersoff());
+			else if (readings[2]=="Born-Mayer-Huggins-NaCl") IntraInter.push_back(new PotentialBorn());
 			else printf("**************Uknown ion parameter was found**************\n");
 		}
 		if (readings[1]=="vi"||readings[1]=="iv") {
-			if (readings[2]=="LJcoul") flags->inter_vi=1;
-			else if (readings[2]=="OFF") flags->inter_vi=0;
+			if (readings[2]=="LJcoul") InterInter.push_back(new PotentialVaporIon(ML2));
+			else if (readings[2]=="OFF") ;
 			else printf("**************Uknown vapor ion parameter was found**************\n");
 		}
 		if (readings[1]=="vv"||readings[1]=="vv") {
-			if (readings[2]=="LJcoul") flags->inter_vv=1;
-			else if (readings[2]=="OFF") flags->inter_vv=0;
+			if (readings[2]=="LJcoul") InterInter.push_back(new PotentialVaporVapor(ML2));
+			else if (readings[2]=="OFF") ;
 			else printf("**************Uknown vapor vapor parameter was found**************\n");
 		}
 		if (readings[1]=="gv"||readings[1]=="vg") {
-			if (readings[2]=="LJ") flags->inter_vg=1;
-			else if (readings[2]=="OFF") flags->inter_vg=0;
+			if (readings[2]=="LJ") InterInter.push_back(new PotentialVaporGas(ML2));
+			else if (readings[2]=="OFF") ;
 			else printf("**************Uknown vapor vapor parameter was found**************\n");
 		}
-		if (readings[1]=="Efield") {
-			flags->efield=1;
-			Ecoeff[0]=stod(readings[2]);
-			Ecoeff[1]=stod(readings[3]);
-			Ecoeff[2]=stod(readings[4]);
-		}
+		if (readings[1]=="Efield") InterInter.push_back(new PotentialEfield(stod(readings[2]),stod(readings[3]),stod(readings[4])));
 		if (readings[0]=="Gyration") {
 			ostringstream ss;
 			ss<<readings[1]<<"_"<<calculation_number<<".dat";
@@ -198,9 +193,10 @@ MD::readCondFile(char* condfile){
 		}
 	}
 	d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;//pow(28.0855*8/6.02e23/(2.218e-24),1/3.0)*5;
+	obs->d_size=d_size;
 	V=d_size*d_size*d_size;
-	CL2 = (CUTOFF)*(CUTOFF);
-	ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
+	obs->V=V;
+	IntraInter.push_back(new PotentialVaporIntra());
 	cout<<"Cut off length\t\t"<<CUTOFF<<" ang."<<endl;
 	cout<<"Margin length\t\t"<<MARGIN<<" ang."<<endl;
 	cout<<"Domain size\t\t"<<d_size<<" ang."<<endl;

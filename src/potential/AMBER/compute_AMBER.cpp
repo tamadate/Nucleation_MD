@@ -251,7 +251,7 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 }
 
 void
-PotentialAMBER::initialAMBER(Variables *vars, FLAG *flags){
+PotentialAMBER::initial(Variables *vars){
 	std::vector<Pair> noLong;
 	Pair p;
 	for (auto &b : vars-> bonds) {

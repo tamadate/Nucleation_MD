@@ -11,9 +11,8 @@ class MD {
 	private:
 
 
-  public:
+	public:
 
-	double startTime;
 	int Nth;
 	int calculation_number;
 
@@ -27,7 +26,6 @@ class MD {
 	int Nof_around_gas;
 	int Nof_around_vapor;
 	int OBSERVE;
-	double Ecoeff[3];
 
 	double dt;
 	double CUTOFF;
@@ -75,9 +73,7 @@ class MD {
 //	initialization
 	void initialization_gas(void);
 	void initialization_vapor(void);
-	void setCondition(char* condfile);
 	void readCondFile(char* condfile);
-	void setPotential(FLAG *flags,int mode);
 
 //	periodic
 	void periodic(void);	/*	periodic condition for gas_in	*/
@@ -88,17 +84,11 @@ class MD {
 	double pre_ion[3];
 
 //	analysis (calculating position and velocity of center of mass)
-	void analysis_gas(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
-	void analysis_ion(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
-	double ion_r[3];
-	double ion_v[3];	/*	center of ion1 and ion2	*/
-	double gas_r[3];
-	double gas_v[3];	/*	center of ion1 and ion2	*/
+	void getGasCenterProp(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
+	void getIonCenterProp(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
+	double distFromIonCenter(Molecule &mol, double &dx, double &dy, double &dz);
 	double gyration;
 
-//	export
-	void export_dump(void);
-	void export_dump_close(void);
 
 // related vapor sticking position
 	void positionLog(void);
@@ -106,21 +96,12 @@ class MD {
 	std::vector<int> stickPositionList;
 
 /*other*/
-	void output(void);
-	void output_gas(void);
-	void output_temp(double gastemp, double iontemp);
-	void output_initial(void);
-	void output_gas_collision(long int initime);
-	void output_vapor_collision(long int initime);
-	void Ovin(int i);
-	void Ovout(int i);
-	void display(int output_ONOFF);
+
 	char filepath[100];
 	char atomFile[100];
 	char vaporFile[100];
 	char vaporStickFile[100];
 	char filepath_gyration[100];
-	void fix_cell_center(void);
 	void gyration_initial(void);
 	void gyration_out(MD *md2);
 	string gyration_path;

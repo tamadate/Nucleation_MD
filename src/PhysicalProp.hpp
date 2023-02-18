@@ -8,7 +8,6 @@ public:
 	double z, myu, alphagas, zzee, cgas, cvapor;
 	double c;
 	char *gyration_path;
-	char *dump_path;
 	char *RDF_path;
 	double Tnh_gas, Tnh_ion;
 
