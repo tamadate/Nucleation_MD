@@ -7,7 +7,7 @@ Observer::display(void){
 	computeVaporProps();
     double virial=0;//ters->compute_tersoff_virial(vars)/3.0/V*Cpress;
     int Ngas=vars->gases.size();
-    double gaspress=(kb*Ngas*T_g + vars->totalVirial/3.0*6.95e-21)/(V*1e-30);
+    double gaspress=(kb*Ngas*T_g + vars->totalVirial/3.0*6.95e-21)/(con->V*1e-30);
     double U = vars->Usum();
 	double Kin=Kion+Kin_g+Kin_v;
 	double Kout=Kout_g+Kout_v;

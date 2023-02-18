@@ -1,12 +1,13 @@
 #pragma once
 #include "../variables.hpp"
+#include "../MDcondition.hpp"
 //------------------------------------------------------------------------
 class Observer {
 public:
 	Variables *vars;
+	MDcondition *con;
 	double startTime;
-	double V;
-	double d_size;
+	long int OBSERVE;
 	const double coeff=kb_real_inv/1.5;
 	double Kin_g;
 	double Kout_g;
@@ -53,6 +54,6 @@ public:
 	char *fileDump;
 
 	bool dump_fix;
-	Observer(Variables *VARS, int calculation_number);
+	Observer(Variables *VARS, MDcondition *CON, int calculation_number);
 };
 //------------------------------------------------------------------------

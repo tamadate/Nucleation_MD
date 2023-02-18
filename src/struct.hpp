@@ -79,15 +79,15 @@ struct Potentials {
 };
 
 struct Times {
-  double tion;
-  double tgas;
-  double tgi;
-  double tvap;
-  double tvv;
-  double tvg;
-  double tvi;
-  double tpair;
-  double tvel;
-  double tpos;
-  double tetc;
+	double tion;
+	double tgas;
+	double tgi;
+	double tvap;
+	double tvv;
+	double tvg;
+	double tvi;
+	double tpair;
+	double tvel;
+	double tpos;
+	double tetc;
 };

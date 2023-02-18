@@ -3,10 +3,12 @@
 //------------------------------------------------------------------------
 
 
-Observer::Observer(Variables *VARS, int calculation_number){
+Observer::Observer(Variables *VARS, MDcondition *CON, int calculation_number){
 	vars=VARS;
+	con=CON;
 	dump_fix=true;
 	startTime=omp_get_wtime();
+	OBSERVE=10000000;
 	sprintf(fileIonCenter, "ion_%d.dat", int(calculation_number));
 	FILE*f=fopen(fileIonCenter, "w");
 	fclose(f);

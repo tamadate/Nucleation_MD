@@ -3,8 +3,6 @@
 
 /**********************************constructor******************************************/
 FLAG::FLAG(void) {
-	velocity_scaling=0;
-	nose_hoover_ion=0;
 	gyration=0;
 	eflag=false;
 }

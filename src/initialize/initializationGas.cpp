@@ -29,9 +29,9 @@ MD::initialization_gas(void) {
     // Set random number generator
 	random_device seed;
 	default_random_engine engine(seed());
-	normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mgas));
+	normal_distribution<> distgas(0.0, sqrt(kb*pp->T/pp->mgas));
 	mt19937 mt(seed());
-	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
+	uniform_real_distribution<double> r(-con->HL,con->HL);
 
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
@@ -44,7 +44,7 @@ MD::initialization_gas(void) {
 				dx=a.qx-b.qx;
 				dy=a.qy-b.qx;
 				dz=a.qx-b.qx;
-				adjust_periodic(dx, dy, dz, d_size);
+				adjust_periodic(dx, dy, dz, con->L);
 				d=sqrt(dx*dx+dy*dy+dz*dz);
 				if(d<min_dis) min_dis=d; // minimum gas-gas distance
 			}
@@ -53,7 +53,7 @@ MD::initialization_gas(void) {
 			dx=a.qx-b.qx;
 			dy=a.qy-b.qy;
 			dz=a.qz-b.qz;
-			adjust_periodic(dx, dy, dz, d_size);
+			adjust_periodic(dx, dy, dz, con->L);
 			d=sqrt(dx*dx+dy*dy+dz*dz);
 			if(d<min_dis) min_dis=d; // minimum gas-ion distance
 		}
@@ -69,5 +69,5 @@ MD::initialization_gas(void) {
 			i++;
 		}
 		collisionFlagGas.push_back(0);
-	} while(i<Nof_around_gas);
+	} while(i<con->Nof_around_gas);
 }

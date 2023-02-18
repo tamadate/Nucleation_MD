@@ -21,7 +21,7 @@ This makes connection between thermal relaxation and main diffusion coeficient c
 /////////////////////////////////////////////////////////////////////
 
 void
-MD::initialization_vapor(void) {
+MD::initializatIonVapor(void) {
 	double nion=vars->ions.size();
 	double dx,dy,dz, d,min_gv, min_iv, min_vv, gv, iv, vv;
 	gv=10, iv=10, vv=10;	/*	minimum vapor-vapor, vapor-ion, vapor-gas distance */
@@ -29,9 +29,9 @@ MD::initialization_vapor(void) {
     // Set random number generator
 	random_device seed;
 	default_random_engine engine(seed());
-	normal_distribution<> distvapor(0.0, sqrt(kb*T/pp->mvapor));
+	normal_distribution<> distvapor(0.0, sqrt(kb*pp->T/pp->mvapor));
 	mt19937 mt(seed());
-	uniform_real_distribution<double> r(-d_size*0.5,d_size*0.5);
+	uniform_real_distribution<double> r(-con->HL,con->HL);
 
     // Main part, generate random x, y, z positions and calculate minimum gas-gas distance.
 	int i=0;
@@ -44,7 +44,7 @@ MD::initialization_vapor(void) {
 				dx = a.qx - b.qx;
 				dy = a.qy - b.qy;
 				dz = a.qz - b.qz;
-				adjust_periodic(dx, dy, dz, d_size);
+				adjust_periodic(dx, dy, dz, con->L);
 				d=sqrt(dx*dx+dy*dy+dz*dz);
 				if(d<min_vv) min_vv=d; // minimum vapor-vapor distance
 			}
@@ -53,7 +53,7 @@ MD::initialization_vapor(void) {
 			dx=a.qx-b.qx;
 			dy=a.qy-b.qy;
 			dz=a.qz-b.qz;
-			adjust_periodic(dx, dy, dz, d_size);
+			adjust_periodic(dx, dy, dz, con->L);
 			d=sqrt(dx*dx+dy*dy+dz*dz);
 			if(d<min_iv) min_iv=d; // minimum vapor-ion distance
 		}
@@ -61,7 +61,7 @@ MD::initialization_vapor(void) {
 			dx=a.qx-b.qx;
 			dy=a.qy-b.qy;
 			dz=a.qz-b.qz;
-			adjust_periodic(dx, dy, dz, d_size);
+			adjust_periodic(dx, dy, dz, con->L);
 			d=sqrt(dx*dx+dy*dy+dz*dz);
 			if(d<min_gv) min_gv=d; // minimum gas-vapor distance
 		}
@@ -79,5 +79,5 @@ MD::initialization_vapor(void) {
 			i++;
 		}
 		collisionFlagVapor.push_back(0);
-	} while(i<Nof_around_vapor);
+	} while(i<con->Nof_around_vapor);
 }

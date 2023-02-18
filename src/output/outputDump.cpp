@@ -13,11 +13,11 @@ Observer::outputDump(void) {
 	Ngas+=vars->gases[0].inAtoms.size()*int(vars->gas_in.size());
 
 	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", count, Ngas+Nion+Nvapor, 
-        -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
+        -con->HL, con->HL, -con->HL, con->HL, -con->HL, con->HL);
 
 	double X,Y,Z;
 	X=Y=Z=0;
-	if(dump_fix==1) {X=vars->ion_r[0];Y=vars->ion_r[1];Z=vars->ion_r[2];}
+	if(dump_fix==1) {X=vars->IonX[0];Y=vars->IonX[1];Z=vars->IonX[2];}
 
 	int ID=0;
 	for (auto &a : vars->ions) {
@@ -57,11 +57,11 @@ Observer::outputDumpClose(void) {
 	int Ngas=vars->gases[0].inAtoms.size()*int(vars->gas_in.size());
 
 	fprintf(f, "ITEM: TIMESTEP\n%d\nITEM: NUMBER OF ATOMS\n%d\nITEM: BOX BOUNDS pp pp pp\n%e %e\n%e %e\n%e %e\nITEM: ATOMS id type x y z vx vy vz\n", 
-        count, Ngas+Nion+Nvapor, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5, -d_size*0.5, d_size*0.5);
+        count, Ngas+Nion+Nvapor, -con->HL, con->HL, -con->HL, con->HL, -con->HL, con->HL);
 
 	double X,Y,Z;
 	X=Y=Z=0;
-	if(dump_fix==1) {X=vars->ion_r[0];Y=vars->ion_r[1];Z=vars->ion_r[2];}
+	if(dump_fix==1) {X=vars->IonX[0];Y=vars->IonX[1];Z=vars->IonX[2];}
 	int ID=0;
 	for (auto &a : vars->ions) {
 		fprintf(f,"%d %s %f %f %f %f %f %f\n",ID,vars->atypes[a.type].name.c_str(),a.qx-X,a.qy-Y,a.qz-Z,a.px,a.py,a.pz);

@@ -4,10 +4,10 @@
 void
 MD::makeDiatomicProp_in(int i){
 	Molecule *gases = vars->gases.data();
-  if(gases[i].inFlag==0){
+	if(gases[i].inFlag==0){
   	random_device seed;
     mt19937 mt(seed());
-    normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mgas));
+    normal_distribution<> distgas(0.0, sqrt(kb*pp->T/pp->mgas));
 		uniform_real_distribution<double> r(0,1);
 
 		gases[i].inAtoms=vars->atomGas(gastype); //check name
@@ -84,7 +84,7 @@ MD::makePolyatomicProp_in(int i){
 		random_device seed;
 		mt19937 mt(seed());
 		default_random_engine engine(seed());
-		normal_distribution<> distgas(0.0, sqrt(kb*T/pp->mvapor));
+		normal_distribution<> distgas(0.0, sqrt(kb*pp->T/pp->mvapor));
 		uniform_real_distribution<double> r(0,1);
 
 		double a=r(mt)*2*M_PI;
@@ -120,9 +120,9 @@ MD::makePolyatomicProp_in(int i){
 				double dz=vapors[vars->vapor_in[j]].qz-vapors[i].qz;
 				double r2=dx*dx+dy*dy+dz*dz;
 				if(r2<25){
-					dx=vapors[i].qx-vars->ion_r[0];
-					dy=vapors[i].qy-vars->ion_r[1];
-					dz=vapors[i].qz-vars->ion_r[2];
+					dx=vapors[i].qx-vars->IonX[0];
+					dy=vapors[i].qy-vars->IonX[1];
+					dz=vapors[i].qz-vars->IonX[2];
 					r2=dx*dx+dy*dy+dz*dz;
 					double rinv=1/sqrt(r2);
 					vapors[i].qx-=dx*rinv;

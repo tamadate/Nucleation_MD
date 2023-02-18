@@ -5,6 +5,8 @@
 #include "PhysicalProp.hpp"
 #include "flags.hpp"
 #include "pairlist/MBdist.hpp"
+#include "MDcondition.hpp"
+#include "thermostat/thermostat.hpp"
 //------------------------------------------------------------------------
 
 class MD {
@@ -17,25 +19,10 @@ class MD {
 	int calculation_number;
 
 	int gastype;	/*1:He, 2:Ar, 3:N2*/
-	int vaportype;	/*1:MeOH, 2:H2O, 3:EtOH*/
-	long int step_relax;
-	long int step_repre;
-	long int Noftimestep;
-	double p;
-	double T;
-	int Nof_around_gas;
-	int Nof_around_vapor;
-	int OBSERVE;
-
+	
 	double dt;
-	double CUTOFF;
-	double MARGIN;
-	double ML2;
-	double CL2;
-	double d_size;
-	double V;
-
 	long int itime;
+	
 	std::vector<long int> collisionFlagGas;
 	std::vector<long int> collisionFlagVapor;
 	std::vector<Potential*> InterInter;
@@ -45,11 +32,10 @@ class MD {
 	Observer *obs;
 	Physical *pp;
 	FLAG *flags;
+	MDcondition *con;
+	Thermostat *thermo;
 	MBdist *mbdist;
 	MBdist *mbdistV;
-
-//	vectors for pairlist
-	double margin_length;
 
 //	General functions
 
@@ -72,7 +58,7 @@ class MD {
 
 //	initialization
 	void initialization_gas(void);
-	void initialization_vapor(void);
+	void initializatIonVapor(void);
 	void readCondFile(char* condfile);
 
 //	periodic
@@ -87,12 +73,12 @@ class MD {
 	void getGasCenterProp(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
 	void getIonCenterProp(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
 	double distFromIonCenter(Molecule &mol, double &dx, double &dy, double &dz);
+	double distFromIonPreCenter(Molecule &mol, double &dx, double &dy, double &dz);
 	double gyration;
 
 
 // related vapor sticking position
 	void positionLog(void);
-	int positionLogStep;
 	std::vector<int> stickPositionList;
 
 /*other*/
@@ -107,17 +93,7 @@ class MD {
 	string gyration_path;
 	double crsq;
 
-	void velocity_scaling(void);
-	void nosehoover_ion(void);
-	void nosehoover_zeta(void);
-	void nosehoover_gas(void);
-	void nosehoover_zeta_gas(void);
-	double zeta;
-	void setNVE(void);
-	void setNVTion(double temp);
-
 	double totalPotential;
-
 
 	MD(char* condfile,int calcNumber);
 	~MD(void);
