@@ -13,9 +13,15 @@ public:
 	std::vector<Atom> ions;
 	std::vector<Molecule> gases;
   	std::vector<Molecule> vapors;
+
+	double IonX[3];
+	double IonV[3];
+	double gasX[3];
+	double gasV[3];
+	double preIonX[3];
+
 	double time;
 	double zeta_ion;
-	double zeta_gas;
 
 	Potentials Utotal;
 	Times times;

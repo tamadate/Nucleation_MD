@@ -1,8 +1,13 @@
 #pragma once
 #include "../variables.hpp"
+#include "../MDcondition.hpp"
 //------------------------------------------------------------------------
 class Observer {
 public:
+	Variables *vars;
+	MDcondition *con;
+	double startTime;
+	long int OBSERVE;
 	const double coeff=kb_real_inv/1.5;
 	double Kin_g;
 	double Kout_g;
@@ -25,11 +30,30 @@ public:
 	int Nion;
 	int Nvap;
 
-	void computeGasProps(Variables *vars);
-	void computeIonProps(Variables *vars);
-	void computeVaporProps(Variables *vars);
-	double potential_energy(Variables *vars) {return vars->totalPotential;}
-	double pressure(Variables *vars, std::vector<Pair> &pairs, double Treal, double virial,double p,double T);
-	double total_energy(Variables *vars, std::vector<Pair> &pairs) {return K_g + potential_energy(vars);}
+	void computeGasProps(void);
+	void computeIonProps(void);
+	void computeVaporProps(void);
+	double potential_energy() {return vars->totalPotential;}
+	double pressure(std::vector<Pair> &pairs, double Treal, double virial,double p,double T);
+	double total_energy(std::vector<Pair> &pairs) {return K_g + potential_energy();}
+
+	void outputDump(void);
+	void outputDumpClose(void);
+	void outputIonCenter(void);
+	void outputGasCenter(void);
+	void Ovin(int i, double time);
+	void Ovout(int i, double time);
+	void display(void);
+
+	char fileVaporIn[100];
+	char fileVaporOut[100];
+	char fileKinetic[100];
+	char filePotential[100];
+	char fileIonCenter[100];
+	char fileGasCenter[100];
+	char *fileDump;
+
+	bool dump_fix;
+	Observer(Variables *VARS, MDcondition *CON, int calculation_number);
 };
 //------------------------------------------------------------------------

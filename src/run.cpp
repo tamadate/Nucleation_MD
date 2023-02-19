@@ -15,58 +15,51 @@
 /////////////////////////////////////////////////////////////////////
 void
 MD::run(char** argv) {
-/****Thermal relaxation****/
-  const int logger=10000;
-	setPotential(flags,0);
-	for (auto &a : IntraInter) {a->printName();}
-	for (auto &a : InterInter) {a->printName();}
-	for (itime=0; itime < step_relax; itime++) {
-		if (itime%OBSERVE==0) {
-			display(1);
-			export_dump_close();
-			vars->time=(itime*dt);
+	/****Thermal relaxation****/
+	for (itime=0; itime < con->step_relax; itime++) {
+		vars->time=itime*dt;
+		if (itime%obs->OBSERVE==0) {
+			obs->display();
+			obs->outputDumpClose();
 		}
     	verlet();
-		//if ((itime+1)%pp->OBSERVE==0) flags->eflag=1;
 	}
 
-/*
-****Reinitialization****
-- Reset time (time -> 0).
-- Re-initializating the ion and gas positions and velocities.
-Position -> 0 elta, Traslational velocity -> 0
-- Set ion's center of mass (maybe -> 0), make pair list for initial
-step of simulation, reset the margine size.
-*/
-	vars->time=0;
-	itime=0;
-	setPotential(flags,1);
-	for (auto &a : vars->ions) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
-	for (auto &a : vars->gases) a.qx-=ion_r[0], a.qy-=ion_r[1], a.qz-=ion_r[2];
-	analysis_ion();
+	/*
+	****Reinitialization****
+	- Reset time (time -> 0).
+	- Re-initializating the ion and gas positions and velocities.
+	Position -> 0 elta, Traslational velocity -> 0
+	- Set ion's center of mass (maybe -> 0), make pair list for initial
+	step of simulation, reset the margine size.
+	*/
+	for (auto &a : vars->ions) a.qx-=vars->IonX[0], a.qy-=vars->IonX[1], a.qz-=vars->IonX[2];
+	for (auto &a : vars->gases) a.qx-=vars->IonX[0], a.qy-=vars->IonX[1], a.qz-=vars->IonX[2];
+	getIonCenterProp();
 	make_pair();
-	margin_length = MARGIN;
-	setNVE();
+	delete thermo;
+	thermo = new Thermostat();
 
-/****Main simulaiton****/
-	for (itime=0; itime<Noftimestep; itime++) {
-    if (positionLogStep>0){
-		if(itime%positionLogStep==0) positionLog();
-    }
-    if(itime%logger==0){
-		analysis_gas();
-		output();
-		//output_gas();
-		vars->time+=(logger*dt);
-    }
-    if (itime%OBSERVE==0) {
-        display(0);
-        export_dump_close();
-    }
-	if ((itime+1)%OBSERVE==0) {
-		flags->eflag=1;
-		vars->Uzero();
-    }
-  	verlet();
+	/****Main simulaiton****/
+	for (itime=0; itime<con->Noftimestep; itime++) {
+		vars->time=itime*dt;
+		if (itime%obs->OBSERVE==0) {
+			flags->eflag=true;
+			vars->Uzero();
+		}
+		if (con->positionLogStep>0){
+			if(itime%con->positionLogStep==0) positionLog();
+		}
+		if(itime%con->logger==0){
+			getGasCenterProp();
+			obs->outputIonCenter();
+			//obs->outputGasCenter();
+		}
+		if (itime%obs->OBSERVE==0) {
+			obs->display();
+			obs->outputDumpClose();
+			flags->eflag=false;
+		}
+		verlet();
 	}
 }

@@ -1,6 +1,4 @@
-//------------------------------------------------------------------------
 #include "../md.hpp"
-//------------------------------------------------------------------------
 
 
 /////////////////////////////////////////////////////////////////////
@@ -29,11 +27,11 @@ MD::make_pair(void){
 		double v2 = px*px + py*py + pz*pz;
 		if (vmax2 < v2) vmax2 = v2;
 	}
-	double vion2=ion_v[0]*ion_v[0]+ion_v[1]*ion_v[1]+ion_v[2]*ion_v[2];
+	double vion2=vars->IonV[0]*vars->IonV[0]+vars->IonV[1]*vars->IonV[1]+vars->IonV[2]*vars->IonV[2];
 	if (vmax2<vion2) vmax2=vion2;
 	double vmax = sqrt(vmax2);
 
-	loop_update=margin_length/(vmax*dt);
+	loop_update=con->MARGIN/(vmax*dt);
 	loop=0;
 }
 
@@ -49,11 +47,9 @@ MD::update_gas_in(void){
 	vars->gas_in.clear();
 	vars->gas_out.clear();
 
-	for (int i=0;i<Nof_around_gas;i++){
-		double dx = gases[i].qx - ion_r[0];
-		double dy = gases[i].qy - ion_r[1];
-		double dz = gases[i].qz - ion_r[2];
-		double r2 = (dx * dx + dy * dy + dz * dz);
+	for (int i=0;i<con->Nof_around_gas;i++){
+		double dx,dy,dz;
+		double r2 = distFromIonCenter(gases[i],dx,dy,dz);
 		if (r2 < RI2){
 			//if inter-gas interaction flag is ON, stand flag_in ON
 			//if flag_in ON, molecule push back to vars->gas_in
@@ -81,14 +77,12 @@ MD::update_vapor_in(void){
 	vars->vapor_in.clear();
 	vars->vapor_out.clear();
 
-	for (int i=0;i<Nof_around_vapor;i++){
-		double dx = vapors[i].qx - ion_r[0];
-		double dy = vapors[i].qy - ion_r[1];
-		double dz = vapors[i].qz - ion_r[2];
-		double r2 = (dx * dx + dy * dy + dz * dz);
+	for (int i=0;i<con->Nof_around_vapor;i++){
+		double dx,dy,dz;
+		double r2 = distFromIonCenter(vapors[i],dx,dy,dz);
 		if (r2 < RI2) {
 			if(r2<100 && collisionFlagVapor[i]==0){
-				Ovin(i);
+				obs->Ovin(i,itime*dt);
 				collisionFlagVapor[i]=itime;
 			}
 			vars->vapor_in.push_back(i);
@@ -113,23 +107,24 @@ MD::check_pairlist(void){
 	if(loop>loop_update){
 		Molecule *gases = vars->gases.data();
 		Molecule *vapors = vars->vapors.data();
+		double coeff=dt*loop;
 		for (auto &i : vars->gas_out) {
-			gases[i].qx += gases[i].px*dt*loop;
-			gases[i].qy += gases[i].py*dt*loop;
-			gases[i].qz += gases[i].pz*dt*loop;
+			gases[i].qx += gases[i].px*coeff;
+			gases[i].qy += gases[i].py*coeff;
+			gases[i].qz += gases[i].pz*coeff;
 		}
 		for (auto &i : vars->vapor_out) {
-			vapors[i].qx += vapors[i].px*dt*loop;
-			vapors[i].qy += vapors[i].py*dt*loop;
-			vapors[i].qz += vapors[i].pz*dt*loop;
+			vapors[i].qx += vapors[i].px*coeff;
+			vapors[i].qy += vapors[i].py*coeff;
+			vapors[i].qz += vapors[i].pz*coeff;
 		}
 		boundary_scaling_gas_move();
 		boundary_scaling_vapor_move();
 		boundary_scaling_ion_move();
 		make_pair();
-		pre_ion[0]=ion_r[0];
-		pre_ion[1]=ion_r[1];
-		pre_ion[2]=ion_r[2];
+		vars->preIonX[0]=vars->IonX[0];
+		vars->preIonX[1]=vars->IonX[1];
+		vars->preIonX[2]=vars->IonX[2];
 	}
 //	if(flags->force_sw==1) sw->check_pairlist(vars);
 //	if(flags->force_ters==1) ters->check_pairlist(vars);
