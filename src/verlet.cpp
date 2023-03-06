@@ -92,12 +92,12 @@ MD::update_position(void) {
 			a.qx += a.px * dt;
 			a.qy += a.py * dt;
 			a.qz += a.pz * dt;
-		  a.fx=a.fy=a.fz=0.0;
+		  	a.fx=a.fy=a.fz=0.0;
 			for(int nth=0;nth<Nth;nth++){
 				a.fx=a.fy=a.fz=0;
 			}
 		}
-  }
+  	}
 
   	for (auto &i : vars->gas_in) {
 		for (auto &a : vars->gases[i].inAtoms){
@@ -109,7 +109,7 @@ MD::update_position(void) {
 				a.fx=a.fy=a.fz=0;
 			}
 		}
-  }
+  	}
 	vars->times.tpos+=omp_get_wtime();
 }
 
