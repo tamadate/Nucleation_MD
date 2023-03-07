@@ -92,28 +92,14 @@ MD::update_position(void) {
 		}
 	}
   for (auto &i : vars->vapor_in) {
-		double r2min=100000;
 		for (auto &a : vars->vapors[i].inAtoms){
 			a.qx += a.px * dt;
 			a.qy += a.py * dt;
 			a.qz += a.pz * dt;
-		  	a.fx=a.fy=a.fz=0.0;
+		  a.fx=a.fy=a.fz=0.0;
 			for(int nth=0;nth<Nth;nth++){
 				a.fx=a.fy=a.fz=0;
 			}
-			double dx = a.qx - ion_r[0];
-			double dy = a.qy - ion_r[1];
-			double dz = a.qz - ion_r[2];
-			double r2 = (dx * dx + dy * dy + dz * dz);
-			if(r2min>r2) r2min=r2;
-		}
-		if (r2min > RI2 && collisionFlagVapor[i]!=0) {
-			Ovout(i);
-			collisionFlagVapor[i]=0;
-		}
-		if(r2min < 25 && collisionFlagVapor[i]==0){
-			Ovin(i);
-			collisionFlagVapor[i]=itime;
 		}
   }
 
@@ -127,24 +113,7 @@ MD::update_position(void) {
 				a.fx=a.fy=a.fz=0;
 			}
 		}
-				
   }
-
-	updateVaporinCenters();
-	for (auto &i : vars->vapor_in) {
-		double dx = vars->vapors[i].qx - ion_r[0];
-		double dy = vars->vapors[i].qy - ion_r[1];
-		double dz = vars->vapors[i].qz - ion_r[2];
-		double r2 = (dx * dx + dy * dy + dz * dz);
-		if (r2 > RI2 && collisionFlagVapor[i]!=0) {
-			Ovout(i);
-			collisionFlagVapor[i]=0;
-		}
-		if(r2 < 100 && collisionFlagVapor[i]==0){
-			Ovin(i);
-			collisionFlagVapor[i]=itime;
-		}
-	}
 	vars->times.tpos+=omp_get_wtime();
 }
 
