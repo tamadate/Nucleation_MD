@@ -7,6 +7,7 @@
 #include "pairlist/MBdist.hpp"
 #include "MDcondition.hpp"
 #include "thermostat/thermostat.hpp"
+#include "collision/collision.hpp"
 //------------------------------------------------------------------------
 
 class MD {
@@ -24,7 +25,6 @@ class MD {
 	long int itime;
 	
 	std::vector<long int> collisionFlagGas;
-	std::vector<long int> collisionFlagVapor;
 	std::vector<Potential*> InterInter;
 	std::vector<Potential*> IntraInter;
 
@@ -36,12 +36,14 @@ class MD {
 	Thermostat *thermo;
 	MBdist *mbdist;
 	MBdist *mbdistV;
+	Collision *coll;
 
 //	General functions
 
 //	velocity verlet
 	void run(char** argv);
 	void verlet(void);
+	void checkCollision(void);
 	void update_position(void);
 	void velocity_calculation(void);
 

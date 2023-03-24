@@ -110,6 +110,8 @@ MD::update_position(void) {
 			}
 		}
   	}
+
+	coll->checkCollision(itime);
 	vars->times.tpos+=omp_get_wtime();
 }
 

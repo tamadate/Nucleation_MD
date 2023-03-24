@@ -22,6 +22,7 @@ MD::MD(char* condfile, int calcNumber) {
 	pp = new Physical();
 	flags = new FLAG();
 	thermo = new Thermostat();
+	coll = new Collision();
 
 	dt = 0.5;	/*	fs	*/
 
@@ -49,6 +50,7 @@ MD::MD(char* condfile, int calcNumber) {
 
 	mbdist = new MBdist(pp->cgas,pp->mgas,pp->T);
 	mbdistV = new MBdist(pp->cvapor,pp->mvapor,pp->T);
+	coll->init(vars);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -63,5 +65,6 @@ MD::~MD(void) {
 	delete flags;
 	delete mbdist;
 	delete mbdistV;
+	delete coll;
 }
 
