@@ -60,6 +60,8 @@ public:
 	std::vector<vector<vector<double>>> pair_coeff_v;
 
 	std::vector<vector<vector<double>>> pair_coeff_vi;
+	std::vector<vector<vector<double>>> pair_coeff_vi_se;
+
 	std::vector<vector<double>> pair_coeff_vg;
 	std::vector<vector<double>> pair_coeff_gi;
 

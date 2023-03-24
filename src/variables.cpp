@@ -31,10 +31,13 @@ void
 Variables::setCrossPotentials(int Nion,int Nvapor){
 // vapor - ion potential
   pair_coeff_vi.resize(Nvapor);
+  pair_coeff_vi_se.resize(Nvapor);
   for (int i=0;i<Nvapor;i++){
     pair_coeff_vi[i].resize(Nion);
+    pair_coeff_vi_se[i].resize(Nion);
     for (int j=0;j<Nion;j++){
       pair_coeff_vi[i][j].resize(2);
+      pair_coeff_vi_se[i][j].resize(2);
     }
   }
   for (int i=0;i<Nvapor;i++){
@@ -43,6 +46,8 @@ Variables::setCrossPotentials(int Nion,int Nvapor){
 			double sigma=(atypes_v[i].coeff2+atypes[j].coeff2)*0.5;
 			pair_coeff_vi[i][j][0]=48 * epu*pow(sigma,12.0);
 			pair_coeff_vi[i][j][1]=24 * epu*pow(sigma,6.0);
+      pair_coeff_vi_se[i][j][0]=sigma;
+			pair_coeff_vi_se[i][j][1]=epu;
 		}
 	}
 

@@ -55,15 +55,15 @@ MD::velocity_calculation(void) {
 	    a.py += a.fy *Coeff2;
 	    a.pz += a.fz *Coeff2;
 	}
-  for (auto &i : vars->vapor_in) {
+  	for (auto &i : vars->vapor_in) {
 		for (auto &a : vars->vapors[i].inAtoms){
 			double Coeff2=Coeff/a.mass;
 			a.px += a.fx * Coeff2;
 			a.py += a.fy * Coeff2;
 			a.pz += a.fz * Coeff2;
 		}
-  }
-  for (auto &i : vars->gas_in){
+  	}
+  	for (auto &i : vars->gas_in){
 		for (auto &a : vars->gases[i].inAtoms){
 			double Coeff2=Coeff/a.mass;
 			a.px += a.fx * Coeff2;
@@ -91,8 +91,7 @@ MD::update_position(void) {
 			a.fx=a.fy=a.fz=0;
 		}
 	}
-  for (auto &i : vars->vapor_in) {
-		double r2min=100000;
+  	for (auto &i : vars->vapor_in) {
 		for (auto &a : vars->vapors[i].inAtoms){
 			a.qx += a.px * dt;
 			a.qy += a.py * dt;
@@ -101,46 +100,41 @@ MD::update_position(void) {
 			for(int nth=0;nth<Nth;nth++){
 				a.fx=a.fy=a.fz=0;
 			}
-			double dx = a.qx - ion_r[0];
-			double dy = a.qy - ion_r[1];
-			double dz = a.qz - ion_r[2];
-			double r2 = (dx * dx + dy * dy + dz * dz);
-			if(r2min>r2) r2min=r2;
 		}
-		if (r2min > RI2 && collisionFlagVapor[i]!=0) {
-			Ovout(i);
-			collisionFlagVapor[i]=0;
-		}
-		if(r2min < 25 && collisionFlagVapor[i]==0){
-			Ovin(i);
-			collisionFlagVapor[i]=itime;
-		}
-  }
+  	}
 
-  for (auto &i : vars->gas_in) {
+  	for (auto &i : vars->gas_in) {
 		for (auto &a : vars->gases[i].inAtoms){
 			a.qx += a.px * dt;
 			a.qy += a.py * dt;
 			a.qz += a.pz * dt;
-		  a.fx=a.fy=a.fz=0.0;
+		  	a.fx=a.fy=a.fz=0.0;
 			for(int nth=0;nth<Nth;nth++){
 				a.fx=a.fy=a.fz=0;
 			}
-		}
-				
-  }
+		}		
+  	}
 
 	updateVaporinCenters();
 	for (auto &i : vars->vapor_in) {
-		double dx = vars->vapors[i].qx - ion_r[0];
-		double dy = vars->vapors[i].qy - ion_r[1];
-		double dz = vars->vapors[i].qz - ion_r[2];
-		double r2 = (dx * dx + dy * dy + dz * dz);
-		if (r2 > RI2 && collisionFlagVapor[i]!=0) {
+		double dmin=10000000;
+		for (auto &b : vars->vapors[i].inAtoms){
+			for (auto &a : vars->ions) {
+				double dx = b.qx - a.qx;
+				double dy = b.qy - a.qy;
+				double dz = b.qz - a.qz;
+				double r2 = (dx * dx + dy * dy + dz * dz);
+				double r = sqrt(r2);
+				double sig=vars->pair_coeff_vi_se[b.type][a.type][0];
+				double d=r-sig;
+				if(dmin>d) dmin=d;
+			}
+		}
+		if (dmin > 10 && collisionFlagVapor[i]!=0) {
 			Ovout(i);
 			collisionFlagVapor[i]=0;
 		}
-		if(r2 < 100 && collisionFlagVapor[i]==0){
+		if (dmin < 0 && collisionFlagVapor[i]==0){
 			Ovin(i);
 			collisionFlagVapor[i]=itime;
 		}
