@@ -2,6 +2,7 @@
 
 void
 MD:: updateInCenters(void){
+	getIonCenterProp();
 	for (auto i : vars->gas_in){
 		double X=0;
 		double Y=0;

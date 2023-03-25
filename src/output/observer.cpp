@@ -3,25 +3,16 @@
 //------------------------------------------------------------------------
 
 
-Observer::Observer(Variables *VARS, MDcondition *CON, int calculation_number){
+Observer::Observer(Variables *VARS, MDcondition *CON){
 	vars=VARS;
 	con=CON;
 	dump_fix=true;
 	startTime=omp_get_wtime();
 	OBSERVE=10000000;
-	sprintf(fileIonCenter, "ion_%d.dat", int(calculation_number));
-	FILE*f=fopen(fileIonCenter, "w");
+	sprintf(fileKinetic, "K_%d.dat", int(vars->calcID));
+	FILE*f=fopen(fileKinetic, "w");
 	fclose(f);
-	sprintf(fileVaporIn, "vapor_in_%d.dat", int(calculation_number));
-	f=fopen(fileVaporIn, "w");
-	fclose(f);
-	sprintf(fileVaporOut, "vapor_out_%d.dat", int(calculation_number));
-	f=fopen(fileVaporOut, "w");
-	fclose(f);
-	sprintf(fileKinetic, "K_%d.dat", int(calculation_number));
-	f=fopen(fileKinetic, "w");
-	fclose(f);
-	sprintf(filePotential, "U_%d.dat", int(calculation_number));
+	sprintf(filePotential, "U_%d.dat", int(vars->calcID));
 	f=fopen(filePotential, "w");
 	fclose(f);
 }

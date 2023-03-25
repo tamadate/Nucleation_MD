@@ -7,7 +7,7 @@
 */
 /////////////////////////////////////////////////////////////////////
 void
-PotentialGasIon::compute(Variables *vars, FLAG *flags) {
+PotentialGasIon::compute(Variables *vars) {
 	Molecule *gases = vars->gases.data();
 	Atom *ions = vars->ions.data();
 	vars->times.tgi-=omp_get_wtime();
@@ -30,10 +30,10 @@ PotentialGasIon::compute(Variables *vars, FLAG *flags) {
 			ions[j].fx -= force_pair * dx;
 			ions[j].fy -= force_pair * dy;
 			ions[j].fz -= force_pair * dz;
-			if(flags->eflag) {
-				vars->Utotal.Ugi+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+			if(vars->eflag) {
+				vars->U.Ugi+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 			}
-				//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+				//	if(vars->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 				//	vars->totalVirial+=force_lj;
 		}
 	}

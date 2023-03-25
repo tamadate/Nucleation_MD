@@ -9,18 +9,18 @@
 
 /**********************************Force calculation******************************************/
 void
-PotentialAMBER::compute(Variables *vars, FLAG *flags) {
+PotentialAMBER::compute(Variables *vars) {
 	vars->times.tion-=omp_get_wtime();
-	computeLong(vars,flags);
-	computeBond(vars,flags);
-	computeAngle(vars,flags);
-	computeDihedral(vars,flags);
+	computeLong(vars);
+	computeBond(vars);
+	computeAngle(vars);
+	computeDihedral(vars);
 	vars->times.tion+=omp_get_wtime();
 }
 
 
 void
-PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
+PotentialAMBER::computeLong(Variables *vars) {
 	Atom *ions = vars->ions.data();
 	for (auto pair : longPair) {
 		int i=pair.i;
@@ -42,15 +42,15 @@ PotentialAMBER::computeLong(Variables *vars, FLAG *flags) {
 		ions[j].fx -= force_pair * dx;
 		ions[j].fy -= force_pair * dy;
 		ions[j].fz -= force_pair * dz;
-		if(flags->eflag) {
-			vars->Utotal.Uion+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-			vars->Utotal.Uion+=force_coul;
+		if(vars->eflag) {
+			vars->U.Uion+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+			vars->U.Uion+=force_coul;
 		}
 	}
 }
 
 void
-PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
+PotentialAMBER::computeBond(Variables *vars) {
 	Atom *ions = vars->ions.data();
 	Bond_type *btypes = vars->btypes.data();
 	for (auto &b : vars->bonds) {
@@ -72,12 +72,12 @@ PotentialAMBER::computeBond(Variables *vars, FLAG *flags) {
 		ions[j].fx -= force_bond_harmonic * dx;
 		ions[j].fy -= force_bond_harmonic * dy;
 		ions[j].fz -= force_bond_harmonic * dz;
-		if(flags->eflag) vars->Utotal.Uion+=rk*dr;
+		if(vars->eflag) vars->U.Uion+=rk*dr;
 	}
 }
 
 void
-PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
+PotentialAMBER::computeAngle(Variables *vars) {
 	Atom *ions = vars->ions.data();
 	/*intra-molecular interaction (angle)*/
 	Angle_type *ctypes = vars->ctypes.data();
@@ -121,12 +121,12 @@ PotentialAMBER::computeAngle(Variables *vars, FLAG *flags) {
 		ions[k].fx += f3[0];
 		ions[k].fy += f3[1];
 		ions[k].fz += f3[2];
-    	if (flags->eflag) vars->Utotal.Uion+= tk*dtheta;
+    	if (vars->eflag) vars->U.Uion+= tk*dtheta;
 	}
 }
 
 void
-PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
+PotentialAMBER::computeDihedral(Variables *vars) {
 	Atom *ions = vars->ions.data();
 /*intra-molecular interaction (dihedral)*/
 	Dihedral_type *dtypes = vars->dtypes.data();
@@ -199,7 +199,7 @@ PotentialAMBER::computeDihedral(Variables *vars, FLAG *flags) {
 	            df1=0.0;
 	        }
 			df += (-dtypes[type].coeff[JJ5] * df1);
-			if (flags->eflag) vars->Utotal.Uion+= dtypes[type].coeff[JJ5] * p_;
+			if (vars->eflag) vars->U.Uion+= dtypes[type].coeff[JJ5] * p_;
 		}
 
        	// cout<<df<<endl;

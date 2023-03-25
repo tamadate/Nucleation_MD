@@ -39,21 +39,13 @@ public:
 
 	void outputDump(void);
 	void outputDumpClose(void);
-	void outputIonCenter(void);
-	void outputGasCenter(void);
-	void Ovin(int i, double time);
-	void Ovout(int i, double time);
 	void display(void);
 
-	char fileVaporIn[100];
-	char fileVaporOut[100];
 	char fileKinetic[100];
 	char filePotential[100];
-	char fileIonCenter[100];
-	char fileGasCenter[100];
 	char *fileDump;
 
 	bool dump_fix;
-	Observer(Variables *VARS, MDcondition *CON, int calculation_number);
+	Observer(Variables *VARS, MDcondition *CON);
 };
 //------------------------------------------------------------------------

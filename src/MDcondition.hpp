@@ -10,6 +10,8 @@ public:
         CUTOFF = 20.0;
         positionLogStep=0;
         logger=10000;
+        sampleStep=10000;
+        dt=0.5;
     };
 	~MDcondition(void){};
 
@@ -17,10 +19,13 @@ public:
     long int step_relax;
     int positionLogStep;
     int logger;
+    int sampleStep;
 
     double L;
     double HL;
     double V;
+
+    double dt;
 
     int Nof_around_gas;
     int Nof_around_vapor;

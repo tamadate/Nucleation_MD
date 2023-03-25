@@ -7,7 +7,7 @@
 */
 /////////////////////////////////////////////////////////////////////
 void
-PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
+PotentialVaporGas::compute(Variables *vars) {
 	Molecule *gases = vars->gases.data();
 	Molecule *vapors = vars->vapors.data();
 	vars->times.tvg-=omp_get_wtime();
@@ -32,10 +32,10 @@ PotentialVaporGas::compute(Variables *vars, FLAG *flags) {
 				ag.fx -= force_pair * dx;
 				ag.fy -= force_pair * dy;
 				ag.fz -= force_pair * dz;
-				if(flags->eflag) {
-					vars->Utotal.Uvg+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+				if(vars->eflag) {
+					vars->U.Uvg+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 				}
-					//	if(flags->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+					//	if(vars->eflag) vars->totalPotential+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 					//	vars->totalVirial+=force_lj;
 			}
 		}

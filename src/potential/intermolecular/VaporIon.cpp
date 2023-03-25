@@ -7,7 +7,7 @@
 */
 /////////////////////////////////////////////////////////////////////
 void
-PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
+PotentialVaporIon::compute(Variables *vars) {
 	Molecule *vapors = vars->vapors.data();
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
@@ -33,9 +33,9 @@ PotentialVaporIon::compute(Variables *vars, FLAG *flags) {
 				ai.fx -= force_pair * dx;
 				ai.fy -= force_pair * dy;
 				ai.fz -= force_pair * dz;
-				if(flags->eflag) {
-					vars->Utotal.Uvi+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-					vars->Utotal.Uvi+=force_coul;
+				if(vars->eflag) {
+					vars->U.Uvi+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+					vars->U.Uvi+=force_coul;
 				}
 				//	vars->totalVirial+=force_lj;
 			}

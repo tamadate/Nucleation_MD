@@ -78,6 +78,5 @@ MD::initializatIonVapor(void) {
 			vars->vapors.push_back(a);
 			i++;
 		}
-		collisionFlagVapor.push_back(0);
 	} while(i<con->Nof_around_vapor);
 }

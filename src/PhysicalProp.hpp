@@ -7,8 +7,6 @@ public:
 	double mgas, mvapor, m;
 	double cgas, cvapor, c;
 	double z, alphagas, zzee;
-	char *gyration_path;
-	char *RDF_path;
 	double T;
 	double p;
 

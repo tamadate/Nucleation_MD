@@ -31,7 +31,7 @@ MD::make_pair(void){
 	if (vmax2<vion2) vmax2=vion2;
 	double vmax = sqrt(vmax2);
 
-	loop_update=con->MARGIN/(vmax*dt);
+	loop_update=con->MARGIN/(vmax*con->dt);
 	loop=0;
 }
 
@@ -81,10 +81,6 @@ MD::update_vapor_in(void){
 		double dx,dy,dz;
 		double r2 = distFromIonCenter(vapors[i],dx,dy,dz);
 		if (r2 < RI2) {
-			if(r2<100 && collisionFlagVapor[i]==0){
-				obs->Ovin(i,itime*dt);
-				collisionFlagVapor[i]=itime;
-			}
 			vars->vapor_in.push_back(i);
 			makePolyatomicProp_in(i);
 		}
@@ -107,7 +103,7 @@ MD::check_pairlist(void){
 	if(loop>loop_update){
 		Molecule *gases = vars->gases.data();
 		Molecule *vapors = vars->vapors.data();
-		double coeff=dt*loop;
+		double coeff=con->dt*loop;
 		for (auto &i : vars->gas_out) {
 			gases[i].qx += gases[i].px*coeff;
 			gases[i].qy += gases[i].py*coeff;

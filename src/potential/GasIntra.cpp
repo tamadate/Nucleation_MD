@@ -2,7 +2,7 @@
 
 
 void
-PotentialGasIntra::compute(Variables *vars, FLAG *flags){
+PotentialGasIntra::compute(Variables *vars){
 	vars->times.tgas-=omp_get_wtime();
 	for(auto &i : vars->gas_in){
 		Atom *g1= & vars->gases[i].inAtoms[0];
@@ -21,7 +21,7 @@ PotentialGasIntra::compute(Variables *vars, FLAG *flags){
 		g2->fx -= force_bond_harmonic * dx;
 		g2->fy -= force_bond_harmonic * dy;
 		g2->fz -= force_bond_harmonic * dz;
-		if(flags->eflag) vars->Utotal.Ugas+=rk*dr;
+		if(vars->eflag) vars->U.Ugas+=rk*dr;
 	}
 	vars->times.tgas+=omp_get_wtime();
 }
