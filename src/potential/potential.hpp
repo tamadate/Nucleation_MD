@@ -7,7 +7,7 @@ class Potential {
 		string potName="potential";
 	public:
 		virtual void printName(void) {cout<<potName<<endl;}
-		virtual void compute(Variables *vars, FLAG *flags){};
+		virtual void compute(Variables *vars){};
 		virtual void makePair(Variables *vars){};
 		virtual void initial(Variables *vars){};
 		Potential(){};
@@ -21,7 +21,7 @@ class PotentialGasIon : public Potential {
 		std::vector<Pair> pairs;
 		double ML2;
 		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void makePair(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialGasIon(double ml2){ML2=ml2;};
@@ -35,7 +35,7 @@ class PotentialVaporVapor : public Potential {
 		std::vector<Pair> pairs;
 		double ML2;
 		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void makePair(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialVaporVapor(double ml2){ML2=ml2;};
@@ -49,7 +49,7 @@ class PotentialVaporGas : public Potential {
 		std::vector<Pair> pairs;
 		double ML2;
 		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void makePair(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialVaporGas(double ml2){ML2=ml2;};
@@ -63,7 +63,7 @@ class PotentialVaporIon : public Potential {
 		std::vector<Pair> pairs;
 		double ML2;
 		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void makePair(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialVaporIon(double ml2){ML2=ml2;};
@@ -77,7 +77,7 @@ class PotentialGasGas : public Potential {
 		std::vector<Pair> pairs;
 		double ML2;
 		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void makePair(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialGasGas(double ml2){ML2=ml2;};
@@ -91,11 +91,11 @@ class PotentialAMBER : public Potential {
 		std::vector<Pair> longPair;
 	public:
 		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
-		void computeLong(Variables *vars, FLAG *flags);
-		void computeBond(Variables *vars, FLAG *flags);
-		void computeAngle(Variables *vars, FLAG *flags);
-		void computeDihedral(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
+		void computeLong(Variables *vars);
+		void computeBond(Variables *vars);
+		void computeAngle(Variables *vars);
+		void computeDihedral(Variables *vars);
 		void initial(Variables *vars);
 		PotentialAMBER(){};
 		~PotentialAMBER(){};
@@ -107,7 +107,7 @@ class PotentialGasIntra : public Potential {
 		string potName="Gas intra";
 	public:
 		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialGasIntra(){};
 		~PotentialGasIntra(){};
@@ -118,7 +118,7 @@ class PotentialBorn : public Potential {
 		string potName="Ion BMH";
 	public:
 		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialBorn(){};
 		~PotentialBorn(){};
@@ -130,7 +130,7 @@ class PotentialEfield : public Potential {
 	public:
 		void printName(void) {cout<<potName<<endl;}
 		double Ecoeff[3];
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialEfield(double Ex, double Ey, double Ez){
 			Ecoeff[0]=Ex;
@@ -147,7 +147,7 @@ class PotentialIonDipole : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		double alphagas;
 		double zion;
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialIonDipole(){};
 		~PotentialIonDipole(){};
@@ -158,7 +158,7 @@ class PotentialVaporIntra : public Potential {
 		string potName="AMBER vapor";
 	public:
 		void printName(void) {cout<<potName<<endl;}
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		void initial(Variables *vars){};
 		PotentialVaporIntra(){};
 		~PotentialVaporIntra(){};
@@ -211,7 +211,7 @@ class PotentialSW : public Potential {
 		std::vector<int> neighshort;
 
 	public:
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		double U;
 		double Pressure;
 		double virial;
@@ -224,7 +224,7 @@ class PotentialSW : public Potential {
 
 class PotentialTersoff : public Potential{
 	public:
-		void compute(Variables *vars, FLAG *flags);
+		void compute(Variables *vars);
 		double compute_virial(Variables *vars);
 		void check_pairlist(Variables *vars);
 		void make_pair(Variables *vars);

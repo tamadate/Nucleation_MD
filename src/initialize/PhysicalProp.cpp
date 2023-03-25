@@ -39,6 +39,7 @@ Physical::readIonProp(char* infile){
 	string str;
 	int iflag=0;
 	Mion=0;
+	std::vector<double> mass_array;
 	while(getline(stream,str)) {
 		if(str.length()==0) continue;
 		if (str=="atom type") {iflag=1; continue;}
@@ -53,19 +54,18 @@ Physical::readIonProp(char* infile){
 				if (loop==2) mass=stod(tmp);
 				loop++;
 			}
-			atype.push_back(mass);
+			mass_array.push_back(mass);
 		}
 		if (iflag==2) {
 			int loop=0;
 			int type, id;
-			double charge, mass;
+			double charge;
 			while(getline(stream,tmp,'\t')) {
 				if (loop==1) type=stoi(tmp);
 				if (loop==2) charge=stod(tmp);
 				loop++;
 			}
-			mass=atype[type-1];
-			Mion+=mass;
+			Mion+=mass_array[type-1];
 			z+=charge;
 		}
 	}

@@ -9,7 +9,7 @@
 
 /**********************************Force calculation******************************************/
 void
-PotentialBorn::compute(Variables *vars, FLAG *flags) {
+PotentialBorn::compute(Variables *vars) {
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
 	vars->times.tion-=omp_get_wtime();
@@ -44,11 +44,11 @@ PotentialBorn::compute(Variables *vars, FLAG *flags) {
 			ions[j].fx -= force_pair * dx;
 			ions[j].fy -= force_pair * dy;
 			ions[j].fz -= force_pair * dz;
-			if(flags->eflag) {
-				vars->Utotal.Uion+=force_coul;
-				vars->Utotal.Uion+=rexp*vars->bornCoeff[type1][type2][0];
-				vars->Utotal.Uion-=vars->bornCoeff[type1][type2][1]/6.0*r6inv;
-				vars->Utotal.Uion-=vars->bornCoeff[type1][type2][2]/8.0*r6inv*r2inv;
+			if(vars->eflag) {
+				vars->U.Uion+=force_coul;
+				vars->U.Uion+=rexp*vars->bornCoeff[type1][type2][0];
+				vars->U.Uion-=vars->bornCoeff[type1][type2][1]/6.0*r6inv;
+				vars->U.Uion-=vars->bornCoeff[type1][type2][2]/8.0*r6inv*r2inv;
 			}
 			//vars->totalVirial+=force_lj;
 		}

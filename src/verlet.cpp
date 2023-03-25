@@ -21,18 +21,19 @@ MD::verlet(void) {
 	velocity_calculation(); //	v(t) -> v(t+dt/2) using F(x(t))
 
 	update_position();
-	getIonCenterProp();
-
-	thermo->computeZeta(dt);
+	updateInCenters();
+	for (auto &a : funcs) a->postPosition();
 
 	check_pairlist();
 	vars->totalVirial=0;
-	for (auto &a : InterInter) a->compute(vars,flags);
-	for (auto &a : IntraInter) a->compute(vars,flags);
+	for (auto &a : InterInter) a->compute(vars);
+	for (auto &a : IntraInter) a->compute(vars);
 
 	velocity_calculation();	//	v(t+dt/2) -> v(t+dt) using F(x(t+dt))
 
-	thermo->tempControl(dt);
+	for (auto &a : funcs) {
+		if(itime%a->step==0) a->postLoop();
+	}
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -44,7 +45,7 @@ void
 MD::velocity_calculation(void) {
 	vars->times.tvel-=omp_get_wtime();
 	Molecule *gases = vars->gases.data();
-	double const Coeff=0.5*dt*4.184e-4;
+	double const Coeff=0.5*con->dt*4.184e-4;
 	for (auto &a : vars->ions) {
 		double Coeff2=Coeff/a.mass;
 		a.px += a.fx *Coeff2;
@@ -79,39 +80,29 @@ void
 MD::update_position(void) {
 	vars->times.tpos-=omp_get_wtime();
 	for (auto &a : vars->ions) {
-		a.qx += a.px * dt;
-		a.qy += a.py * dt;
-		a.qz += a.pz * dt;
+		a.qx += a.px * con->dt;
+		a.qy += a.py * con->dt;
+		a.qz += a.pz * con->dt;
 		a.fx=a.fy=a.fz=0.0;
-		for(int nth=0;nth<Nth;nth++){
-			a.fx=a.fy=a.fz=0;
-		}
 	}
  	 for (auto &i : vars->vapor_in) {
 		for (auto &a : vars->vapors[i].inAtoms){
-			a.qx += a.px * dt;
-			a.qy += a.py * dt;
-			a.qz += a.pz * dt;
+			a.qx += a.px * con->dt;
+			a.qy += a.py * con->dt;
+			a.qz += a.pz * con->dt;
 		  	a.fx=a.fy=a.fz=0.0;
-			for(int nth=0;nth<Nth;nth++){
-				a.fx=a.fy=a.fz=0;
-			}
 		}
   	}
 
   	for (auto &i : vars->gas_in) {
 		for (auto &a : vars->gases[i].inAtoms){
-			a.qx += a.px * dt;
-			a.qy += a.py * dt;
-			a.qz += a.pz * dt;
+			a.qx += a.px * con->dt;
+			a.qy += a.py * con->dt;
+			a.qz += a.pz * con->dt;
 		  	a.fx=a.fy=a.fz=0.0;
-			for(int nth=0;nth<Nth;nth++){
-				a.fx=a.fy=a.fz=0;
-			}
 		}
   	}
 
-	coll->checkCollision(itime);
 	vars->times.tpos+=omp_get_wtime();
 }
 

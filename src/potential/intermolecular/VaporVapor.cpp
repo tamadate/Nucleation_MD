@@ -7,7 +7,7 @@
 */
 /////////////////////////////////////////////////////////////////////
 void
-PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
+PotentialVaporVapor::compute(Variables *vars) {
 	Molecule *vapors = vars->vapors.data();
 	const int vs = pairs.size();
 	vars->times.tvv-=omp_get_wtime();
@@ -32,9 +32,9 @@ PotentialVaporVapor::compute(Variables *vars, FLAG *flags) {
 				av2.fx -= force_pair * dx;
 				av2.fy -= force_pair * dy;
 				av2.fz -= force_pair * dz;
-				if(flags->eflag) {
-					vars->Utotal.Uvv+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
-					vars->Utotal.Uvv+=force_coul;
+				if(vars->eflag) {
+					vars->U.Uvv+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+					vars->U.Uvv+=force_coul;
 				}
 				//	vars->totalVirial+=force_lj;
 			}

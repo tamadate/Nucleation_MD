@@ -7,7 +7,7 @@
 */
 /////////////////////////////////////////////////////////////////////
 void
-PotentialGasGas::compute(Variables *vars, FLAG *flags) {
+PotentialGasGas::compute(Variables *vars) {
 	Molecule *gases = vars->gases.data();
 	for(auto &p : pairs){
 		int i=p.i;
@@ -31,8 +31,8 @@ PotentialGasGas::compute(Variables *vars, FLAG *flags) {
 				ag2.fx -= force_pair * dx;
 				ag2.fy -= force_pair * dy;
 				ag2.fz -= force_pair * dz;
-				if(flags->eflag) {
-					vars->Utotal.Ugg+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
+				if(vars->eflag) {
+					vars->U.Ugg+=r6inv * (vars->pair_coeff[type1][type2][0]/12.0 * r6inv - vars->pair_coeff[type1][type2][1]/6.0);
 				}
 				//vars->totalVirial+=force_lj;
 			}

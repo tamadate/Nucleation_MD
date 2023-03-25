@@ -3,47 +3,38 @@
 #include "output/observer.hpp"
 #include "potential/potential.hpp"
 #include "PhysicalProp.hpp"
-#include "flags.hpp"
 #include "pairlist/MBdist.hpp"
 #include "MDcondition.hpp"
 #include "thermostat/thermostat.hpp"
-#include "collision/collision.hpp"
+#include "sampling/collision/collision.hpp"
+#include "sampling/gyration/gyration.hpp"
+#include "sampling/ionCenter/ionCenter.hpp"
+#include "sampling/stickPosition/stickPosition.hpp"
+#include "functions.hpp"
 //------------------------------------------------------------------------
 
 class MD {
-	private:
+private:
 
 
-	public:
-
-	int Nth;
-	int calculation_number;
-
+public:
 	int gastype;	/*1:He, 2:Ar, 3:N2*/
-	
-	double dt;
 	long int itime;
 	
-	std::vector<long int> collisionFlagGas;
 	std::vector<Potential*> InterInter;
 	std::vector<Potential*> IntraInter;
 
 	Variables *vars;
 	Observer *obs;
 	Physical *pp;
-	FLAG *flags;
 	MDcondition *con;
-	Thermostat *thermo;
 	MBdist *mbdist;
 	MBdist *mbdistV;
-	Collision *coll;
-
-//	General functions
+	std::vector<Functions*> funcs;
 
 //	velocity verlet
 	void run(char** argv);
 	void verlet(void);
-	void checkCollision(void);
 	void update_position(void);
 	void velocity_calculation(void);
 
@@ -79,20 +70,10 @@ class MD {
 	double gyration;
 
 
-// related vapor sticking position
-	void positionLog(void);
-	std::vector<int> stickPositionList;
-
 /*other*/
-
 	char filepath[100];
 	char atomFile[100];
 	char vaporFile[100];
-	char vaporStickFile[100];
-	char filepath_gyration[100];
-	void gyration_initial(void);
-	void gyration_out(MD *md2);
-	string gyration_path;
 	double crsq;
 
 	double totalPotential;

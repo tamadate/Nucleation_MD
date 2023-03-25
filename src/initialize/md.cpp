@@ -8,25 +8,14 @@
 */
 /////////////////////////////////////////////////////////////////////
 MD::MD(char* condfile, int calcNumber) {
-	calculation_number =  calcNumber;
-	#pragma omp parallel
-	{
-		#pragma omp single
-		{
-			Nth=omp_get_num_threads();
-		}
-	}
 	vars = new Variables();
+	vars->calcID =  calcNumber;
 	con = new MDcondition();
-	obs = new Observer(vars,con,calcNumber);
+	obs = new Observer(vars,con);
 	pp = new Physical();
-	flags = new FLAG();
-	thermo = new Thermostat();
-	coll = new Collision();
-
-	dt = 0.5;	/*	fs	*/
 
 	readCondFile(condfile);
+
 	pp->readIonProp(atomFile);
 	pp->readVaporProp(vaporFile);
 	pp->setPhysicalProp(gastype);
@@ -50,7 +39,7 @@ MD::MD(char* condfile, int calcNumber) {
 
 	mbdist = new MBdist(pp->cgas,pp->mgas,pp->T);
 	mbdistV = new MBdist(pp->cvapor,pp->mvapor,pp->T);
-	coll->init(vars);
+	for (auto &a : funcs) a->initial(vars, pp, con, obs);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -62,9 +51,8 @@ MD::~MD(void) {
 	delete vars;
 	delete obs;
 	delete pp;
-	delete flags;
 	delete mbdist;
 	delete mbdistV;
-	delete coll;
+	for (auto &a : funcs) delete a;
 }
 

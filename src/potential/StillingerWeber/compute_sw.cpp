@@ -7,7 +7,7 @@
 */
 /////////////////////////////////////////////////////////////////////
 void
-PotentialSW::compute(Variables *vars, FLAG *flags) {
+PotentialSW::compute(Variables *vars) {
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
 	U=0;

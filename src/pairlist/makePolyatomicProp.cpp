@@ -163,10 +163,6 @@ MD::makePolyatomicProp_out(int i){
 			av.py-=vapors[i].py;
 			av.pz-=vapors[i].pz;
 		}
-		if(collisionFlagVapor[i]!=0){
-			obs->Ovout(i,itime*dt);
-			collisionFlagVapor[i]=0;
-		}
   	}
 	vars->vapors[i].inFlag=0;
 }

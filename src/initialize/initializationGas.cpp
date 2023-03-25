@@ -68,6 +68,5 @@ MD::initialization_gas(void) {
 			vars->gases.push_back(a);
 			i++;
 		}
-		collisionFlagGas.push_back(0);
 	} while(i<con->Nof_around_gas);
 }

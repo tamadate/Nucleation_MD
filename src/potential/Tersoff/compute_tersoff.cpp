@@ -9,7 +9,7 @@
 */
 /////////////////////////////////////////////////////////////////////
 void
-PotentialTersoff::compute(Variables *vars, FLAG *flags) {
+PotentialTersoff::compute(Variables *vars) {
 	Atom *ions = vars->ions.data();
 	const int is = vars->ions.size();
 	U=0;

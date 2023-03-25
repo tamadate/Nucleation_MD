@@ -13,7 +13,7 @@
 */
 /////////////////////////////////////////////////////////////////////
 void
-PotentialEfield::compute(Variables *vars, FLAG *flags) {
+PotentialEfield::compute(Variables *vars) {
     for (auto &a : vars->ions) {
 		a.fx+=5.55e-5*a.charge*Ecoeff[0];
 		a.fy+=5.55e-5*a.charge*Ecoeff[1];
@@ -32,7 +32,7 @@ PotentialEfield::compute(Variables *vars, FLAG *flags) {
 
 // charge devided by number of atoms in ions
 void
-PotentialIonDipole::compute(Variables *vars, FLAG *flags) {
+PotentialIonDipole::compute(Variables *vars) {
 	Molecule *gases = vars->gases.data();
 	const int gs = vars->gas_in.size();
 	const int is = vars->ions.size();
@@ -55,7 +55,7 @@ PotentialIonDipole::compute(Variables *vars, FLAG *flags) {
             a.fx -= force_pair * dx;
             a.fy -= force_pair * dy;
             a.fz -= force_pair * dz;
-			if(flags->eflag) vars->totalPotential += -0.5*alphagas*r2inv*r2inv*qqrd2e/is/is;
+			if(vars->eflag) vars->totalPotential += -0.5*alphagas*r2inv*r2inv*qqrd2e/is/is;
 		}
 	}*/
 }

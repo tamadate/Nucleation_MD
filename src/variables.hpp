@@ -5,6 +5,8 @@
 class Variables {
 public:
 
+	int calcID;
+
 	Variables(void);
 	~Variables(void){};
 
@@ -23,15 +25,15 @@ public:
 	double time;
 	double zeta_ion;
 
-	Potentials Utotal;
+	Potentials U;
 	Times times;
 
-	void Uzero(void)	{
-		Utotal.Uion=Utotal.Ugas=Utotal.Uvap=Utotal.Ugi=Utotal.Ugg=Utotal.Uvg=Utotal.Uvi=Utotal.Uvv=0;
-  	}
+	void Uzero(void)	{U.Uion=U.Ugas=U.Uvap=U.Ugi=U.Ugg=U.Uvg=U.Uvi=U.Uvv=0;}
 
   	void tzero(void)	{times.tion=times.tgas=times.tvap=times.tgi=times.tvv=times.tvg=times.tvi=times.tpair=0;}
-	double Usum(void)	{return Utotal.Uion+Utotal.Ugas+Utotal.Uvap+Utotal.Ugi+Utotal.Ugg+Utotal.Uvg+Utotal.Uvi+Utotal.Uvv;}
+	double Usum(void)	{return U.Uion+U.Ugas+U.Uvap+U.Ugi+U.Ugg+U.Uvg+U.Uvi+U.Uvv;}
+
+	bool eflag;
 
 	std::vector<int> gas_in;	/*	gas list around ion1	*/
 	std::vector<int> gas_out;	/*	gas list far from ion1	*/
