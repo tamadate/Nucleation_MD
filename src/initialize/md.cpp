@@ -22,7 +22,6 @@ MD::MD(char* condfile, int calcNumber) {
 
 	vars->readIonFile(atomFile);
 	vars->readVaporFile(vaporFile);
-	vars->setBMHPotential();
 	vars->setCrossPotentials();
 	vars->ionRotation();
 	vars->ionInitialVelocity(pp->T);
@@ -35,7 +34,6 @@ MD::MD(char* condfile, int calcNumber) {
   	initializatIonVapor();	//Set initial positions & velocities for vapor
 	getIonCenterProp();
 	make_pair();
-	vars->tzero();
 
 	mbdist = new MBdist(pp->cgas,pp->mgas,pp->T);
 	mbdistV = new MBdist(pp->cvapor,pp->mvapor,pp->T);

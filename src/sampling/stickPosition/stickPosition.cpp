@@ -6,9 +6,9 @@ StickPosition::postLoop(void){
 		double minDist=1e10;
 		int closeAtomID=0;
 		for(auto &j : stickPositionList){
-			double dx=vars->vapors[i].qx-vars->IonX[0];
-			double dy=vars->vapors[i].qy-vars->IonX[1];
-			double dz=vars->vapors[i].qz-vars->IonX[2];
+			double dx=vars->vapors[i].qx-vars->ions[j].qx;
+			double dy=vars->vapors[i].qy-vars->ions[j].qy;
+			double dz=vars->vapors[i].qz-vars->ions[j].qz;
 			double dr2=dx*dx+dy*dy+dz*dz;
 			if(dr2<minDist){
 				closeAtomID=j;

@@ -6,7 +6,7 @@ class MDcondition {
 public:
 
 	MDcondition(void){
-        MARGIN = 10.0;
+        MARGIN = 5.0;
         CUTOFF = 20.0;
         positionLogStep=0;
         logger=10000;

@@ -38,7 +38,7 @@ const double SN2=107, TrefN2=273.0, myuN2=1.663e-5; // REF
 //------------------------------------------------------------------------
 
 /*******************Coeff.************************/
-const double Rinter=100;	// Radius of interaction area
+const double Rinter=200;	// Radius of interaction area
 const double RI2=Rinter*Rinter;
 const double cal=4187;
 const double qqrd2e=e*e/4.0/M_PI/e0*Nw*1e10/4184.0;

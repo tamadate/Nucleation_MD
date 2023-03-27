@@ -120,7 +120,8 @@ class PotentialBorn : public Potential {
 		void printName(void) {cout<<potName<<endl;}
 		void compute(Variables *vars);
 		void initial(Variables *vars){};
-		PotentialBorn(){};
+		double bornCoeff[2][2][5];
+		PotentialBorn(Variables *vars);
 		~PotentialBorn(){};
 };
 

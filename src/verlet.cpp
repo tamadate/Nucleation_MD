@@ -1,19 +1,16 @@
-//------------------------------------------------------------------------
 #include "md.hpp"
-//------------------------------------------------------------------------
 
 /////////////////////////////////////////////////////////////////////
 /*
-	- Compute a domain (NVE or NVT)
-	- v(t) -> v(t+dt/2)
-	- Calculate velocity and potition of ion's center of mass.
-	- Temperature control (velocity scaling, this case is NVT)
-	- r(t) -> r(t+dt)
-	- apply periodic boundary condition
-	- Determine whethere update pair list or not
-	- Calculate ion intraatmic interaction
-	- Calculate ion-gas interatominc interaction
-	- v(t+dt/2) -> v(t)
+	- velocity update v(t) -> v(t+dt/2)
+	- position update r(t) -> r(t+dt)
+	- update center of masses in spherical domain
+	- run postPotisions in function array
+	- check if pairlist is updated 
+	- Calculate ion inter-molecular interactions
+	- Calculate ion intra-molecular interactions
+	- velocity update v(t+dt/2) -> v(t)
+	- run postLoops in function array 
 */
 /////////////////////////////////////////////////////////////////////
 void
@@ -38,7 +35,7 @@ MD::verlet(void) {
 
 /////////////////////////////////////////////////////////////////////
 /*
-	- Update velocity (half of a time step, dt/2)
+	- Update velocities (half of a time step, dt/2)
 */
 /////////////////////////////////////////////////////////////////////
 void
@@ -73,7 +70,7 @@ MD::velocity_calculation(void) {
 
 /////////////////////////////////////////////////////////////////////
 /*
-	- Update velocity (a time step, dt)
+	- Update positions (a time step, dt)
 */
 /////////////////////////////////////////////////////////////////////
 void
