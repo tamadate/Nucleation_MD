@@ -116,7 +116,7 @@ MD::update_position(void) {
   	}
 
 	updateVaporinCenters();
-	for (auto &i : vars->vapor_in) {
+	/*for (auto &i : vars->vapor_in) {
 		double dmin=10000000;
 		for (auto &b : vars->vapors[i].inAtoms){
 			for (auto &a : vars->ions) {
@@ -137,6 +137,34 @@ MD::update_position(void) {
 		if (dmin < 0 && collisionFlagVapor[i]==0){
 			Ovin(i);
 			collisionFlagVapor[i]=itime;
+		}
+	}*/
+	if(itime%100==0){
+		for (auto &i : vars->vapor_in) {
+			double dmin=10000000;
+			for (auto &b : vars->vapors[i].inAtoms){
+				for (auto &a : vars->ions) {
+					double dx = b.qx - a.qx;
+					double dy = b.qy - a.qy;
+					double dz = b.qz - a.qz;
+					double r2 = (dx * dx + dy * dy + dz * dz);
+					double r = sqrt(r2);
+					double sig=vars->pair_coeff_vi_se[b.type][a.type][0];
+					double d=r-sig;
+					if(dmin>d) dmin=d;
+				}
+			}
+
+			if (collisionFlagVapor[i]!=0) {
+				sprintf(filepath, "vapor_in_%d.dat", int(calculation_number));
+				FILE*f=fopen(filepath, "a");
+				fprintf(f, "%d %e %e\n", i,itime*dt,dmin);
+				fclose(f);
+				if (dmin > 100) collisionFlagVapor[i]=0;
+			}
+			else{
+				if (dmin < 20) collisionFlagVapor[i]=1;
+			}
 		}
 	}
 	vars->times.tpos+=omp_get_wtime();
