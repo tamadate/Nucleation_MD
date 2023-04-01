@@ -8,49 +8,91 @@ from scipy.optimize import minimize
 
 os.system("make")
 
+def pltNormal():
+	plt.rcParams['ytick.direction'] = 'in'
+	plt.rcParams['xtick.direction'] = 'in'
+	plt.rcParams['figure.subplot.bottom'] = 0.2
+	plt.rcParams['figure.subplot.left'] = 0.2
+	#plt.rcParams['font.family'] = 'Arial'
+	plt.rcParams["font.size"]=12
+
+def axNormal(ax):
+	ax.xaxis.set_ticks_position('both')
+	ax.yaxis.set_ticks_position('both')
+	ax.tick_params(axis='x')
+	ax.tick_params(axis='y')
+
 #-----------------------------------------------------------------------------#
-plot=plot.plot()
+pltNormal()
 
-plot.pltNormal()
-plot.fig, plot.axs = plt.subplots(1,2,figsize=(10,5))
-for i in np.arange(2):
-	plot.axNormal(plot.axs.flat[i])
+labelSize=15
+titleSize=18
+lineWidth=0.8
 
-plot.labelSize=15
-plot.titleSize=18
-plot.lineWidth=0.8
+expLoad=np.loadtxt("experiment.csv",skiprows=1,delimiter=",")
 #-----------------------------------------------------------------------------#
-
-
 				## Unknown parameters
 #-----------------------------------------------------------------------------#
-teq=0.2e-6     # equilibliumed time [s]
-tcut=1e-13       # cut residence time [s]
-Nmax=40         # Max number of sticking vapors
-dt_post=1e-11   # dt in analysis, dt_post [s]
-directory="../../../nucleation/NaCl/Na2Cl_toluene/"
-#directory="../../../nucleation/angio2+/100/"
-I=10
+directory="/media/tama3rdgen/6TB/vaporUptake/bradykinin/v"
+press=np.array((0,20,40,60,80,100,120,140,180,240))
+exp=np.array([[0,0,5,10,20,40,60,80,120,160,240,300],[1,1.0033,1.005275,1.001312,0.990309,0.987374,0.977268,0.979336,0.964985,0.96599,0.959359,0.951782]])
+exp[1]*=0.59*2
+z=2
+molName="brad"
+range=(0.55,0.60)
 
-startTime=2e-9
-endTime=5e-9
 
-checkMode=0 # display
-figOutput=1
+directory="/media/tama3rdgen/6TB/vaporUptake/angio2+_new/v"
+press=np.array((0,20,40,60,80,100,120,140))
+exp=np.array((expLoad.T[0],expLoad.T[11]))
+z=2
+molName="angio2"
+range=(0.50,0.60)
+'''
+directory="/media/tama3rdgen/6TB/vaporUptake/angio1+_new/v"
+press=np.array((0,10,20,40,60,80,140,180,240,300))
+exp=np.array((expLoad.T[0],expLoad.T[9]))
+z=1
+molName="angio1"
+range=(0.55,0.65)
+'''
+exp[0]*=111/300.0
 
-#-----------------------------------------------------------------------------#
+#	Plot	
 i=0
-fileName=str(directory)+"DiffusionCoefficients."+str(i)
-data=np.loadtxt(fileName,skiprows=1)
-data=np.append([0],data)
-datas=np.array([data])
-for i in np.arange(100):
-    fileName=str(directory)+"DiffusionCoefficients."+str(i)
-    if(os.path.exists(fileName)):
-        data=np.loadtxt(fileName,skiprows=1)
-        if(math.isnan(data[0])):
-            continue
-        data=np.append([i],data)
-        datas=np.append(datas,np.array([data]),axis=0)
+datas=np.zeros((np.size(press),7))
+for p in press:
+	fileName=str(directory)+str(int(p/10))+"/"+str(int(p))+"Pa/DiffusionCoefficients.1"
+	datas[i]=np.loadtxt(fileName,skiprows=1)
+	i+=1
+fig, axs = plt.subplots(1,1,figsize=(5,5))
+axNormal(axs)
 
-plot.plotMobilityShift(datas,directory)
+axs.set_xlabel("Vapor pressure [Pa]",fontsize=labelSize)
+axs.set_ylabel(r"Reduced mobility, $Z_p/z$ [cm$^2$ V$^{-1}$ s$^{-1}$]",fontsize=labelSize)
+coeff=1.6e-19/1.38e-23/300.0
+axs.scatter(press,datas.T[3]*coeff,color = "black",label="MSD")
+axs.scatter(press,datas.T[4]*coeff,color = "red",label="VACF")
+axs.scatter(exp[0],exp[1]/float(z),facecolor="none",edgecolor="blue",marker="^",label="Experiment")
+axs.set_xlim(-10,150)
+axs.set_ylim(range)
+axs.legend()
+plt.savefig(str(directory)+"diffusionSumABS_"+molName+".png", dpi=1000)
+
+fig, axs = plt.subplots(1,1,figsize=(5,5))
+axNormal(axs)
+exp[1]/=exp[1][0]
+
+axs.set_xlabel("Vapor pressure [Pa]",fontsize=labelSize)
+axs.set_ylabel(r"Mobility shift, $Z_p/Z_{p,0}$ [-]",fontsize=labelSize)
+K0=(datas.T[3][0]+datas.T[4][0])*0.5
+axs.scatter(press,datas.T[3]/K0,color = "black",label="MSD")
+axs.scatter(press,datas.T[4]/K0,color = "red",label="VACF")
+axs.scatter(exp[0],exp[1],facecolor="none",edgecolor="blue",marker="^",label="Experiment")
+axs.set_xlim(-10,150)
+axs.set_ylim(0.9,1.05)
+axs.legend()
+plt.savefig(str(directory)+"diffSum_"+molName+".png", dpi=1000)
+
+plt.show()
+

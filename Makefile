@@ -1,4 +1,4 @@
-NAME        = ./src/nucleationMD
+NAME        = MD.out
 SRCS        = ./src/*cpp
 OBJS        = $(SRCS:.cpp=.o)
 CXX         = g++

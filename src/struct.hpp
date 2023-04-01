@@ -27,9 +27,6 @@ struct Atom {
 	double fx, fy, fz;
 	double mass;
 	int ix, iy, iz;
-  std::vector<double> fxMP;
-  std::vector<double> fyMP;
-  std::vector<double> fzMP;
 };
 
 //------------------------------------------------------------------------
@@ -71,7 +68,7 @@ struct Molecule {
 };
 
 struct Potentials {
-  double Uion;
+	double Uion;
 	double Ugas;
 	double Uvap;
 	double Ugi;
@@ -82,15 +79,15 @@ struct Potentials {
 };
 
 struct Times {
-  double tion;
-  double tgas;
-  double tgi;
-  double tvap;
-  double tvv;
-  double tvg;
-  double tvi;
-  double tpair;
-  double tvel;
-  double tpos;
-  double tetc;
+	double tion;
+	double tgas;
+	double tgi;
+	double tvap;
+	double tvv;
+	double tvg;
+	double tvi;
+	double tpair;
+	double tvel;
+	double tpos;
+	double tetc;
 };
