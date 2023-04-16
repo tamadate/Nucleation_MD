@@ -118,7 +118,7 @@ MD::boundary_scaling_ion_move(void){
 
 	Molecule *gases = vars->gases.data();
 	normal_distribution<> distgas(0.0, sqrt(kb*pp->T/pp->mgas));
-
+	double c2ten=8*kb*pp->T/pp->mgas/M_PI*100;
 	for (auto &i : vars->gas_out){
 		flag=flagx=flagy=flagz=0;
 		double dx,dy,dz;
@@ -130,9 +130,19 @@ MD::boundary_scaling_ion_move(void){
 		if (dy > con->HL) gases[i].qy -= con->L, flagy++, flag++;
 		if (dz > con->HL) gases[i].qz -= con->L, flagz++, flag++;
 		if (flag>0) {
-			gases[i].px = distgas(mt) *1e-5;
-			gases[i].py = distgas(mt) *1e-5;
-			gases[i].pz = distgas(mt) *1e-5;
+			bool stay=true;
+			while(stay){
+				double vx=distgas(mt);
+				double vy=distgas(mt);
+				double vz=distgas(mt);
+				double v2=vx*vx+vy*vy+vz*vz;
+				if(v2<c2ten){
+					gases[i].px = vx *1e-5;
+					gases[i].py = vy *1e-5;
+					gases[i].pz = vz *1e-5;
+					stay=false;
+				}
+			}
 		}
 	}
 
@@ -150,9 +160,19 @@ MD::boundary_scaling_ion_move(void){
 		if (dy > con->HL) vapors[i].qy -= con->L, flagy++, flag++;
 		if (dz > con->HL) vapors[i].qz -= con->L, flagz++, flag++;
 		if (flag>0) {
-			vapors[i].px = distvapor(mt) *1e-5;
-			vapors[i].py = distvapor(mt) *1e-5;
-			vapors[i].pz = distvapor(mt) *1e-5;
+			bool stay=true;
+			while(stay){
+				double vx=distvapor(mt);
+				double vy=distvapor(mt);
+				double vz=distvapor(mt);
+				double v2=vx*vx+vy*vy+vz*vz;
+				if(v2<c2ten){
+					vapors[i].px = vx *1e-5;
+					vapors[i].py = vy *1e-5;
+					vapors[i].pz = vz *1e-5;
+					stay=false;
+				}
+			}
 		}
 	}
 
