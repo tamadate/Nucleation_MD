@@ -1,13 +1,9 @@
 #include "../md.hpp"
-/*########################################################################################
 
------compute intramolecular interaction-----
-
-#######################################################################################*/
 #define TOLERANCE 0.05
 #define SMALL     0.001
 #define SMALLER   0.00001
-/**********************************Force calculation******************************************/
+
 void
 PotentialVaporIntra::compute(Variables *vars) {
 	Molecule *vapors = vars->vapors.data();
@@ -31,6 +27,8 @@ PotentialVaporIntra::compute(Variables *vars) {
 	double s2,cx,cy,cz,cmag,dx,phi,si,siinv,sin2;
 	vars->times.tvap-=omp_get_wtime();
 	for(auto &I : vars->vapor_in){
+
+		// bond interaction (two body)
 		for (auto &b : vapors[I].bonds) {
 			int i=b.atom1, j=b.atom2, type=(b.type);
 			dx1 = vapors[I].inAtoms[i].qx - vapors[I].inAtoms[j].qx;
@@ -51,6 +49,7 @@ PotentialVaporIntra::compute(Variables *vars) {
 			if(vars->eflag) vars->U.Uvap+=rk*dr;
 		}
 
+		// angle interaction (three body)
 		for (auto &c : vapors[I].angles) {
 		    int i, j, k, type;
 			i=c.atom1, j=c.atom2, k=c.atom3, type=c.type;
@@ -91,7 +90,7 @@ PotentialVaporIntra::compute(Variables *vars) {
 			if (vars->eflag) vars->U.Uvap+= tk*dtheta;
 		}
 
-
+		// dihedral interaction (four body)
 		for (auto &d : vapors[I].dihedrals) {
 			int i=d.atom1, j=d.atom2, k=d.atom3, l=d.atom4, type=d.type;
 			// 1st bond

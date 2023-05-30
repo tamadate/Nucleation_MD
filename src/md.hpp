@@ -12,72 +12,85 @@
 #include "sampling/stickPosition/stickPosition.hpp"
 #include "sampling/trajectory/trajectory.hpp"
 #include "functions.hpp"
-//------------------------------------------------------------------------
 
 class MD {
 private:
 
 
 public:
-	int gastype;	/*1:He, 2:Ar, 3:N2*/
-	long int itime;
+	int gastype;	// gas type
+	long int itime; // number of iteration
 	
-	std::vector<Potential*> InterInter;
-	std::vector<Potential*> IntraInter;
+	std::vector<Potential*> InterInter; // inter-molecular interactions
+	std::vector<Potential*> IntraInter;	// intra-molecular interactiops
 
-	Variables *vars;
-	Observer *obs;
-	Physical *pp;
-	MDcondition *con;
-	MBdist *mbdist;
-	MBdist *mbdistV;
-	std::vector<Functions*> funcs;
+	Variables *vars;	// variables class
+	Observer *obs;		// observer class
+	Physical *pp;		// physical property class
+	MDcondition *con;	// calculation condition class
+	MBdist *mbdist;		// Maxwell-Boltzumann distribution class for gas moleucle
+	MBdist *mbdistV;	// Maxwell-Boltzumann distribution class for vapor molecule
+	std::vector<Functions*> funcs; // funciton class array
+
+// start MD simulation
+	void run(char** argv);	
 
 //	velocity verlet
-	void run(char** argv);
-	void verlet(void);
-	void update_position(void);
-	void velocity_calculation(void);
+	void verlet(void);					// main function
+	void update_position(void); 		// update position in Verlet
+	void velocity_calculation(void);	// update velocity in Verlet
 
 //	pair list
-	void update_vapor_in(void);
-	void update_gas_in(void);
-	void make_pair(void);
-	void check_pairlist(void);
-	void makeDiatomicProp_in(int i);
+	void update_vapor_in(void);			// update list of all-atom vapor (vars->vapor_in)
+	void update_gas_in(void);			// update list of all-atom gas (vars->gas_in)
+	void make_pair(void);				// update pair list
+	void check_pairlist(void);			// check if pair list is updated or not
+	int loop;							// number of iterations from last pair-list updating
+	int loop_update;					// number of iterations to update pair-list
+	/* 
+		When the molecules are transfered either from mono-atomic to poly-atomic molecule or the other direction,
+		it is necessary to modify some matrixes in the code (you can find detail in below four functions).
+		makeDiatomicProp is for gas molecule and makePolyatomicProp is for vapor molecule.
+		Signs "in" and "out" indicate the case entering to and exiting from the all-atom region, respectively.
+	*/
+	void makeDiatomicProp_in(int i);	
 	void makeDiatomicProp_out(int i);
 	void makePolyatomicProp_in(int i);
 	void makePolyatomicProp_out(int i);
 	void updateInCenters(void);
 
 //	initialization
-	void initialization_gas(void);
-	void initializatIonVapor(void);
-	void readCondFile(char* condfile);
+	void initialization_gas(void);		// initialization of gas molecules
+	void initializatIonVapor(void);		// initialization of ion and vapor molecules
+	void readCondFile(char* condfile); // read conditions file
 
 //	periodic
-	void periodic(void);	/*	periodic condition for gas_in	*/
-	void boundary_scaling_gas_move(void);
-	void boundary_scaling_ion_move(void);
-	void boundary_scaling_vapor_move(void);
-	int loop, loop_update;	/*	current fixing time(loop) and update fixing time(loop) of out_gas for multi-timestep	*/
+	void periodic(void);	//	periodic condition for gas_in	
+	/* 
+		Below 3 functions are velocity rescaling periodic bnoundary conditions.
+		It resample the gas and vapor molecule velocites when it re-enter to the simulation domain 
+		through periodic B.C.
+		There are two types which sample the velocity from normal MB and modified MB distributions
+	*/
+	void boundary_scaling_gas_move(void);	// modified MB-distribution for gas molecule
+	void boundary_scaling_vapor_move(void);	// modified MB-distribution for vapor molecule
+	void boundary_scaling_ion_move(void);	// modified MB-distribution for gas molecule
 	double pre_ion[3];
 
 //	analysis (calculating position and velocity of center of mass)
-	void getGasCenterProp(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
-	void getIonCenterProp(void);	/*	calculation of center of ion1 and ion2, also collision judgement of collision and not collision	*/
-	double distFromIonCenter(Molecule &mol, double &dx, double &dy, double &dz);
+	void getGasCenterProp(void);	// For gas molecules
+	void getIonCenterProp(void);	// For ion
+	// distance of atoms in the ion from ion COM 
+	double distFromIonCenter(Molecule &mol, double &dx, double &dy, double &dz); 	
+	// distance of atoms in the ion from "previous" ion COM 
 	double distFromIonPreCenter(Molecule &mol, double &dx, double &dy, double &dz);
-	double gyration;
 
 
 /*other*/
-	char filepath[100];
-	char atomFile[100];
-	char vaporFile[100];
-	double crsq;
+	char filepath[100]; // general file path
+	char atomFile[100]; // file path for ion
+	char vaporFile[100]; // file path for vapor
 
-	double totalPotential;
 
 	MD(char* condfile,int calcNumber);
 	~MD(void);

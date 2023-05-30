@@ -75,7 +75,7 @@ Observer::outputDumpClose(void) {
 	}
     for (auto &a : vars->vapor_in) {
 		for (auto &b : vars->vapors[a].inAtoms) {
-			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes[b.type].name+"(v)").c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
+			fprintf(f, "%d %s %f %f %f %f %f %f\n", ID, (vars->atypes[b.type].name).c_str(), b.qx-X, b.qy-Y, b.qz-Z, b.px, b.py, b.pz);
 			ID++;
 		}
 	}

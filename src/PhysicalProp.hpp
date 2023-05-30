@@ -5,7 +5,7 @@ class Physical{
 public:
 	double Mion, Mgas, Mvapor;
 	double mgas, mvapor, m;
-	double cgas, cvapor, c;
+	double c;
 	double z, alphagas, zzee;
 	double T;
 	double p;

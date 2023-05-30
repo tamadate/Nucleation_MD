@@ -108,7 +108,7 @@ MD::readCondFile(char* condfile){
 			}
 			if (readings[1]=="RelaxSteps") {
 				con->step_relax=stod(readings[2]);
-				cout<<"Relax steps\t\t"<<float(con->step_relax)<<endl;
+				cout<<"Iteration for relaxation\t\t"<<float(con->step_relax)<<endl;
 			}
 			if (readings[1]=="CutOff") {
 				con->CUTOFF=stod(readings[2]);

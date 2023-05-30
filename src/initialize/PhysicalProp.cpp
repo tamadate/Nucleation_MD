@@ -18,12 +18,10 @@ Physical::setPhysicalProp(int gastype){
 		Mgas=MAr;
 		alphagas=alphaAr;
 	}
-	mvapor=Mvapor/Nw/1000.0;
-	mgas=Mgas/Nw/1000.0;
-	m=Mion/Nw/1000.0;
-	c=sqrt(8*kb*T/M_PI/m);
-	cgas=sqrt(8*kb*T/M_PI/mgas);
-	cvapor=sqrt(8*kb*T/M_PI/mvapor);
+	mvapor=Mvapor/Nw/1000.0; // mass of a vapor molecule
+	mgas=Mgas/Nw/1000.0;	// mass of a gas molecule
+	m=Mion/Nw/1000.0;		// mass of an ion
+	c=sqrt(8*kb*T/M_PI/m);	// mean thermal speed of ion
 
 	printf("Ion mass\t\t%f g/mol\nIon charges\t\t%f\n", Mion,z);
 	printf("Vapor mass\t\t%f g/mol\n", Mvapor);

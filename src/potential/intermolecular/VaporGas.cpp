@@ -1,11 +1,7 @@
 #include "../potential.hpp"
 
 
-/////////////////////////////////////////////////////////////////////
-/*
-	- Calculate force working on vapor-gas (LJ)
-*/
-/////////////////////////////////////////////////////////////////////
+
 void
 PotentialVaporGas::compute(Variables *vars) {
 	Molecule *gases = vars->gases.data();
