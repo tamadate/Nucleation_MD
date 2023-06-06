@@ -24,6 +24,29 @@
         "preLaunchTask": "C++ debug"
       },
 
+      {
+        "name": "C++ main O3",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/test/MD.out",
+        "args": ["brad.con","0"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}/test/",
+        "environment": [],
+        "externalConsole": false, //set to true to see output in cmd instead
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ],
+
+        "preLaunchTask": "C++ compile O3"
+      },
+
       ]
   }
   

@@ -6,11 +6,11 @@
 #include "pairlist/MBdist.hpp"
 #include "MDcondition.hpp"
 #include "thermostat/thermostat.hpp"
-#include "sampling/collision/collision.hpp"
+#include "vaporUptake/collision_inout/collision.hpp"
 #include "sampling/gyration/gyration.hpp"
-#include "sampling/ionCenter/ionCenter.hpp"
-#include "sampling/stickPosition/stickPosition.hpp"
-#include "sampling/trajectory/trajectory.hpp"
+#include "sampling/ionCOM/ionCenter.hpp"
+#include "vaporUptake/stickPosition/stickPosition.hpp"
+#include "vaporUptake/collision_trajectory/trajectory.hpp"
 #include "functions.hpp"
 
 class MD {

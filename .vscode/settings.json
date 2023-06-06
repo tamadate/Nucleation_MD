@@ -8,6 +8,8 @@
         "vector": "cpp",
         "iosfwd": "cpp",
         "algorithm": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "numeric": "cpp",
+        "cmath": "cpp"
     }
 }

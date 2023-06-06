@@ -29,15 +29,15 @@
         },
         {
             "type": "shell",
-            "label": "Only compile",
+            "label": "C++ compile O3",
             "command": "g++",
             "args": [
-                "-g",
+                "-O3",
                 "-o",
-                "${fileDirname}/../test/a.out",
-                "${fileDirname}/*cpp", 
-                "${fileDirname}/*/*cpp",
-                "${fileDirname}/*/*/*cpp",
+                "${workspaceFolder}/test/MD.out",
+                "${workspaceFolder}/src/*cpp", 
+                "${workspaceFolder}/src/*/*cpp",
+                "${workspaceFolder}/src/*/*/*cpp",
                 "-std=c++11",
                 "-fopenmp"
             ],

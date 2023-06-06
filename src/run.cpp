@@ -1,37 +1,25 @@
-//------------------------------------------------------------------------
 #include "md.hpp"
-//------------------------------------------------------------------------
 
-
-/////////////////////////////////////////////////////////////////////
-/*
-	- Diffusion coefficient calculation
-	- MD simulation performed for (step_relax) steps as a thermal
-	relaxation, and main calculation run for (Noftimestep) steps.
-	- Among of two calculations, a calculation is re-initialized.
-	- Properties (pressure, temperature, energy etc...) are observed
-	each (OBSERVE) steps.
-*/
-/////////////////////////////////////////////////////////////////////
 void
 MD::run(char** argv) {
 	// Thermal relaxation
 	for (itime=0; itime < con->step_relax; itime++) {
-		vars->time=itime*con->dt;
+		vars->time=itime*con->dt;	// time = (iteration) * (time step, dt)
+		// observer?
 		if (itime%obs->OBSERVE==0) {
 			vars->eflag=true;
 			vars->Uzero();
 		}
 		
-		verlet();
+		verlet(); // one step forward iteration
 
+		// observer?
 		if (itime%obs->OBSERVE==0) {
 			obs->display();
 			obs->outputDumpClose();
 			vars->eflag=false;
 		}
 	}
-
 
 	// Delete thermostat and set NVE 
 	int ifunc=0;
@@ -53,7 +41,7 @@ MD::run(char** argv) {
 			vars->Uzero();
 		}
 
-		verlet();
+		verlet();	// one step forward iteration
 
 		if (itime%obs->OBSERVE==0) {
 			obs->display();

@@ -4,7 +4,6 @@
 
 class StickPosition : public Functions{
 public:
-    // check collision
 	void postLoop(void);
     void initial(Variables *VARS, Physical *PP, MDcondition *CON, Observer *OBS);
     std::vector<int> stickPositionList;

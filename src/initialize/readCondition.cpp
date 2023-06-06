@@ -160,7 +160,7 @@ MD::readCondFile(char* condfile){
 				if (readings[2]=="AMBER") IntraInter.push_back(new PotentialAMBER());
 				else if (readings[2]=="Stilinger-Weber") IntraInter.push_back(new PotentialSW());
 				else if (readings[2]=="Tersoff") IntraInter.push_back(new PotentialTersoff());
-				else if (readings[2]=="Born-Mayer-Huggins-NaCl") IntraInter.push_back(new PotentialBorn(vars));
+				else if (readings[2]=="Born-Mayer-Huggins") IntraInter.push_back(new PotentialBorn(vars));
 				else printf("**************Uknown ion parameter was found**************\n");
 			}
 			if (readings[1]=="vi"||readings[1]=="iv") {

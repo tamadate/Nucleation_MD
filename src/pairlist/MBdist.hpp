@@ -47,7 +47,7 @@ class MBdist {
 		};
 
 		MBdist(double m, double t){
-			meanVel=sqrt(8*kb*T/M_PI/m); // mean thermal speed
+			meanVel=sqrt(8*kb*t/M_PI/m); // mean thermal speed
 			mass=m;
 			T=t;
 			makeWeightedMB();
