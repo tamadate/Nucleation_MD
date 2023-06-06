@@ -1,18 +1,8 @@
 #include "../md.hpp"
 
-/*########################################################################################
-
------Initialization-----
-intialization:
-This intialize the calculation. Reading initial positions and setting initial velocities.
-reintialization:
-This makes connection between thermal relaxation and main diffusion coeficient calculation. It reset position, time, pair list and margine length.
-
-#######################################################################################*/
-
 /////////////////////////////////////////////////////////////////////
 /*
-	- Randomly arraying gas molecule around an ion with avoiding the
+	- Randomly aranging vapor molecule around an ion with avoiding the
 	overlapping. The velocity is picked from  the Maxwell-Boltzumann
 	distribution
 	- Set ion's center of mass (maybe -> 0), make pair list for initial

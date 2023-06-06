@@ -6,39 +6,35 @@ class Variables {
 public:
 
 	int calcID;
+	Times times;	// Timer
 
 	Variables(void);
 	~Variables(void){};
 
 	/*variables*/
-  	int Nth;
-	std::vector<Atom> ions;
-	std::vector<Molecule> gases;
-  	std::vector<Molecule> vapors;
+	std::vector<Atom> ions;	// ion atoms array
+	std::vector<Molecule> gases;	// gas molecules array
+  	std::vector<Molecule> vapors;	// vapor molecules array
 
-	double IonX[3];
-	double IonV[3];
-	double gasX[3];
-	double gasV[3];
-	double preIonX[3];
+	std::vector<int> gas_in;	//	gas list around ion	
+	std::vector<int> gas_out;	//	gas list far from ion
+	std::vector<int> vapor_in;	//	gas list around ion
+	std::vector<int> vapor_out;	//	gas list far from ion
+
+	double IonX[3];	// ion center of mass cordinate
+	double IonV[3];	// ion center of mass velocity
+	double gasX[3]; // gas center of mass cordinate
+	double gasV[3]; // gas center of mass velocity
+	double preIonX[3]; // ion center of mass cordinate at previous time step
 
 	double time;
-	double zeta_ion;
 
 	Potentials U;
-	Times times;
-
-	void Uzero(void)	{U.Uion=U.Ugas=U.Uvap=U.Ugi=U.Ugg=U.Uvg=U.Uvi=U.Uvv=0;}
-
-  	void tzero(void)	{times.tion=times.tgas=times.tvap=times.tgi=times.tvv=times.tvg=times.tvi=times.tpair=0;}
-	double Usum(void)	{return U.Uion+U.Ugas+U.Uvap+U.Ugi+U.Ugg+U.Uvg+U.Uvi+U.Uvv;}
-
-	bool eflag;
-
-	std::vector<int> gas_in;	/*	gas list around ion1	*/
-	std::vector<int> gas_out;	/*	gas list far from ion1	*/
-	std::vector<int> vapor_in;	/*	gas list around ion1	*/
-	std::vector<int> vapor_out;	/*	gas list far from ion1	*/
+	bool eflag;	// flag for potential calculation
+	void Uzero(void)	{U.Uion=U.Ugas=U.Uvap=U.Ugi=U.Ugg=U.Uvg=U.Uvi=U.Uvv=0;} // set all potential to zero
+	double Usum(void)	{return U.Uion+U.Ugas+U.Uvap+U.Ugi+U.Ugg+U.Uvg+U.Uvi+U.Uvv;} // compute total potential
+	double totalPotential;
+	double totalVirial;
 
 	/*vectors for potential calculation*/
 	std::vector<Bond> bonds;
@@ -59,9 +55,6 @@ public:
 	std::vector<Angle_type> ctypes_v;
 	std::vector<Dihedral_type> dtypes_v;
 
-	double bornCoeff[2][2][5];
-
-	void setBMHPotential(void);
 	void setCrossPotentials(void);
 
 	/*initialization and export to dump file*/
@@ -69,8 +62,6 @@ public:
 	void readVaporFile(char* infile);
 	void ionInitialVelocity(double T);
 	void ionRotation(void);
-	double totalPotential;
-	double totalVirial;
 
 	void ROTATION(double &X, double &Y, double &Z, double A, double B, double C, double x, double y, double z){
 		X = cos(C)*(x*cos(B)+y*sin(A)*sin(B)-z*cos(A)*sin(B))+sin(C)*(y*cos(A)+z*sin(A));

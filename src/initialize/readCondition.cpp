@@ -23,6 +23,10 @@ MD::readCondFile(char* condfile){
 			iflag=3;
 			continue;
 		}
+		if (readings[0]=="MDconditions") {
+			iflag=4;
+			continue;
+		}
 		if (readings[0]=="Interactions") {
 			con->CL2 = con->CUTOFF*con->CUTOFF;
 			con->ML2 = (con->CUTOFF+con->MARGIN)*(con->CUTOFF+con->MARGIN);
@@ -85,60 +89,60 @@ MD::readCondFile(char* condfile){
 				cout<<"Number of gases\t\t"<<con->Nof_around_gas<<endl;
 			}
 		}
-
-		if(readings[0]=="Temperature"){
-			pp->T=stod(readings[1]);
-			cout<<"Temperature\t\t"<<pp->T<<" K"<<endl;
-		}
-		if(readings[0]=="Pressure"){
-			pp->p=stod(readings[1]);
-			cout<<"Pressure\t\t"<<pp->p<<" Pa"<<endl;
-		}
-		if (readings[0]=="dt") {
-			con->dt=stod(readings[1]);
-			cout<<"Time step\t\t"<<con->dt<<" fs"<<endl;
-		}
-		if (readings[0]=="TotalSteps") {
-			con->Noftimestep=stod(readings[1]);
-			cout<<"Total steps\t\t"<<float(con->Noftimestep)<<endl;
-		}
-		if (readings[0]=="RelaxSteps") {
-			con->step_relax=stod(readings[1]);
-			cout<<"Relax steps\t\t"<<float(con->step_relax)<<endl;
-		}
-		if (readings[0]=="CutOff") {
-			con->CUTOFF=stod(readings[1]);
-			cout<<"Cutoff\t\t\t"<<con->CUTOFF<<" ang."<<endl;
-		}
-		if (readings[0]=="Margin") {
-			con->MARGIN=stod(readings[1]);
-			cout<<"Margin size\t\t"<<con->MARGIN<<" ang."<<endl;
-		}
-		if (readings[0]=="Output") {
-			ostringstream ss;
-			ss<<readings[1]<<"_"<<vars->calcID<<".dump";
-			string tmp2=ss.str();
-			obs->fileDump=new char[tmp2.length()+1];
-			strcpy(obs->fileDump,tmp2.c_str());
-			obs->OBSERVE=stoi(readings[2]);
-			FILE*f=fopen(obs->fileDump, "w");
-			fclose(f);
-			cout<<"Dump file -->\t\t"<<tmp2<<endl;
-		}
-		if (readings[0]=="NVTion") {
-			if (readings[1]=="NVE") {
-				cout<<"Ensemble --> NVE"<<endl;
+		if(iflag==4){
+			if(readings[1]=="Temperature"){
+				pp->T=stod(readings[2]);
+				cout<<"Temperature\t\t"<<pp->T<<" K"<<endl;
 			}
-			else if(readings[1]=="scale") {
-				funcs.push_back(new NVT_vscale(stod(readings[1]),stod(readings[2])));
-				cout<<"Ensemble --> NVT --> Velocity scaling --> "<<readings[1]<<" K"<<endl;
+			if(readings[1]=="Pressure"){
+				pp->p=stod(readings[2]);
+				cout<<"Pressure\t\t"<<pp->p<<" Pa"<<endl;
 			}
-			else {
-				funcs.push_back(new NVT_nh(stod(readings[1]),stod(readings[2])));
-				cout<<"Ensemble --> NVT --> Nose-Hoover --> "<<readings[1]<<" K"<<endl;
+			if (readings[1]=="dt") {
+				con->dt=stod(readings[2]);
+				cout<<"Time step\t\t"<<con->dt<<" fs"<<endl;
+			}
+			if (readings[1]=="TotalSteps") {
+				con->Noftimestep=stod(readings[2]);
+				cout<<"Total steps\t\t"<<float(con->Noftimestep)<<endl;
+			}
+			if (readings[1]=="RelaxSteps") {
+				con->step_relax=stod(readings[2]);
+				cout<<"Iteration for relaxation\t\t"<<float(con->step_relax)<<endl;
+			}
+			if (readings[1]=="CutOff") {
+				con->CUTOFF=stod(readings[2]);
+				cout<<"Cutoff\t\t\t"<<con->CUTOFF<<" ang."<<endl;
+			}
+			if (readings[1]=="Margin") {
+				con->MARGIN=stod(readings[2]);
+				cout<<"Margin size\t\t"<<con->MARGIN<<" ang."<<endl;
+			}
+			if (readings[1]=="Output") {
+				ostringstream ss;
+				ss<<readings[2]<<"_"<<vars->calcID<<".dump";
+				string tmp2=ss.str();
+				obs->fileDump=new char[tmp2.length()+1];
+				strcpy(obs->fileDump,tmp2.c_str());
+				obs->OBSERVE=stoi(readings[3]);
+				FILE*f=fopen(obs->fileDump, "w");
+				fclose(f);
+				cout<<"Dump file -->\t\t"<<tmp2<<endl;
+			}
+			if (readings[1]=="NVTion") {
+				if (readings[2]=="NVE") {
+					cout<<"Ensemble --> NVE"<<endl;
+				}
+				else if(readings[1]=="scale") {
+					funcs.push_back(new NVT_vscale(stod(readings[2]),stod(readings[3])));
+					cout<<"Ensemble --> NVT --> Velocity scaling --> "<<readings[2]<<" K"<<endl;
+				}
+				else {
+					funcs.push_back(new NVT_nh(stod(readings[2]),stod(readings[3])));
+					cout<<"Ensemble --> NVT --> Nose-Hoover --> "<<readings[2]<<" K"<<endl;
+				}
 			}
 		}
-
 
 		if(iflag==1){
 			if (readings[1]=="gg") {
@@ -156,7 +160,7 @@ MD::readCondFile(char* condfile){
 				if (readings[2]=="AMBER") IntraInter.push_back(new PotentialAMBER());
 				else if (readings[2]=="Stilinger-Weber") IntraInter.push_back(new PotentialSW());
 				else if (readings[2]=="Tersoff") IntraInter.push_back(new PotentialTersoff());
-				else if (readings[2]=="Born-Mayer-Huggins-NaCl") IntraInter.push_back(new PotentialBorn());
+				else if (readings[2]=="Born-Mayer-Huggins") IntraInter.push_back(new PotentialBorn(vars));
 				else printf("**************Uknown ion parameter was found**************\n");
 			}
 			if (readings[1]=="vi"||readings[1]=="iv") {
@@ -181,7 +185,8 @@ MD::readCondFile(char* condfile){
 			if (readings[1]=="Gyration") funcs.push_back(new Gyration(stoi(readings[2])));
 			if (readings[1]=="ionCenter") funcs.push_back(new IonCenter(stoi(readings[2])));
 			if (readings[1]=="vaporCollision") funcs.push_back(new Collision(stod(readings[2]),stod(readings[3]),stoi(readings[4])));
-			if (readings[1]=="VaporStickPositions") funcs.push_back(new StickPosition(readings));
+			if (readings[1]=="vaporStickPositions") funcs.push_back(new StickPosition(readings));
+			if (readings[1]=="vaporTrajectory") funcs.push_back(new Trajectory(stod(readings[2]),stod(readings[3]),stoi(readings[4])));
 		}
 	}
 	con->L=pow(con->Nof_around_gas*kb*pp->T/pp->p,1/3.0)*1e10;//pow(28.0855*8/6.02e23/(2.218e-24),1/3.0)*5;

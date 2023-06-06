@@ -3,8 +3,11 @@
 
 void 
 Collision::postPosition(void){
+	// loop for vapor molecule in all-atom region (i is the vapor molecule id)
+	// this loop calculate r12=|r1-r2| and obtain minimum value
+	// where r1 and r2 are the positions of atoms in vapor and center ion molecules
 	for (auto &i : vars->vapor_in) {
-		double dmin=10000000;
+		double dmin=10000000;	// define minimum distance 
 		for (auto &b : vars->vapors[i].inAtoms){
 			for (auto &a : vars->ions) {
 				double dx = b.qx - a.qx;
@@ -16,6 +19,8 @@ Collision::postPosition(void){
 				if(dmin>d) dmin=d;
 			}
 		}
+		// if dmin is larger than leaving distance and vapor status is "no-binding",
+		// the vapor status is switched to "binding"
 		if (dmin > dl && collisionFlagVapor[i]!=0) {
 			FILE*f=fopen(fileVaporOut, "a");
 			fprintf(f, "%d %e %e %e %e %e %e %e\n", i,vars->time,vars->vapors[i].qx-vars->IonX[0],vars->vapors[i].qy-vars->IonX[1],vars->vapors[i].qz-vars->IonX[2],
@@ -23,6 +28,8 @@ Collision::postPosition(void){
 			fclose(f);
 			collisionFlagVapor[i]=0;
 		}
+		// if dmin is smaller than arriving (collision) distance and vapor status is "binding",
+		// the vapor status is switched to "no-binding"
 		if (dmin < da && collisionFlagVapor[i]==0){
 			FILE*f=fopen(fileVaporIn, "a");
 			fprintf(f, "%d %e %e %e %e %e %e %e\n", i,vars->time,vars->vapors[i].qx-vars->IonX[0],vars->vapors[i].qy-vars->IonX[1],vars->vapors[i].qz-vars->IonX[2],
