@@ -23,7 +23,7 @@ MD::makeDiatomicProp_in(int i){
 				double dy=gases[vars->gas_in[j]].qy-gases[i].qy;
 				double dz=gases[vars->gas_in[j]].qz-gases[i].qz;
 				double r2=dx*dx+dy*dy+dz*dz;
-				if(r2<25){
+				if(r2<400){
 					dx=gases[i].qx-ion_r[0];
 					dy=gases[i].qy-ion_r[1];
 					dz=gases[i].qz-ion_r[2];
@@ -107,7 +107,7 @@ MD::makePolyatomicProp_in(int i){
 				double dy=gases[j].qy-vapors[i].qy;
 				double dz=gases[j].qz-vapors[i].qz;
 				double r2=dx*dx+dy*dy+dz*dz;
-				if(r2<25){
+				if(r2<400){
 					dx=vapors[i].qx-ion_r[0];
 					dy=vapors[i].qy-ion_r[1];
 					dz=vapors[i].qz-ion_r[2];
@@ -127,7 +127,7 @@ MD::makePolyatomicProp_in(int i){
 				double dy=vapors[vars->vapor_in[j]].qy-vapors[i].qy;
 				double dz=vapors[vars->vapor_in[j]].qz-vapors[i].qz;
 				double r2=dx*dx+dy*dy+dz*dz;
-				if(r2<25){
+				if(r2<400){
 					dx=vapors[i].qx-ion_r[0];
 					dy=vapors[i].qy-ion_r[1];
 					dz=vapors[i].qz-ion_r[2];

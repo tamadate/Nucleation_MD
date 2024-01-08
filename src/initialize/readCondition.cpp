@@ -144,12 +144,21 @@ MD::readCondFile(char* condfile){
 		}
 
 		if (readings[0]=="Interactions") {continue;}
+		
 		if (readings[1]=="gg") {
+			d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;//pow(28.0855*8/6.02e23/(2.218e-24),1/3.0)*5;
+			V=d_size*d_size*d_size;
+			CL2 = (CUTOFF)*(CUTOFF);
+			ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
 			if (readings[2]=="LJ") InterInter.push_back(new PotentialGasGas(ML2));
 			else if (readings[2]=="OFF");
 			else printf("**************Uknown gas gas parameter was found**************\n");
 		}
 		if (readings[1]=="gi"||readings[1]=="ig") {
+			d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;//pow(28.0855*8/6.02e23/(2.218e-24),1/3.0)*5;
+			V=d_size*d_size*d_size;
+			CL2 = (CUTOFF)*(CUTOFF);
+			ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
 			if (readings[2]=="LJ") InterInter.push_back(new PotentialGasIon(ML2));
 			else if (readings[2]=="ion dipole") InterInter.push_back(new PotentialIonDipole());
 			else if (readings[2]=="OFF");
@@ -163,16 +172,28 @@ MD::readCondFile(char* condfile){
 			else printf("**************Uknown ion parameter was found**************\n");
 		}
 		if (readings[1]=="vi"||readings[1]=="iv") {
+			d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;//pow(28.0855*8/6.02e23/(2.218e-24),1/3.0)*5;
+			V=d_size*d_size*d_size;
+			CL2 = (CUTOFF)*(CUTOFF);
+			ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
 			if (readings[2]=="LJcoul") InterInter.push_back(new PotentialVaporIon(ML2));
 			else if (readings[2]=="OFF");
 			else printf("**************Uknown vapor ion parameter was found**************\n");
 		}
 		if (readings[1]=="vv"||readings[1]=="vv") {
+			d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;//pow(28.0855*8/6.02e23/(2.218e-24),1/3.0)*5;
+			V=d_size*d_size*d_size;
+			CL2 = (CUTOFF)*(CUTOFF);
+			ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
 			if (readings[2]=="LJcoul") InterInter.push_back(new PotentialVaporVapor(ML2));
 			else if (readings[2]=="OFF");
 			else printf("**************Uknown vapor vapor parameter was found**************\n");
 		}
 		if (readings[1]=="gv"||readings[1]=="vg") {
+			d_size=pow(Nof_around_gas*kb*T/p,1/3.0)*1e10;//pow(28.0855*8/6.02e23/(2.218e-24),1/3.0)*5;
+			V=d_size*d_size*d_size;
+			CL2 = (CUTOFF)*(CUTOFF);
+			ML2 = (CUTOFF+MARGIN)*(CUTOFF+MARGIN);
 			if (readings[2]=="LJ") InterInter.push_back(new PotentialVaporGas(ML2));
 			else if (readings[2]=="OFF");
 			else printf("**************Uknown vapor vapor parameter was found**************\n");
